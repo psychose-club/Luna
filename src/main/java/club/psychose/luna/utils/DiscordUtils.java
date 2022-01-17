@@ -14,10 +14,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DiscordUtils {
@@ -240,6 +238,10 @@ public class DiscordUtils {
 
         // Returns the embed builder.
         return embedBuilder;
+    }
+
+    public static List<Message> getMessageHistory(TextChannel textChannel, int messages) {
+        return new ArrayList<>(textChannel.getHistory().retrievePast(messages).complete());
     }
 
     public static Role getRoleViaID (String roleID, List<Role> roleList) {
