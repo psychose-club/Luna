@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-public class SettingsManager {
+public final class SettingsManager {
     private final BotSettings botSettings = new BotSettings();
     private final FilterSettings filterSettings = new FilterSettings();
     private final ServerSettings serverSettings = new ServerSettings();
@@ -49,7 +49,7 @@ public class SettingsManager {
                 }
             } else {
                 retryBotSettings ++;
-                this.saveBotSettings();
+                this.saveSettings();
                 this.loadBotSettings();
             }
         } else {
@@ -75,8 +75,17 @@ public class SettingsManager {
             URL url = new URL(this.getBotSettings().getMessageFilterURL());
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
 
+            this.getFilterSettings().getBlacklistedWords().clear();
             bufferedReader.lines().filter(line -> !(this.getFilterSettings().getBlacklistedWords().contains(line))).forEachOrdered(line -> this.getFilterSettings().getBlacklistedWords().add(line));
             bufferedReader.close();
+
+            if (this.getFilterSettings().getBlacklistedWords().size() > 3) {
+                this.getFilterSettings().getBlacklistedWords().remove(0);
+                this.getFilterSettings().getBlacklistedWords().remove(0);
+                this.getFilterSettings().getBlacklistedWords().remove(0);
+            } else {
+                this.getFilterSettings().getBlacklistedWords().clear();
+            }
         } catch (IOException ioException) {
             CrashLog.saveLogAsCrashLog(ioException, null);
         }
@@ -103,42 +112,42 @@ public class SettingsManager {
             File[] files = Constants.getLunaFolderPath("\\servers\\").toFile().listFiles();
 
             if (files != null) {
-                ArrayList<ArrayList<String>> configurationFilesArrayList = new ArrayList<>();
+                ArrayList<String> configurationFilesArrayList = new ArrayList<>();
 
                 Arrays.stream(files).filter(File::isDirectory).forEachOrdered(file -> {
-                    ArrayList<String> directoryConfigArrayList = new ArrayList<>();
-                    directoryConfigArrayList.add(file.getName());
-
                     File[] directoryFiles = file.listFiles();
 
                     if (directoryFiles != null) {
-                        Arrays.stream(directoryFiles).filter(File::isFile).filter(directoryFile -> directoryFile.getName().endsWith(".json")).map(File::getAbsolutePath).forEachOrdered(directoryConfigArrayList::add);
-                        configurationFilesArrayList.add(directoryConfigArrayList);
+                        Arrays.stream(directoryFiles).filter(File::isDirectory).forEachOrdered(directoryFile -> {
+                            File[] settingsDirectoryFiles = directoryFile.listFiles();
+
+                            if (settingsDirectoryFiles != null) {
+                                Arrays.stream(settingsDirectoryFiles).filter(File::isFile).forEachOrdered(settingsDirectoryFile -> {
+                                    if (settingsDirectoryFile.getName().endsWith(".json")) {
+                                        String absolutePath = settingsDirectoryFile.getAbsolutePath();
+                                        configurationFilesArrayList.add(absolutePath);
+                                    }
+                                });
+                            } else {
+                                CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException(directoryFile.getAbsolutePath() + " has no files inside!"), null);
+                            }
+                        });
+                    } else {
+                        CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException(file.getAbsolutePath() + " has no files inside!"), null);
                     }
                 });
 
-                for (ArrayList<String> configurationFileArrayList : configurationFilesArrayList) {
-                    if (configurationFileArrayList.size() >= 2) {
-                        String serverID = configurationFileArrayList.get(0).trim();
-
-                        if (Files.exists(Constants.getLunaFolderPath("\\servers\\" + serverID + "\\settings\\"))) {
-                            for (String filePath : configurationFileArrayList) {
-                                JsonObject jsonObject = Luna.FILE_MANAGER.readJsonObject(Paths.get(filePath));
-
-                                if (jsonObject != null) {
-                                    if ((jsonObject.has("Owner Role ID")) && ((jsonObject.has("Admin Role ID")) && ((jsonObject.has("Moderator Role ID")) && ((jsonObject.has("Verification Role ID")) && ((jsonObject.has("Bot information Channel ID")) && ((jsonObject.has("Logging Channel ID")) && ((jsonObject.has("Verification Channel ID"))))))))) {
-                                        ServerSetting serverSetting = new ServerSetting(jsonObject.get("Owner Role ID").getAsString(), jsonObject.get("Admin Role ID").getAsString(), jsonObject.get("Moderator Role ID").getAsString(), jsonObject.get("Verification Role ID").getAsString(), jsonObject.get("Bot information Channel ID").getAsString(), jsonObject.get("Logging Channel ID").getAsString(), jsonObject.get("Verification Channel ID").getAsString());
-                                        this.getServerSettings().addServerConfiguration(serverID, serverSetting);
-                                    } else {
-                                        CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException(serverID + " has an invalid JsonObject!"), null);
-                                    }
-                                } else {
-                                    CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException(serverID + " has an invalid JsonObject!"), null);
-                                }
-                            }
+                for (String configurationFile : configurationFilesArrayList) {
+                    JsonObject jsonObject = Luna.FILE_MANAGER.readJsonObject(Paths.get(configurationFile));
+                    if (jsonObject != null) {
+                        if (((jsonObject.has("Server ID")) && (jsonObject.has("Owner Role ID")) && ((jsonObject.has("Admin Role ID")) && ((jsonObject.has("Moderator Role ID")) && ((jsonObject.has("Verification Role ID")) && ((jsonObject.has("Bot information Channel ID")) && ((jsonObject.has("Logging Channel ID")) && ((jsonObject.has("Verification Channel ID")))))))))) {
+                            ServerSetting serverSetting = new ServerSetting(jsonObject.get("Owner Role ID").getAsString(), jsonObject.get("Admin Role ID").getAsString(), jsonObject.get("Moderator Role ID").getAsString(), jsonObject.get("Verification Role ID").getAsString(), jsonObject.get("Bot information Channel ID").getAsString(), jsonObject.get("Logging Channel ID").getAsString(), jsonObject.get("Verification Channel ID").getAsString());
+                            this.getServerSettings().addServerConfiguration(jsonObject.get("Server ID").getAsString(), serverSetting);
                         } else {
-                            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException(serverID + " is invalid!"), null);
+                            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException(configurationFile + " has an invalid JsonObject!"), null);
                         }
+                    } else {
+                        CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException(configurationFile + " has an invalid JsonObject!"), null);
                     }
                 }
             } else {
@@ -174,6 +183,7 @@ public class SettingsManager {
             String serverID = serverDataMapEntry.getKey();
             ServerSetting serverSetting = serverDataMapEntry.getValue();
 
+            serverSettingsJsonObject.addProperty("Server ID", serverID);
             serverSettingsJsonObject.addProperty("Owner Role ID", serverSetting.getOwnerRoleID());
             serverSettingsJsonObject.addProperty("Admin Role ID", serverSetting.getAdminRoleID());
             serverSettingsJsonObject.addProperty("Moderator Role ID", serverSetting.getModeratorRoleID());
