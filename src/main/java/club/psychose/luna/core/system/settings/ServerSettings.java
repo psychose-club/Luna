@@ -5,6 +5,7 @@ import club.psychose.luna.core.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.Constants;
+import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 
-public class ServerSettings {
+public final class ServerSettings {
     private final HashMap<String, ServerSetting> serverConfigurationHashMap = new HashMap<>();
 
     public void addServerConfiguration (String serverID, ServerSetting serverSetting) {
@@ -79,7 +80,7 @@ public class ServerSettings {
                             case ADMIN -> {
                                 if (serverSetting.getAdminRoleID().equals(role.getId()))
                                     return true;
-                            }
+                                }
 
                             case MODERATOR -> {
                                 if (serverSetting.getModeratorRoleID().equals(role.getId()))
@@ -155,7 +156,7 @@ public class ServerSettings {
                     }
 
                     case VERIFICATION -> {
-                        return serverSetting.getVerificationRoleID();
+                        return serverSetting.getVerificationChannelID();
                     }
                 }
             }
@@ -166,5 +167,33 @@ public class ServerSettings {
 
     public HashMap<String, ServerSetting> getServerConfigurationHashMap () {
         return this.serverConfigurationHashMap;
+    }
+
+    public Role getDiscordServerRoleViaID (String serverID, PermissionRoles permissionRole, List<Role> roleList) {
+        if (permissionRole != null) {
+            ServerSetting serverSetting = this.getServerConfigurationHashMap().getOrDefault(serverID, null);
+
+            if (serverSetting != null) {
+                switch (permissionRole) {
+                    case OWNER -> {
+                        return DiscordUtils.getRoleViaID(serverSetting.getOwnerRoleID(), roleList);
+                    }
+
+                    case ADMIN -> {
+                        return DiscordUtils.getRoleViaID(serverSetting.getAdminRoleID(), roleList);
+                    }
+
+                    case MODERATOR -> {
+                        return DiscordUtils.getRoleViaID(serverSetting.getModeratorRoleID(), roleList);
+                    }
+
+                    case VERIFICATION -> {
+                        return DiscordUtils.getRoleViaID(serverSetting.getVerificationRoleID(), roleList);
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }
