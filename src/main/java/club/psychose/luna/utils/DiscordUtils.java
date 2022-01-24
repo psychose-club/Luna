@@ -11,116 +11,60 @@ import net.dv8tion.jda.api.interactions.components.Button;
 
 import java.awt.*;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DiscordUtils {
-    public static void addRoleToMember (Member member, String roleID, List<Role> roleList) {
-        if (checkIfRoleExist(roleID, roleList)) {
-            if (!(hasUserRole(member, roleID))) {
-                member.getRoles().add(getRoleViaID(roleID, roleList));
-            }
-        }
-    }
-
-    public static void removeRoleFromMember (Member member, String roleID, List<Role> roleList) {
-        if (checkIfRoleExist(roleID, roleList)) {
-            if (hasUserRole(member, roleID)) {
-                member.getRoles().remove(getRoleViaID(roleID, roleList));
-            }
-        }
+public final class DiscordUtils {
+    public static void addRoleToMember (User user, String serverID, String roleID, List<Guild> guildList) {
+        // TODO: Find method to add role to unknown member.
     }
 
     // Method to delete a complete channel History.
     public static void deleteChannelHistory (String serverID, TextChannel textChannel) {
-        // Saves the messages in an ArrayList to prevent a rate-limit from discord when checking the messages.
-        // If we delete the message without checking if all messages written in the past 14 days we will unnecessarily abuse the discord api and get a rate limit.
-        // To prevent this we will store temporarily the messages in the ArrayList, and we will only use this if no message is older than 14 days.
-        ArrayList<Message> messageArrayList = new ArrayList<>();
+        // Creates a copy of the text channel
+        TextChannel copyOfTheOriginalChannel = textChannel.createCopy().complete();
 
-        // Checks the messages from the text channel.
-        for (Message message : textChannel.getHistory().getChannel().getIterableHistory().complete()) {
-            // Initialize variables.
-            OffsetDateTime messageOffsetDateTime = message.getTimeCreated();
-            LocalDate messageLocalDateTime = LocalDate.from(messageOffsetDateTime);
-            LocalDate localDateNow = LocalDate.now();
+        // Saves the text channel position.
+        int textChannelPosition = textChannel.getPosition();
 
-            // Checks the days between the message creation date and today.
-            long daysDifference = ChronoUnit.DAYS.between(messageLocalDateTime, localDateNow);
+        // Checks if the text channel is a configured channel.
+        for (DiscordChannels discordChannel : DiscordChannels.values()) {
+            String channelID = Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(serverID, discordChannel);
 
-            // Checks if the difference is not 14 or higher.
-            if (daysDifference < 14) {
-                // Adds the message to the ArrayList.
-                messageArrayList.add(message);
-            } else {
-                // Creates a copy of the text channel
-                TextChannel copyOfTheOriginalChannel = textChannel.createCopy().complete();
-
-                // Saves the text channel position.
-                int textChannelPosition = textChannel.getPosition();
-
-                // Checks if the text channel is a configured channel.
-                for (DiscordChannels discordChannel : DiscordChannels.values()) {
-                    String channelID = Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(serverID, discordChannel);
-
-                    // Checks if the channel id equals the text channel id.
-                    if (channelID.equals(textChannel.getId())) {
-                        // Sets the channel id to the copy of the original text channel.
-                        Luna.SETTINGS_MANAGER.getServerSettings().replaceChannelConfiguration(serverID, discordChannel, copyOfTheOriginalChannel.getId());
-                        break;
-                    }
-                }
-
-                // Deletes the text channel.
-                textChannel.delete().queue();
-
-                // Sets the position.
-                copyOfTheOriginalChannel.getManager().setPosition(textChannelPosition).queue();
-
-                // Returns.
-                return;
+            // Checks if the channel id equals the text channel id.
+            if (channelID.equals(textChannel.getId())) {
+                // Sets the channel id to the copy of the original text channel.
+                Luna.SETTINGS_MANAGER.getServerSettings().replaceChannelConfiguration(serverID, discordChannel, copyOfTheOriginalChannel.getId());
             }
         }
 
-        // Checks the messages.
-        for (Message message : messageArrayList) {
-            // Deletes the message.
-            message.delete().queue();
+        // Deletes the text channel.
+        textChannel.delete().queue();
 
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException interruptedException) {
-                CrashLog.saveLogAsCrashLog(interruptedException, textChannel.getJDA().getGuilds());
-            }
-        }
+        // Sets the position.
+        copyOfTheOriginalChannel.getManager().setPosition(textChannelPosition).queue();
     }
 
-    public static void refreshVerificationChannel (String serverID, TextChannel verificationChannel, List<TextChannel> textChannelList) {
-        if (verificationChannel.hasLatestMessage()) {
-            List<Message> messageList = verificationChannel.getHistory().getRetrievedHistory();
+    public static void refreshVerificationChannel (String serverID, TextChannel verificationChannel, Guild guild) {
+        List<Message> messageList = verificationChannel.getIterableHistory().complete();
 
-            for (Message message : messageList) {
-                if (message.getContentRaw().startsWith("Version: " + Constants.VERSION)) {
-                    return;
-                }
-            }
-
-            deleteChannelHistory(serverID, verificationChannel);
+        for (Message message : messageList) {
+            if (message.getContentRaw().equals("Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD))
+                return;
         }
+
+        deleteChannelHistory(serverID, verificationChannel);
 
         String channelID = Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(serverID, DiscordChannels.VERIFICATION);
 
         if (!(channelID.equals(verificationChannel.getId())))
-            verificationChannel = getTextChannel(channelID, textChannelList);
+            verificationChannel = getTextChannel(channelID, guild.getTextChannels());
 
         if (verificationChannel != null) {
             verificationChannel.sendMessage("Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD).queue();
 
-            sendEmbedMessage(verificationChannel, "Verification Process", "Welcome to this server!\nYou need to get verified to access all channels!\nYou accept automatically the server rules by verifying you with the bot and that the bot can maybe collect messages to improve the experience and stability!\n\nYou need to enable your PMs!\nEnter !verify to receive a PM!", null, "Luna was developed by psychose.club", Color.MAGENTA);
+            sendEmbedMessage(verificationChannel, "Verification Process", "Welcome to this server!\nYou need to get verified to access all channels!\nYou accept automatically the server rules by verifying you with the bot and that the bot can maybe collect messages to improve the experience and stability!\n\nYou need to enable your PMs you'll not get any captcha if you disable your PMs!\nTo enable PMs -> Server Menu -> Privacy Settings -> Allow direct messages from server members. -> Toggle on\n\nEnter !verify to receive a PM!", null, "Luna was developed by psychose.club", Color.MAGENTA);
         } else {
             CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found after refresh on the server with the server id " + serverID + "!"), null);
         }
@@ -187,20 +131,16 @@ public class DiscordUtils {
         }
     }
 
-    public static boolean checkIfRoleExist (String roleID, List<Role> roleList) {
-        return ((roleList.size() != 0) && (roleList.stream().anyMatch(role -> role.getId().equals(roleID))));
-    }
-
-    public static boolean hasUserRole (Member member, String roleID) {
-        return (member != null) && (member.getRoles().size() != 0) && member.getRoles().stream().anyMatch(role -> role.getId().equals(roleID));
-    }
-
     public static boolean hasUserPermission (Member member, String serverID, PermissionRoles permission) {
         return hasUserPermissions(member, serverID, new PermissionRoles[] {permission});
     }
 
+    public static boolean hasUserPermission (User user, String serverID, PermissionRoles permission, List<Guild> guildList) {
+        return hasUserPermissions(getMember(user, serverID, guildList), serverID, new PermissionRoles[] {permission});
+    }
+
     public static boolean hasUserPermissions (Member member, String serverID, PermissionRoles[] permissions) {
-        return (((member != null) && (member.getRoles().size() != 0) && (Luna.SETTINGS_MANAGER.getServerSettings().containsPermission(serverID, member.getRoles(), permissions))));
+        return (member != null && (member.getRoles().size() == 0 ? Arrays.asList(permissions).contains(PermissionRoles.EVERYONE) : Luna.SETTINGS_MANAGER.getServerSettings().containsPermission(serverID, member.getRoles(), permissions)));
     }
 
     public static boolean isChannelValidForTheDiscordCommand (TextChannel textChannel, String serverID, DiscordChannels[] discordChannels) {
@@ -217,7 +157,7 @@ public class DiscordUtils {
         embedBuilder.setTitle(title);
         embedBuilder.setDescription(description);
         embedBuilder.setAuthor("\uD83D\uDC08 L U N A \uD83D\uDC08");
-        //embedBuilder.setImage("https://cdn.discordapp.com/icons/670667590812696623/a_824fb3dbf622ccb5434f91e35bb308f9.gif?size=4096");
+        //embedBuilder.setImage("");
 
         // Checks if the field hashmap is not null.
         if (fieldHashMap != null) {
@@ -240,8 +180,12 @@ public class DiscordUtils {
         return embedBuilder;
     }
 
-    public static List<Message> getMessageHistory(TextChannel textChannel, int messages) {
+    public static List<Message> getMessageHistory (TextChannel textChannel, int messages) {
         return new ArrayList<>(textChannel.getHistory().retrievePast(messages).complete());
+    }
+
+    public static Member getMember (User user, String serverID, List<Guild> guildList) {
+        return user != null ? guildList.stream().filter(guild -> guild.getId().equals(serverID)).flatMap(guild -> guild.getMembers().stream()).filter(member -> member.getId().equals(user.getId())).findFirst().orElse(null) : null;
     }
 
     public static Role getRoleViaID (String roleID, List<Role> roleList) {
