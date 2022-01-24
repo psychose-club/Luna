@@ -6,7 +6,7 @@ import club.psychose.luna.core.system.managers.SettingsManager;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.StringUtils;
 
-public class Luna {
+public final class Luna {
     public static final FileManager FILE_MANAGER = new FileManager();
     public static final SettingsManager SETTINGS_MANAGER = new SettingsManager();
 

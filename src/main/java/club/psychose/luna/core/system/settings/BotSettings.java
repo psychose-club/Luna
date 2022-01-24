@@ -1,6 +1,6 @@
 package club.psychose.luna.core.system.settings;
 
-public class BotSettings {
+public final class BotSettings {
     private String botToken = "NULL";
     private String messageFilterURL = "NULL";
     private String messageWhitelistFilterURL = "NULL";

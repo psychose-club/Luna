@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 
 import java.util.concurrent.TimeUnit;
 
-public class DiscordButton {
+public final class DiscordButton {
     private final Button button;
     private final boolean requiresButtonOwner;
 

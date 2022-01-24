@@ -5,7 +5,7 @@ import club.psychose.luna.core.logging.CrashLog;
 
 import java.util.Map;
 
-public class MessageFilter {
+public final class MessageFilter {
     private String lastBadWord = null;
 
     public boolean checkMessage (String message) {

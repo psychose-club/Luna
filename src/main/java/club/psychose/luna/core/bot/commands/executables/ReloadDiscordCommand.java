@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 
-public class ReloadDiscordCommand extends DiscordCommand {
+public final class ReloadDiscordCommand extends DiscordCommand {
     public ReloadDiscordCommand () {
         super("reload", "Reload specific configurations", "!reload <filter | settings>", new String[] {"rl", "rel"}, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }

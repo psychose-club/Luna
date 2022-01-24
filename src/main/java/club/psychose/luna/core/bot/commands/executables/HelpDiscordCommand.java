@@ -11,7 +11,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-public class HelpDiscordCommand extends DiscordCommand {
+public final class HelpDiscordCommand extends DiscordCommand {
     public HelpDiscordCommand () {
         super("help", "Shows the help usage of other commands!", "!help", new String[] {"?"}, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
