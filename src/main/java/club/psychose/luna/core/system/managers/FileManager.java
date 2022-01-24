@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class FileManager {
+public final class FileManager {
     // This is the public constructor. If the application calls the FileManager it'll try to create automatically the folders.
     public FileManager () {
         try {
@@ -23,8 +23,8 @@ public class FileManager {
             if (!(Files.exists(Constants.getLunaFolderPath("\\logs\\"))))
                 Files.createDirectories(Constants.getLunaFolderPath("\\logs\\"));
 
-            if (!(Files.exists(Constants.getLunaFolderPath("\\logs\\crash\\"))))
-                Files.createDirectories(Constants.getLunaFolderPath("\\logs\\crash\\"));
+            if (!(Files.exists(Constants.getLunaFolderPath("\\logs\\crashes\\"))))
+                Files.createDirectories(Constants.getLunaFolderPath("\\logs\\crashes\\"));
 
             if (!(Files.exists(Constants.getLunaFolderPath("\\logs\\detections\\"))))
                 Files.createDirectories(Constants.getLunaFolderPath("\\logs\\detections\\"));
@@ -37,6 +37,9 @@ public class FileManager {
 
             if (!(Files.exists(Constants.getLunaFolderPath("\\settings\\"))))
                 Files.createDirectories(Constants.getLunaFolderPath("\\settings\\"));
+
+            if (!(Files.exists(Constants.getLunaFolderPath("\\temp\\"))))
+                Files.createDirectories(Constants.getLunaFolderPath("\\temp\\"));
         } catch (IOException ioException) {
             StringUtils.debug("IOException while creating the directories!");
             ioException.printStackTrace();
