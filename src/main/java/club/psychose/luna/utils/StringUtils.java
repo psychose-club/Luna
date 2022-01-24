@@ -7,7 +7,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class StringUtils {
+public final class StringUtils {
     // Prints an empty line in the console.
     public static void printEmptyLine () {
         System.out.println(" ");
@@ -21,7 +21,13 @@ public class StringUtils {
     // This method returns a date and time string.
     public static String getDateAndTime (String formatMode) {
         Date date = new Date();
-        DateFormat dateFormat = formatMode.equals("CONSOLE") ? new SimpleDateFormat("dd/MM/yyyy HH:mm:ss") : new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+
+        DateFormat dateFormat = switch (formatMode) {
+            case "CONSOLE" -> new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            case "LOG" -> new SimpleDateFormat("dd-MM-yyyy HH-mm-ss-SSS");
+            default -> new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+        };
+
         return dateFormat.format(date);
     }
 
