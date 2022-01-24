@@ -8,18 +8,22 @@ import net.dv8tion.jda.api.entities.Member;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class BadWordLog {
+public final class BadWordLog {
     public static String createBadWordLog (Member member, String serverID, String badWord, String message, String timestamp) {
-
         ArrayList<String> badWordLogArrayList = new ArrayList<>();
+
+        String cutTimeStamp = timestamp.replaceAll(" ", "").trim();
+
         badWordLogArrayList.add("==================================================================================================");
         badWordLogArrayList.add("                                         Bad Word Log                                             ");
         badWordLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        badWordLogArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\detections\\" + timestamp + ".log"));
+        badWordLogArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\detections\\" + cutTimeStamp + ".txt"));
         badWordLogArrayList.add("Timestamp: " + timestamp);
         badWordLogArrayList.add("Server ID: " + serverID);
         badWordLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        badWordLogArrayList.add("Member: " + member.getAsMention());
+        badWordLogArrayList.add("Member Name: " + member.getEffectiveName());
+        badWordLogArrayList.add("Member ID: " + member.getId());
+        badWordLogArrayList.add("Member (As mention): " + member.getAsMention());
         badWordLogArrayList.add("Bad Word: " + badWord);
         badWordLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         badWordLogArrayList.add("Full Message:");
@@ -27,13 +31,13 @@ public class BadWordLog {
         badWordLogArrayList.add("==================================================================================================");
 
         HashMap<String, String> fieldHashMap = new HashMap<>();
-        fieldHashMap.put("Path in Luna folder", "\\logs\\detections\\" + timestamp + ".log");
+        fieldHashMap.put("Path in Luna folder", "\\logs\\detections\\" + cutTimeStamp + ".txt");
         fieldHashMap.put("Timestamp: ", timestamp);
         DiscordUtils.sendBotInformationMessage(serverID, "Bad Word Log saved!", fieldHashMap, "SYSTEM", member.getGuild().getTextChannels());
 
-        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\detections\\" + timestamp + ".log"), badWordLogArrayList);
-        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\detections\\latest.log"), badWordLogArrayList);
+        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\detections\\" + cutTimeStamp + ".txt"), badWordLogArrayList);
+        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\detections\\latest.txt"), badWordLogArrayList);
 
-        return "\\logs\\detections\\" + timestamp + ".log";
+        return "\\logs\\detections\\" + cutTimeStamp + ".txt";
     }
 }

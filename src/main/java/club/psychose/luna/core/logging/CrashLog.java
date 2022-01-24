@@ -11,15 +11,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class CrashLog {
+public final class CrashLog {
     public static void saveLogAsCrashLog (Exception exception, List<Guild> guildList) {
-        String timestamp = StringUtils.getDateAndTime("LOG");
-
         ArrayList<String> crashLogArrayList = new ArrayList<>();
+
+        String timestamp = StringUtils.getDateAndTime("LOG");
+        String cutTimeStamp = timestamp.replaceAll(" ", "").trim();
+
         crashLogArrayList.add("==================================================================================================");
         crashLogArrayList.add("                                            Crash Log                                             ");
         crashLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        crashLogArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\crash\\" + timestamp + ".log"));
+        crashLogArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\crashes\\" + cutTimeStamp + ".txt"));
         crashLogArrayList.add("Timestamp: " + timestamp);
         crashLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         crashLogArrayList.add("Exception Cause: " + exception.getCause());
@@ -30,15 +32,15 @@ public class CrashLog {
 
         if (guildList != null) {
             HashMap<String, String> fieldHashMap = new HashMap<>();
-            fieldHashMap.put("Path in Luna folder", "\\logs\\crash\\" + timestamp + ".log");
+            fieldHashMap.put("Path in Luna folder", "\\logs\\crashes\\" + cutTimeStamp + ".txt");
             fieldHashMap.put("Timestamp: ", timestamp);
 
             guildList.forEach(guild -> DiscordUtils.sendBotInformationMessage(guild.getId(), "Oh no!\nA crash occurred!\nPlease contact CrashedLife!", fieldHashMap, "SYSTEM", guild.getTextChannels()));
         }
 
-        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crash\\" + timestamp + ".log"), crashLogArrayList);
-        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crash\\latest.log"), crashLogArrayList);
+        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crashes\\" + cutTimeStamp + ".txt"), crashLogArrayList);
+        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crashes\\latest.txt"), crashLogArrayList);
 
-        StringUtils.debug("ERROR: An exception occurred! Crash Log under: " + Constants.getLunaFolderPath("\\logs\\crash\\" + timestamp + ".log"));
+        StringUtils.debug("ERROR: An exception occurred! Crash Log under: " + Constants.getLunaFolderPath("\\logs\\crashes\\" + cutTimeStamp + ".txt"));
     }
 }
