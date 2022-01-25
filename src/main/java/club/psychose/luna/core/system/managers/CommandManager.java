@@ -11,6 +11,7 @@ public final class CommandManager {
     public void initializeCommands () {
         this.discordCommandsArrayList.add(new ClearTempFolderDiscordCommand());
         this.discordCommandsArrayList.add(new HelpDiscordCommand());
+        this.discordCommandsArrayList.add(new MusicPlayerDiscordCommand());
         this.discordCommandsArrayList.add(new NukeDiscordCommand());
         this.discordCommandsArrayList.add(new ReloadDiscordCommand());
         this.discordCommandsArrayList.add(new ViewLogsDiscordCommand());
