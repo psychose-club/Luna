@@ -111,8 +111,7 @@ public final class MessageListener extends ListenerAdapter {
                                      Role verificationRole = Luna.SETTINGS_MANAGER.getServerSettings().getDiscordServerRoleViaID(serverGuild.getId(), PermissionRoles.VERIFICATION, serverGuild.getRoles());
 
                                      if (verificationRole != null) {
-                                         DiscordUtils.addRoleToMember(user, serverGuild.getId(), verificationRole.getId(), user.getMutualGuilds());
-                                         StringUtils.debug("psedgfeeopkdfpe24242");
+                                         DiscordUtils.addVerificationRoleToUser(user, captcha, verificationRole);
 
                                          try {
                                              Files.deleteIfExists(captcha.getImageFile().toPath());
