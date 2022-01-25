@@ -2,6 +2,7 @@ package club.psychose.luna.utils;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.button.DiscordButton;
+import club.psychose.luna.core.captcha.Captcha;
 import club.psychose.luna.core.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
@@ -16,8 +17,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class DiscordUtils {
-    public static void addRoleToMember (User user, String serverID, String roleID, List<Guild> guildList) {
-        // TODO: Find method to add role to unknown member.
+    public static void addVerificationRoleToUser (User user, Captcha captcha, Role verificationRole) {
+        if (captcha.getMember().getId().equals(user.getId())) {
+            if (captcha.getMember().getGuild().getRoles().contains(verificationRole))
+                captcha.getMember().getGuild().addRoleToMember(user.getId(), verificationRole).queue();
+        }
     }
 
     // Method to delete a complete channel History.
