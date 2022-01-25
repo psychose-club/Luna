@@ -231,7 +231,7 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
             // Checks if the member is not null and if the voice state of the member is not null.
             if ((messageReceivedEvent.getMember() != null) && (messageReceivedEvent.getMember().getVoiceState() != null)) {
                 // Tries to fetch the member voice channel.
-                VoiceChannel memberVoiceChannel = DiscordUtils.fetchVoiceChannel(messageReceivedEvent.getMember(), messageReceivedEvent.getGuild());
+                VoiceChannel memberVoiceChannel = DiscordUtils.getVoiceChannel(messageReceivedEvent.getMember(), messageReceivedEvent.getGuild());
 
                 // Checks if the voice channel is not null.
                 if (memberVoiceChannel != null) {

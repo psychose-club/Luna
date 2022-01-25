@@ -196,7 +196,7 @@ public final class DiscordUtils {
         return textChannelList.stream().filter(textChannel -> textChannel.getId().equals(channelID)).findFirst().orElse(null);
     }
 
-    public static VoiceChannel fetchVoiceChannel (Member member, Guild guild) {
+    public static VoiceChannel getVoiceChannel (Member member, Guild guild) {
         return guild.getVoiceChannels().stream().filter(voiceChannel -> voiceChannel.getMembers().stream().anyMatch(joinedMember -> joinedMember.getId().equals(member.getId()))).findFirst().orElse(null);
     }
 }
