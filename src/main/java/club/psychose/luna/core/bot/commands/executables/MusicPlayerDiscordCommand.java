@@ -62,56 +62,60 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                 if (arguments.length >= 2) {
                     switch (mode) {
                         case "play" -> {
-                            String trackURL = arguments[1].trim();
+                            if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
+                                String trackURL = arguments[1].trim();
 
-                            this.musicPlayer.getAudioPlayerManager().loadItemOrdered(this.musicPlayer, trackURL, new AudioLoadResultHandler () {
-                                @Override
-                                public void trackLoaded (AudioTrack audioTrack) {
-                                    // Initialize variable.
-                                    HashMap<String, String> fieldHashMap = new HashMap<>();
+                                this.musicPlayer.getAudioPlayerManager().loadItemOrdered(this.musicPlayer, trackURL, new AudioLoadResultHandler () {
+                                    @Override
+                                    public void trackLoaded (AudioTrack audioTrack) {
+                                        // Initialize variable.
+                                        HashMap<String, String> fieldHashMap = new HashMap<>();
 
-                                    // FieldHashMap inputs.
-                                    fieldHashMap.put("Title: ", audioTrack.getInfo().title);
-                                    fieldHashMap.put("Author: ", audioTrack.getInfo().author);
-                                    fieldHashMap.put("URL: ", trackURL);
-                                    fieldHashMap.put("Stream: ", String.valueOf(audioTrack.getInfo().isStream));
-                                    fieldHashMap.put("Identifier: ", audioTrack.getInfo().identifier);
+                                        // FieldHashMap inputs.
+                                        fieldHashMap.put("Title: ", audioTrack.getInfo().title);
+                                        fieldHashMap.put("Author: ", audioTrack.getInfo().author);
+                                        fieldHashMap.put("URL: ", trackURL);
+                                        fieldHashMap.put("Stream: ", String.valueOf(audioTrack.getInfo().isStream));
+                                        fieldHashMap.put("Identifier: ", audioTrack.getInfo().identifier);
 
-                                    // Adds the track to the queue.
-                                    musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack);
+                                        // Adds the track to the queue.
+                                        musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack);
 
-                                    // Sends an embed message to the text channel.
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added song to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
-                                }
+                                        // Sends an embed message to the text channel.
+                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added song to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
+                                    }
 
-                                @Override
-                                public void playlistLoaded (AudioPlaylist audioPlaylist) {
-                                    // Initialize variable.
-                                    HashMap<String, String> fieldHashMap = new HashMap<>();
+                                    @Override
+                                    public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                                        // Initialize variable.
+                                        HashMap<String, String> fieldHashMap = new HashMap<>();
 
-                                    // FieldHashMap inputs.
-                                    fieldHashMap.put("Playlist Name: ", audioPlaylist.getName());
-                                    fieldHashMap.put("Playlist Songs: ", String.valueOf(audioPlaylist.getTracks().size()));
-                                    fieldHashMap.put("URL: ", trackURL);;
+                                        // FieldHashMap inputs.
+                                        fieldHashMap.put("Playlist Name: ", audioPlaylist.getName());
+                                        fieldHashMap.put("Playlist Songs: ", String.valueOf(audioPlaylist.getTracks().size()));
+                                        fieldHashMap.put("URL: ", trackURL);;
 
-                                    // Adds the tracks to the queue.
-                                    audioPlaylist.getTracks().forEach(audioTrack -> musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack));
+                                        // Adds the tracks to the queue.
+                                        audioPlaylist.getTracks().forEach(audioTrack -> musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack));
 
-                                    // Sends an embed message to the text channel.
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added playlist to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
-                                }
+                                        // Sends an embed message to the text channel.
+                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added playlist to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
+                                    }
 
-                                @Override
-                                public void noMatches () {
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Song not found :(", null, "searched whole internet and nothing found :(", Color.WHITE);
-                                }
+                                    @Override
+                                    public void noMatches () {
+                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Song not found :(", null, "searched whole internet and nothing found :(", Color.WHITE);
+                                    }
 
-                                @Override
-                                public void loadFailed (FriendlyException friendlyException) {
-                                    CrashLog.saveLogAsCrashLog(friendlyException, messageReceivedEvent.getJDA().getGuilds());
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", null, "The developers already got a notification!", Color.RED);
-                                }
-                            });
+                                    @Override
+                                    public void loadFailed (FriendlyException friendlyException) {
+                                        CrashLog.saveLogAsCrashLog(friendlyException, messageReceivedEvent.getJDA().getGuilds());
+                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", null, "The developers already got a notification!", Color.RED);
+                                    }
+                                });
+                            } else {
+                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
+                            }
                         }
 
                         case "volume" -> {
