@@ -1,0 +1,55 @@
+/*
+ * Copyright © 2022 psychose.club
+ * Contact: psychose.club@gmail.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package club.psychose.luna.utils;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public final class StringUtils {
+    // Prints an empty line in the console.
+    public static void printEmptyLine () {
+        System.out.println(" ");
+    }
+
+    // These methods are for debugging.
+    public static void debug (String output) {
+        System.out.println(getDateAndTime("CONSOLE") + " | [Luna]: " + output);
+    }
+
+    // This method returns a date and time string.
+    public static String getDateAndTime (String formatMode) {
+        Date date = new Date();
+
+        DateFormat dateFormat = switch (formatMode) {
+            case "CONSOLE" -> new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            case "LOG" -> new SimpleDateFormat("dd-MM-yyyy HH-mm-ss-SSS");
+            default -> new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+        };
+
+        return dateFormat.format(date);
+    }
+
+    // This returns a path with the valid file separators for the OS.
+    public static Path getOSPath (Path path) {
+        return Paths.get(path.toString().trim().replace("\\", File.separator));
+    }
+}
