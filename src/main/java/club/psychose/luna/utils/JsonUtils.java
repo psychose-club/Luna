@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public class JsonUtils {
+public final class JsonUtils {
     // Method to fetch the JsonObject.
     public static JsonObject fetchOnlineJsonObject (String url) throws IOException {
         InputStream inputStream = new URL(url).openStream();
