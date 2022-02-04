@@ -18,6 +18,7 @@
 package club.psychose.luna.core.bot;
 
 import club.psychose.luna.Luna;
+import club.psychose.luna.core.bot.listeners.ButtonClickListener;
 import club.psychose.luna.core.bot.listeners.MessageListener;
 import club.psychose.luna.core.bot.listeners.ReadyListener;
 import club.psychose.luna.core.system.managers.CaptchaManager;
@@ -36,7 +37,7 @@ public final class DiscordBot {
     public void startDiscordBot () {
         if (!(Luna.SETTINGS_MANAGER.getBotSettings().getBotToken().equals("null"))) {
             JDABuilder jdaBuilder = JDABuilder.createDefault(Luna.SETTINGS_MANAGER.getBotSettings().getBotToken());
-            jdaBuilder.setActivity(Activity.playing("with \uD83D\uDC08"));
+            jdaBuilder.setActivity(Activity.watching("Sailor Moon"));
             jdaBuilder.setStatus(OnlineStatus.ONLINE);
 
             jdaBuilder.addEventListeners(new ReadyListener());
