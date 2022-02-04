@@ -92,7 +92,7 @@ public final class DiscordButton {
     }
 
     public boolean isMemberButtonOwner (Member member) {
-        return ((this.requiresButtonOwner) && (this.buttonOwner != null) && (this.buttonOwner.getId().equals(member.getId())));
+        return !(this.requiresButtonOwner) || (this.buttonOwner != null) && (this.buttonOwner.getId().equals(member.getId()));
     }
 
     public Button getButton () {
