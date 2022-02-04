@@ -19,6 +19,8 @@ package club.psychose.luna.core.bot.commands.executables;
 
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.bot.musicplayer.MusicPlayer;
+import club.psychose.luna.core.bot.musicplayer.youtube.YouTubeVideo;
+import club.psychose.luna.core.bot.musicplayer.youtube.YoutubeSearch;
 import club.psychose.luna.core.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
@@ -35,15 +37,20 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public final class MusicPlayerDiscordCommand extends DiscordCommand {
+    private final YoutubeSearch youtubeSearch = new YoutubeSearch();
+
     private final AudioPlayerManager audioPlayerManager;
     private int reInitializeMusicPlayerTrys = 0;
     private MusicPlayer musicPlayer = null;
 
     public MusicPlayerDiscordCommand () {
-        super("music", "Music player for the server!", "!music <play | queue | pause | resume | skip | stop | volume> <URL | (status | Value (0-100))>", new String[] {"m", "mp", "player"}, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("music", "Music player for the server!", "!music <play | queue | pause | resume | skip | stop | volume> <Keywords | URL | (status | Value (0-100))>", new String[] {"m", "mp", "player"}, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
 
         // Initialize the audio player manager.
         this.audioPlayerManager = new DefaultAudioPlayerManager();
@@ -65,54 +72,95 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                             if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
                                 String trackURL = arguments[1].trim();
 
-                                this.musicPlayer.getAudioPlayerManager().loadItemOrdered(this.musicPlayer, trackURL, new AudioLoadResultHandler () {
-                                    @Override
-                                    public void trackLoaded (AudioTrack audioTrack) {
-                                        // Initialize variable.
-                                        HashMap<String, String> fieldHashMap = new HashMap<>();
+                                boolean cancel = false;
+                                if ((!(trackURL.startsWith("https://") && (trackURL.contains("youtube") || (trackURL.contains("youtu.be")) || (trackURL.contains("soundcloud")))))) {
+                                    String[] keywords = Arrays.copyOfRange(arguments, 1, arguments.length);
 
-                                        // FieldHashMap inputs.
-                                        fieldHashMap.put("Title: ", audioTrack.getInfo().title);
-                                        fieldHashMap.put("Author: ", audioTrack.getInfo().author);
-                                        fieldHashMap.put("URL: ", trackURL);
-                                        fieldHashMap.put("Stream: ", String.valueOf(audioTrack.getInfo().isStream));
-                                        fieldHashMap.put("Identifier: ", audioTrack.getInfo().identifier);
+                                    try {
+                                        YouTubeVideo youTubeVideo = this.youtubeSearch.searchYouTubeVideo(keywords);
 
-                                        // Adds the track to the queue.
-                                        musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack);
+                                        if (youTubeVideo != null) {
+                                            if ((youTubeVideo.getTitleURL() != null) && (youTubeVideo.getYoutubeURL() != null)) {
+                                                HashMap<String, String> fieldHashMap = new HashMap<>();
+                                                fieldHashMap.put("Title: ", youTubeVideo.getTitleURL());
+                                                fieldHashMap.put("Identifier: ", youTubeVideo.getYoutubeURL());
 
-                                        // Sends an embed message to the text channel.
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added song to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
+                                                trackURL = "https://www.youtube.com/watch?v=" + youTubeVideo.getYoutubeURL();
+                                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "We found this video:", "", fieldHashMap,"1234", Color.RED);
+                                            } else {
+                                                if (youTubeVideo.isLivestream()) {
+                                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Please don't search for livestreams, load these directly!", "This is a sample text.", null, "1234", Color.RED);
+                                                } else {
+                                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", null, "00000", Color.RED);
+                                                }
+
+                                                cancel = true;
+                                            }
+                                        } else {
+                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Video not found!", "We didn't find the YouTube video!\nPlease try another keywords!", null, "damn", Color.RED);
+                                            cancel = true;
+                                        }
+                                    } catch (MalformedURLException malformedURLException) {
+                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid characters!", "YouTube didn't like special characters that much!\nPlease use no emojis or other special characters.", null, "https://www.youtube.com/watch?v=dQw4w9WgXcQ", Color.RED);
+                                        cancel = true;
+                                    } catch (IOException ioException) {
+                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", null, "damn", Color.RED);
+                                        CrashLog.saveLogAsCrashLog(ioException, messageReceivedEvent.getJDA().getGuilds());
+                                        cancel = true;
                                     }
+                                }
 
-                                    @Override
-                                    public void playlistLoaded (AudioPlaylist audioPlaylist) {
-                                        // Initialize variable.
-                                        HashMap<String, String> fieldHashMap = new HashMap<>();
+                                if (!(cancel)) {
+                                    String finalTrackURL = trackURL;
+                                    this.musicPlayer.getAudioPlayerManager().loadItemOrdered(this.musicPlayer, trackURL, new AudioLoadResultHandler () {
+                                        @Override
+                                        public void trackLoaded (AudioTrack audioTrack) {
+                                            // Initialize variable.
+                                            HashMap<String, String> fieldHashMap = new HashMap<>();
 
-                                        // FieldHashMap inputs.
-                                        fieldHashMap.put("Playlist Name: ", audioPlaylist.getName());
-                                        fieldHashMap.put("Playlist Songs: ", String.valueOf(audioPlaylist.getTracks().size()));
-                                        fieldHashMap.put("URL: ", trackURL);;
+                                            // FieldHashMap inputs.
+                                            fieldHashMap.put("Title: ", audioTrack.getInfo().title);
+                                            fieldHashMap.put("Author: ", audioTrack.getInfo().author);
+                                            fieldHashMap.put("URL: ", finalTrackURL);
+                                            fieldHashMap.put("Stream: ", String.valueOf(audioTrack.getInfo().isStream));
+                                            fieldHashMap.put("Identifier: ", audioTrack.getInfo().identifier);
 
-                                        // Adds the tracks to the queue.
-                                        audioPlaylist.getTracks().forEach(audioTrack -> musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack));
+                                            // Adds the track to the queue.
+                                            musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack);
 
-                                        // Sends an embed message to the text channel.
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added playlist to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
-                                    }
+                                            // Sends an embed message to the text channel.
+                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added song to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
+                                        }
 
-                                    @Override
-                                    public void noMatches () {
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Song not found :(", null, "searched whole internet and nothing found :(", Color.WHITE);
-                                    }
+                                        @Override
+                                        public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                                            // Initialize variable.
+                                            HashMap<String, String> fieldHashMap = new HashMap<>();
 
-                                    @Override
-                                    public void loadFailed (FriendlyException friendlyException) {
-                                        CrashLog.saveLogAsCrashLog(friendlyException, messageReceivedEvent.getJDA().getGuilds());
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", null, "The developers already got a notification!", Color.RED);
-                                    }
-                                });
+                                            // FieldHashMap inputs.
+                                            fieldHashMap.put("Playlist Name: ", audioPlaylist.getName());
+                                            fieldHashMap.put("Playlist Songs: ", String.valueOf(audioPlaylist.getTracks().size()));
+                                            fieldHashMap.put("URL: ", finalTrackURL);;
+
+                                            // Adds the tracks to the queue.
+                                            audioPlaylist.getTracks().forEach(audioTrack -> musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack));
+
+                                            // Sends an embed message to the text channel.
+                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added playlist to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
+                                        }
+
+                                        @Override
+                                        public void noMatches () {
+                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Song not found :(", null, "searched whole internet and nothing found :(", Color.WHITE);
+                                        }
+
+                                        @Override
+                                        public void loadFailed (FriendlyException friendlyException) {
+                                            CrashLog.saveLogAsCrashLog(friendlyException, messageReceivedEvent.getJDA().getGuilds());
+                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", null, "The developers already got a notification!", Color.RED);
+                                        }
+                                    });
+                                }
                             } else {
                                 DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
                             }
