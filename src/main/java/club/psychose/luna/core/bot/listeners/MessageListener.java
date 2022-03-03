@@ -53,7 +53,7 @@ public final class MessageListener extends ListenerAdapter {
              if (!(messageReceivedEvent.getChannelType().equals(ChannelType.PRIVATE))) {
                  if (member != null) {
                      if (this.messageFilter.checkMessage(message)) {
-                         if (message.startsWith("!")) {
+                         if (message.startsWith("L!")) {
                              String command = message.substring(1).trim();
                              String[] commandArguments = null;
 
@@ -92,6 +92,7 @@ public final class MessageListener extends ListenerAdapter {
                              }
                          }
 
+                         // TODO: Fix bot sent things in verification channel.
                          if (messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION)))
                              messageReceivedEvent.getMessage().delete().queue();
                      } else {
