@@ -18,20 +18,16 @@
 package club.psychose.luna.utils;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.core.bot.button.DiscordButton;
 import club.psychose.luna.core.captcha.Captcha;
 import club.psychose.luna.core.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.components.Button;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class DiscordUtils {
     public static void addVerificationRoleToUser (User user, Captcha captcha, Role verificationRole) {
@@ -67,7 +63,11 @@ public final class DiscordUtils {
         copyOfTheOriginalChannel.getManager().setPosition(textChannelPosition).queue();
     }
 
-    public static void refreshVerificationChannel (String serverID, TextChannel verificationChannel, Guild guild) {
+    private static void sendChangelog (TextChannel botInformationChannel) {
+        sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "[+] Added changelog\n[=] Fixed YouTube search algorithm\n[=] Updated and added dependencies to fix security vulnerabilities\n[-] Stopped and removed button interaction development because of API changes.", null, "Luna was developed by psychose.club", Color.MAGENTA);
+    }
+
+    public static void refreshVerificationChannel (String serverID, TextChannel verificationChannel, TextChannel botInformationChannel, Guild guild) {
         List<Message> messageList = verificationChannel.getIterableHistory().complete();
 
         for (Message message : messageList) {
@@ -85,7 +85,8 @@ public final class DiscordUtils {
         if (verificationChannel != null) {
             verificationChannel.sendMessage("Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD).queue();
 
-            sendEmbedMessage(verificationChannel, "Verification Process", "Welcome to this server!\nYou need to get verified to access all channels!\nYou accept automatically the server rules by verifying you with the bot and that the bot can maybe collect messages to improve the experience and stability!\n\nYou need to enable your PMs you'll not get any captcha if you disable your PMs!\nTo enable PMs -> Server Menu -> Privacy Settings -> Allow direct messages from server members. -> Toggle on\n\nEnter !verify to receive a PM!", null, "Luna was developed by psychose.club", Color.MAGENTA);
+            sendEmbedMessage(verificationChannel, "Verification Process", "Welcome to this server!\nYou need to get verified to access all channels!\nYou accept automatically the server rules by verifying you with the bot and that the bot can maybe collect messages to improve the experience and stability!\n\nYou need to enable your PMs you'll not get any captcha if you disable your PMs!\nTo enable PMs -> Server Menu -> Privacy Settings -> Allow direct messages from server members. -> Toggle on\n\nEnter !verify to receive a PM!\n\nIMPORTANT: IF YOU NOTICE ANY BUG OR NEED HELP FOR VERIFICATION CONTACT CrashedLife#0420 !!!", null, "Luna was developed by psychose.club", Color.MAGENTA);
+            sendChangelog(botInformationChannel);
         } else {
             CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found after refresh on the server with the server id " + serverID + "!"), null);
         }
@@ -125,24 +126,6 @@ public final class DiscordUtils {
     public static void sendEmbedMessage (User user, String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color) {
         // Opens the private channel from the user and sends the message to the user.
         user.openPrivateChannel().queue((privateChannel -> privateChannel.sendMessageEmbeds(getEmbedBuilder(title, description, fieldHashMap, footerText, color).build()).queue()));
-    }
-
-    // Sends the embed message.
-    public static void sendEmbedMessageWithButtons (TextChannel textChannel, String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color, ArrayList<DiscordButton> discordButtonArrayList) {
-        // Checks if more than 5 buttons are in the list.
-        if (discordButtonArrayList.size() > 5) {
-            CrashLog.saveLogAsCrashLog(new IOException("Warning! You cannot use more than 5 buttons for the embedded message!"), textChannel.getJDA().getGuilds());
-            return;
-        }
-
-        // Converts the discord button list to a normal button list.
-        List<Button> discordButtonList = discordButtonArrayList.stream().map(DiscordButton::getButton).collect(Collectors.toCollection(ArrayList::new));
-
-        // Builds the embed message.
-        MessageEmbed messageEmbed = getEmbedBuilder(title, description, fieldHashMap, footerText, color).build();
-
-        // Sends the message to the text channel.
-        textChannel.sendMessageEmbeds(messageEmbed).setActionRow(discordButtonList).queue();
     }
 
     public static void sendLoggingMessage (String serverID, String message, HashMap<String, String> fieldHashMap, String footerText, List<TextChannel> textChannelList) {
