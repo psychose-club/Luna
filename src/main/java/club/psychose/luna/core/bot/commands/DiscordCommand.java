@@ -19,6 +19,7 @@ package club.psychose.luna.core.bot.commands;
 
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public abstract class DiscordCommand {
@@ -29,6 +30,10 @@ public abstract class DiscordCommand {
     private final PermissionRoles[] permissions;
     private final DiscordChannels[] discordChannels;
 
+    private String slashCommandName = null;
+    private String slashCommandDescription = null;
+
+    @Deprecated
     public DiscordCommand (String commandName, String commandDescription, String commandSyntax, String[] aliases, PermissionRoles[] permissions, DiscordChannels[] discordChannels) {
         this.commandName = commandName;
         this.commandDescription = commandDescription;
@@ -38,7 +43,20 @@ public abstract class DiscordCommand {
         this.discordChannels = discordChannels;
     }
 
+    public DiscordCommand (String commandName, String commandDescription, String commandSyntax, String[] aliases, PermissionRoles[] permissions, DiscordChannels[] discordChannels, String slashCommandName, String slashCommandDescription) {
+        this.commandName = commandName;
+        this.commandDescription = commandDescription;
+        this.commandSyntax = commandSyntax;
+        this.aliases = aliases;
+        this.permissions = permissions;
+        this.discordChannels = discordChannels;
+
+        this.slashCommandName = slashCommandName;
+        this.slashCommandDescription = slashCommandDescription;
+    }
+
     public abstract void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent);
+    public void onSlashCommandExecution (SlashCommandInteractionEvent slashCommandInteractionEvent) {}
 
     public String getCommandName () {
         return this.commandName;
@@ -62,5 +80,13 @@ public abstract class DiscordCommand {
 
     public DiscordChannels [] getDiscordChannels () {
         return this.discordChannels;
+    }
+
+    public String getSlashCommandName () {
+        return this.slashCommandName;
+    }
+
+    public String getSlashCommandDescription () {
+        return this.slashCommandDescription;
     }
 }
