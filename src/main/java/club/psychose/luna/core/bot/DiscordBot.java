@@ -18,7 +18,6 @@
 package club.psychose.luna.core.bot;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.core.bot.listeners.ButtonClickListener;
 import club.psychose.luna.core.bot.listeners.MessageListener;
 import club.psychose.luna.core.bot.listeners.ReadyListener;
 import club.psychose.luna.core.system.managers.CaptchaManager;

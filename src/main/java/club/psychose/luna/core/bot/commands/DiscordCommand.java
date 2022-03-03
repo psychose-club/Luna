@@ -17,16 +17,9 @@
 
 package club.psychose.luna.core.bot.commands;
 
-import club.psychose.luna.core.bot.button.DiscordButton;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.StringUtils;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.components.Button;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public abstract class DiscordCommand {
     private final String commandName;
@@ -35,7 +28,6 @@ public abstract class DiscordCommand {
     private final String[] aliases;
     private final PermissionRoles[] permissions;
     private final DiscordChannels[] discordChannels;
-    private final HashMap<String, ArrayList<DiscordButton>> discordButtonsHashMap = new HashMap<>();
 
     public DiscordCommand (String commandName, String commandDescription, String commandSyntax, String[] aliases, PermissionRoles[] permissions, DiscordChannels[] discordChannels) {
         this.commandName = commandName;
@@ -44,60 +36,9 @@ public abstract class DiscordCommand {
         this.aliases = aliases;
         this.permissions = permissions;
         this.discordChannels = discordChannels;
-
-        this.resetButtons();
     }
 
-    public void onButtonExecution (ButtonClickEvent buttonClickEvent) {}
     public abstract void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent);
-    public void resetButtons () {}
-
-    public void createNewButtonList (String listID) {
-        // Checks if the list id not exists.
-        if (!(this.discordButtonsHashMap.containsKey(listID))) {
-            this.discordButtonsHashMap.put(listID, new ArrayList<>());
-        } else {
-            StringUtils.debug("Warning! The list with the ID " + listID + " already exists!");
-        }
-    }
-
-    public void deleteButtonList (String listID) {
-        // Removes the list.
-        this.discordButtonsHashMap.remove(listID);
-    }
-
-    // Registers the button the list.
-    public void registerButton (String listID, DiscordButton discordButton) {
-        if (this.discordButtonsHashMap.containsKey(listID)) {
-            this.discordButtonsHashMap.get(listID).add(discordButton);
-        } else {
-            StringUtils.debug("Warning! The list with the ID " + listID + " didn't exist!");
-        }
-    }
-
-    public void deleteButton (String listID, DiscordButton discordButton) {
-        if (this.discordButtonsHashMap.containsKey(listID)) {
-            this.discordButtonsHashMap.get(listID).remove(discordButton);
-        } else {
-            StringUtils.debug("Warning! The list with the ID " + listID + " didn't exist!");
-        }
-    }
-
-    public ArrayList<DiscordButton> getDiscordBotArrayList (String listID) {
-        return this.discordButtonsHashMap.getOrDefault(listID, null);
-    }
-
-    public boolean checkIfButtonExists (Button button) {
-        return this.discordButtonsHashMap.entrySet().stream().flatMap(discordButtonArrayListMapEntry -> discordButtonArrayListMapEntry.getValue().stream()).anyMatch(discordButton -> discordButton.getButton().equals(button));
-    }
-
-    public DiscordButton getDiscordButton (String listID, String buttonID) {
-        return this.discordButtonsHashMap.getOrDefault(listID, null).stream().filter(discordButton -> discordButton.getButton().getId() != null).filter(discordButton -> discordButton.getButton().getId().equals(buttonID)).findFirst().orElse(null);
-    }
-
-    public DiscordButton getDiscordButton (Button button) {
-        return this.discordButtonsHashMap.entrySet().stream().flatMap(discordButtonArrayListStringMapEntry -> discordButtonArrayListStringMapEntry.getValue().stream()).filter(discordButton -> discordButton.getButton().equals(button)).findFirst().orElse(null);
-    }
 
     public String getCommandName () {
         return this.commandName;
