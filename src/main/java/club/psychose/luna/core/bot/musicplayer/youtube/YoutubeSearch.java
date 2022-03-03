@@ -34,7 +34,7 @@ public final class YoutubeSearch {
             if (keywords != null) {
                 String keyword = Arrays.toString(keywords).replaceAll(" ", "+");
 
-                JsonObject youtubeSearchJsonObject = JsonUtils.fetchOnlineJsonObject("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&order=rating&q=" + keyword + "&key=" + Luna.SETTINGS_MANAGER.getBotSettings().getYoutubeAPIKey());
+                JsonObject youtubeSearchJsonObject = JsonUtils.fetchOnlineJsonObject("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&order=relevance&q=" + keyword + "&key=" + Luna.SETTINGS_MANAGER.getBotSettings().getYoutubeAPIKey());
 
                 if (youtubeSearchJsonObject != null) {
                     if (youtubeSearchJsonObject.has("items")) {

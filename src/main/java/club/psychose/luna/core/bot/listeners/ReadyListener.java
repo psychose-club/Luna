@@ -46,13 +46,18 @@ public final class ReadyListener extends ListenerAdapter {
             ServerSetting serverSetting = serverSettingEntry.getValue();
 
             if (serverSetting != null) {
-                if (serverSetting.getVerificationChannelID() != null) {
+                if ((serverSetting.getVerificationChannelID() != null) && (serverSetting.getBotInfoChannelID() != null)) {
+                    TextChannel botInformationTextChannel = DiscordUtils.getTextChannel(serverSetting.getBotInfoChannelID(), textChannelList);
                     TextChannel verificationTextChannel = DiscordUtils.getTextChannel(serverSetting.getVerificationChannelID(), textChannelList);
 
-                    if (verificationTextChannel != null) {
-                        DiscordUtils.refreshVerificationChannel(serverID, verificationTextChannel, verificationTextChannel.getGuild());
+                    if (botInformationTextChannel != null) {
+                        if (verificationTextChannel != null) {
+                            DiscordUtils.refreshVerificationChannel(serverID, verificationTextChannel, botInformationTextChannel, verificationTextChannel.getGuild());
+                        } else {
+                            CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found for the server with the id " + serverID +  "!"), readyEvent.getJDA().getGuilds());
+                        }
                     } else {
-                        CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found for the server with the id " + serverID +  "!"), readyEvent.getJDA().getGuilds());
+                        CrashLog.saveLogAsCrashLog(new NullPointerException("Bot information channel not found for the server with the id " + serverID +  "!"), readyEvent.getJDA().getGuilds());
                     }
                 } else {
                     CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Invalid configuration for the server with the id " + serverID + "!"), readyEvent.getJDA().getGuilds());
