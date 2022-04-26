@@ -25,7 +25,7 @@ import club.psychose.luna.core.logging.exceptions.InvalidConfigurationDataExcept
 import club.psychose.luna.core.system.settings.ServerSetting;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.DiscordUtils;
-import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -93,7 +93,7 @@ public final class ReadyListener extends ListenerAdapter {
             }
         }
 
-        StringUtils.debug("Bot started successfully!");
-        StringUtils.printEmptyLine();
+        ConsoleLogger.debug("Bot started successfully!");
+        ConsoleLogger.printEmptyLine();
     }
 }

@@ -21,6 +21,7 @@ import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -60,7 +61,7 @@ public final class NukeLog {
         messageHistoryList.stream().map(message -> "[" + message.getTimeCreated() + "] " + message.getAuthor().getName() + " : " + message.getAuthor().getId() + " : " + message.getAuthor().getAsMention() + " > " + message.getContentRaw()).forEach(messageHistoryArrayList::add);
         messageHistoryArrayList.add("==================================================================================================");
 
-        StringUtils.debug(member.getEffectiveName() + " nuked -> " + channelName);
+        ConsoleLogger.debug(member.getEffectiveName() + " nuked -> " + channelName);
 
         HashMap<String, String> fieldHashMap = new HashMap<>();
         fieldHashMap.put("Path in Luna folder", "\\logs\\nukes\\" + cutTimeStamp + ".txt");

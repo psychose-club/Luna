@@ -21,6 +21,7 @@ import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -58,6 +59,6 @@ public final class CrashLog {
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crashes\\" + cutTimeStamp + ".txt"), crashLogArrayList);
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crashes\\latest.txt"), crashLogArrayList);
 
-        StringUtils.debug("ERROR: An exception occurred! Crash Log under: " + Constants.getLunaFolderPath("\\logs\\crashes\\" + cutTimeStamp + ".txt"));
+        ConsoleLogger.debug("ERROR: An exception occurred! Crash Log under: " + Constants.getLunaFolderPath("\\logs\\crashes\\" + cutTimeStamp + ".txt"));
     }
 }

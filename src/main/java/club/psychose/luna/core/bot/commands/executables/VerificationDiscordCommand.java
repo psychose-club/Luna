@@ -24,7 +24,7 @@ import club.psychose.luna.core.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.DiscordUtils;
-import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
@@ -57,7 +57,7 @@ public final class VerificationDiscordCommand extends DiscordCommand {
                 } catch (IOException ioException) {
                     CrashLog.saveLogAsCrashLog(ioException, messageReceivedEvent.getJDA().getGuilds());
                 } catch (Exception exception) {
-                    StringUtils.debug("Failed to send captcha!");
+                    ConsoleLogger.debug("Failed to send captcha!");
                 }
             } else {
                 DiscordUtils.sendEmbedMessage(Objects.requireNonNull(messageReceivedEvent.getMember()).getUser(), "You have already a captcha!", "You have already a captcha please solve it first!", null, "oh no qwq", Color.RED);

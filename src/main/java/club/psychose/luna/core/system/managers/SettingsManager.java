@@ -25,7 +25,7 @@ import club.psychose.luna.core.system.settings.ServerSettings;
 import club.psychose.luna.core.logging.CrashLog;
 import club.psychose.luna.core.logging.exceptions.InvalidConfigurationDataException;
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
@@ -169,10 +169,10 @@ public final class SettingsManager {
                     }
                 }
             } else {
-                StringUtils.debug("No server is available to be loaded!");
+                ConsoleLogger.debug("No server is available to be loaded!");
             }
         } else {
-            StringUtils.debug("No server is available to be loaded!");
+            ConsoleLogger.debug("No server is available to be loaded!");
         }
     }
 

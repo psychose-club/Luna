@@ -21,7 +21,7 @@ import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.system.managers.FileManager;
 import club.psychose.luna.core.system.managers.SettingsManager;
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 
 public final class Luna {
     public static final FileManager FILE_MANAGER = new FileManager();
@@ -34,18 +34,18 @@ public final class Luna {
                 "/ /__| |_| | | | | (_| |\n" +
                 "\\____/\\__,_|_| |_|\\__,_|\n" +
                 "\n");
-        StringUtils.debug("Copyright © 2022 psychose.club");
-        StringUtils.debug("Version: " + Constants.VERSION);
-        StringUtils.debug("Build Version: " + Constants.BUILD);
-        StringUtils.printEmptyLine();
-        StringUtils.debug("This is a private psychose.club project!");
-        StringUtils.debug("Publishing is not allowed!");
-        StringUtils.printEmptyLine();
-        StringUtils.debug("Loading settings...");
+        ConsoleLogger.debug("Copyright © 2022 psychose.club");
+        ConsoleLogger.debug("Version: " + Constants.VERSION);
+        ConsoleLogger.debug("Build Version: " + Constants.BUILD);
+        ConsoleLogger.printEmptyLine();
+        ConsoleLogger.debug("This is a private psychose.club project!");
+        ConsoleLogger.debug("Publishing is not allowed!");
+        ConsoleLogger.printEmptyLine();
+        ConsoleLogger.debug("Loading settings...");
         SETTINGS_MANAGER.loadSettings();
-        StringUtils.debug("Settings loaded!");
-        StringUtils.printEmptyLine();
-        StringUtils.debug("Starting bot...");
+        ConsoleLogger.debug("Settings loaded!");
+        ConsoleLogger.printEmptyLine();
+        ConsoleLogger.debug("Starting bot...");
         new DiscordBot().startDiscordBot();
     }
 }

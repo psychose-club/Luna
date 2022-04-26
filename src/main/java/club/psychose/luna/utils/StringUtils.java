@@ -25,16 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public final class StringUtils {
-    // Prints an empty line in the console.
-    public static void printEmptyLine () {
-        System.out.println(" ");
-    }
-
-    // These methods are for debugging.
-    public static void debug (String output) {
-        System.out.println(getDateAndTime("CONSOLE") + " | [Luna]: " + output);
-    }
-
     // This method returns a date and time string.
     public static String getDateAndTime (String formatMode) {
         Date date = new Date();
