@@ -18,7 +18,7 @@
 package club.psychose.luna.core.bot.filter;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.core.logging.CrashLog;
+import club.psychose.luna.utils.logging.CrashLog;
 
 import java.util.Map;
 

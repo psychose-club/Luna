@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.logging;
+package club.psychose.luna.utils.logging;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;

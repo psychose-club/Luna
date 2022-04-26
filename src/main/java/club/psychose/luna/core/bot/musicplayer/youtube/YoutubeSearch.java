@@ -18,8 +18,8 @@
 package club.psychose.luna.core.bot.musicplayer.youtube;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.core.logging.CrashLog;
-import club.psychose.luna.core.logging.exceptions.InvalidConfigurationDataException;
+import club.psychose.luna.utils.logging.CrashLog;
+import club.psychose.luna.utils.logging.exceptions.InvalidConfigurationDataException;
 import club.psychose.luna.utils.JsonUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -18,7 +18,7 @@
 package club.psychose.luna.core.system.settings;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.core.logging.CrashLog;
+import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.Constants;

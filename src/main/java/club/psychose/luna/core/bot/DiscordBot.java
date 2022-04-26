@@ -23,7 +23,7 @@ import club.psychose.luna.core.bot.listeners.ReadyListener;
 import club.psychose.luna.core.bot.listeners.SlashCommandListener;
 import club.psychose.luna.core.system.managers.CaptchaManager;
 import club.psychose.luna.core.system.managers.CommandManager;
-import club.psychose.luna.core.logging.CrashLog;
+import club.psychose.luna.utils.logging.CrashLog;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;

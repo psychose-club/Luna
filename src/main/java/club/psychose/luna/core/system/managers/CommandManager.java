@@ -19,7 +19,7 @@ package club.psychose.luna.core.system.managers;
 
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.bot.commands.executables.*;
-import club.psychose.luna.core.logging.CrashLog;
+import club.psychose.luna.utils.logging.CrashLog;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.commands.Command;

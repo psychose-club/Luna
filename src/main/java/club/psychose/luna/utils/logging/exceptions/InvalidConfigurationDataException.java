@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.logging.exceptions;
+package club.psychose.luna.utils.logging.exceptions;
 
 public final class InvalidConfigurationDataException extends Exception{
     public InvalidConfigurationDataException (String message) {

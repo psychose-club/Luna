@@ -19,7 +19,7 @@ package club.psychose.luna.utils;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.captcha.Captcha;
-import club.psychose.luna.core.logging.CrashLog;
+import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -33,7 +33,7 @@ public final class DiscordUtils {
     public static void addVerificationRoleToUser (User user, Captcha captcha, Role verificationRole) {
         if (captcha.getMember().getId().equals(user.getId())) {
             if (captcha.getMember().getGuild().getRoles().contains(verificationRole))
-                captcha.getMember().getGuild().addRoleToMember(user.getId(), verificationRole).queue();
+                captcha.getMember().getGuild().addRoleToMember(user, verificationRole).queue();
         }
     }
 

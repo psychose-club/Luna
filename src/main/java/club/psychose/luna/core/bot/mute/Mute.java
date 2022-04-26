@@ -17,7 +17,7 @@
 
 package club.psychose.luna.core.bot.mute;
 
-import club.psychose.luna.core.logging.CrashLog;
+import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.StringUtils;
 import net.dv8tion.jda.api.entities.Member;

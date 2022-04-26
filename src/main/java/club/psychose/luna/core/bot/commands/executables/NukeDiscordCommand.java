@@ -18,8 +18,8 @@
 package club.psychose.luna.core.bot.commands.executables;
 
 import club.psychose.luna.core.bot.commands.DiscordCommand;
-import club.psychose.luna.core.logging.CrashLog;
-import club.psychose.luna.core.logging.NukeLog;
+import club.psychose.luna.utils.logging.CrashLog;
+import club.psychose.luna.utils.logging.NukeLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.DiscordUtils;

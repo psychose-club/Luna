@@ -21,7 +21,7 @@ import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.bot.musicplayer.MusicPlayer;
 import club.psychose.luna.core.bot.musicplayer.youtube.YouTubeVideo;
 import club.psychose.luna.core.bot.musicplayer.youtube.YoutubeSearch;
-import club.psychose.luna.core.logging.CrashLog;
+import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.DiscordUtils;
