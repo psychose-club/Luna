@@ -20,7 +20,6 @@ package club.psychose.luna.core.bot;
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.listeners.MessageListener;
 import club.psychose.luna.core.bot.listeners.ReadyListener;
-import club.psychose.luna.core.bot.listeners.SlashCommandListener;
 import club.psychose.luna.core.system.managers.CaptchaManager;
 import club.psychose.luna.core.system.managers.CommandManager;
 import club.psychose.luna.utils.logging.CrashLog;
@@ -43,7 +42,6 @@ public final class DiscordBot {
 
             jdaBuilder.addEventListeners(new ReadyListener());
             jdaBuilder.addEventListeners(new MessageListener());
-            jdaBuilder.addEventListeners(new SlashCommandListener());
 
             COMMAND_MANAGER.initializeCommands();
 

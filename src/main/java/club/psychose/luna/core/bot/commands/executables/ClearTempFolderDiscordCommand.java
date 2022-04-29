@@ -26,7 +26,6 @@ import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
@@ -37,22 +36,7 @@ import java.util.List;
 
 public final class ClearTempFolderDiscordCommand extends DiscordCommand {
     public ClearTempFolderDiscordCommand () {
-        super("cleartempfolder", "Clears the temporary folder on the bot server!", "!cleartempfolder", new String[] {"cltmp"}, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL}, "cleartempfolder", "Clears the temporary folder on the bot server!");
-    }
-
-    @Override
-    public void onSlashCommandExecution (SlashCommandInteractionEvent slashCommandInteractionEvent) {
-        if (slashCommandInteractionEvent.getMember() != null) {
-            if (slashCommandInteractionEvent.getMember().getId().equals("321249545394847747")) {
-                if (this.clearTempFolder(slashCommandInteractionEvent.getJDA().getGuilds())) {
-                    slashCommandInteractionEvent.getHook().editOriginalFormat("Temp folder cleared :)").queue();
-                } else {
-                    slashCommandInteractionEvent.getHook().editOriginalFormat("Temp folder already cleared :)").queue();
-                }
-            } else {
-                slashCommandInteractionEvent.getHook().editOriginalFormat("Invalid permissions!").queue();
-            }
-        }
+        super("cleartempfolder", "Clears the temporary folder on the bot server!", "!cleartempfolder", new String[] {"cltmp"}, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     @Override
