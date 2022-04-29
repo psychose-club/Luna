@@ -20,6 +20,7 @@ package club.psychose.luna.core.bot.commands.executables;
 import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.captcha.Captcha;
+import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
@@ -35,7 +36,7 @@ import java.util.Objects;
 
 public final class VerificationDiscordCommand extends DiscordCommand {
     public VerificationDiscordCommand () {
-        super("verification", "Verify your self to gain access to the server!", "!verification", new String[] {"verify", "v"}, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.VERIFICATION});
+        super("verification", "Verify your self to gain access to the server!", "!verification", new String[] {"verify", "v"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.VERIFICATION});
     }
 
     @Override

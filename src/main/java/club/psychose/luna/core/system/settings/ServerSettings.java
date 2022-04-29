@@ -22,6 +22,7 @@ import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public final class ServerSettings {
         }
     }
 
-    public boolean containsPermission (String serverID, List<Role> roles, PermissionRoles[] permissionRoles) {
+    public boolean containsPermission (String serverID, User user, List<Role> roles, PermissionRoles[] permissionRoles) {
         if ((roles != null) && (permissionRoles != null)) {
             ServerSetting serverSetting = this.getServerConfigurationHashMap().getOrDefault(serverID, null);
 
@@ -67,6 +68,11 @@ public final class ServerSettings {
                 for (Role role : roles) {
                     for (PermissionRoles permissionRole : permissionRoles) {
                         switch (permissionRole) {
+                            case BOT_OWNER -> {
+                                if (Luna.SETTINGS_MANAGER.getBotSettings().getBotOwnerID().equals(user.getId()))
+                                    return true;
+                            }
+
                             case OWNER -> {
                                 if (serverSetting.getOwnerRoleID().equals(role.getId()))
                                     return true;

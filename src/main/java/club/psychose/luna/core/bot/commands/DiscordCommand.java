@@ -17,6 +17,7 @@
 
 package club.psychose.luna.core.bot.commands;
 
+import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -26,15 +27,17 @@ public abstract class DiscordCommand {
     private final String commandDescription;
     private final String commandSyntax;
     private final String[] aliases;
+    private final CommandCategory commandCategory;
     private final PermissionRoles[] permissions;
     private final DiscordChannels[] discordChannels;
 
     @Deprecated
-    public DiscordCommand (String commandName, String commandDescription, String commandSyntax, String[] aliases, PermissionRoles[] permissions, DiscordChannels[] discordChannels) {
+    public DiscordCommand (String commandName, String commandDescription, String commandSyntax, String[] aliases, CommandCategory commandCategory, PermissionRoles[] permissions, DiscordChannels[] discordChannels) {
         this.commandName = commandName;
         this.commandDescription = commandDescription;
         this.commandSyntax = commandSyntax;
         this.aliases = aliases;
+        this.commandCategory = commandCategory;
         this.permissions = permissions;
         this.discordChannels = discordChannels;
     }
@@ -55,6 +58,10 @@ public abstract class DiscordCommand {
 
     public String[] getAliases () {
         return this.aliases;
+    }
+
+    public CommandCategory getCommandCategory() {
+        return this.commandCategory;
     }
 
     public PermissionRoles[] getPermissions () {

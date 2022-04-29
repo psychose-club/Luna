@@ -20,6 +20,7 @@ package club.psychose.luna.core.bot.commands.executables;
 import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.captcha.Captcha;
+import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
@@ -36,19 +37,15 @@ import java.util.List;
 
 public final class ClearTempFolderDiscordCommand extends DiscordCommand {
     public ClearTempFolderDiscordCommand () {
-        super("cleartempfolder", "Clears the temporary folder on the bot server!", "!cleartempfolder", new String[] {"cltmp"}, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("cleartempfolder", "Clears the temporary folder on the bot server!", "!cleartempfolder", new String[] {"cltmp"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     @Override
     public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
-        if (messageReceivedEvent.getAuthor().getId().equals("321249545394847747")) {
-            if (this.clearTempFolder(messageReceivedEvent.getJDA().getGuilds())) {
-                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder cleared :)", "Everything is clean now :o", null, "stay safe! <3", Color.GREEN);
-            } else {
-                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder already cleared :)", "No need to let the bot do the dirty stuff.", null, "stay safe! <3", Color.GREEN);
-            }
+        if (this.clearTempFolder(messageReceivedEvent.getJDA().getGuilds())) {
+            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder cleared :)", "Everything is clean now :o", null, "stay safe! <3", Color.GREEN);
         } else {
-            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid permissions!", "You didn't have permissions to execute this command!", null, "oh no qwq", Color.RED);
+            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder already cleared :)", "No need to let the bot do the dirty stuff.", null, "stay safe! <3", Color.GREEN);
         }
     }
 
