@@ -18,5 +18,5 @@
 package club.psychose.luna.enums;
 
 public enum PermissionRoles {
-    OWNER, ADMIN, MODERATOR, VERIFICATION, EVERYONE
+    BOT_OWNER, OWNER, ADMIN, MODERATOR, VERIFICATION, EVERYONE
 }
