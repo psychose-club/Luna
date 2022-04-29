@@ -50,8 +50,8 @@ public final class ServerSettings {
             if (serverSetting != null) {
                 switch (discordChannel) {
                     case BOT_INFORMATION -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), channelID, serverSetting.getLoggingChannelID(), serverSetting.getVerificationChannelID()));
-                    case LOGGING -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), serverSetting.getBotInfoChannelID(), channelID, serverSetting.getVerificationChannelID()));
-                    case VERIFICATION -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), serverSetting.getBotInfoChannelID(), serverSetting.getLoggingChannelID(), channelID));
+                    case LOGGING -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), serverSetting.getBotInformationChannelID(), channelID, serverSetting.getVerificationChannelID()));
+                    case VERIFICATION -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), serverSetting.getBotInformationChannelID(), serverSetting.getLoggingChannelID(), channelID));
                 }
 
                 Luna.SETTINGS_MANAGER.saveServerSettings();
@@ -111,7 +111,7 @@ public final class ServerSettings {
                         }
 
                         case BOT_INFORMATION -> {
-                            if (serverSetting.getBotInfoChannelID().equals(textChannelID))
+                            if (serverSetting.getBotInformationChannelID().equals(textChannelID))
                                 return true;
                         }
 
@@ -143,7 +143,7 @@ public final class ServerSettings {
                     }
 
                     case BOT_INFORMATION -> {
-                        return serverSetting.getBotInfoChannelID();
+                        return serverSetting.getBotInformationChannelID();
                     }
 
                     case LOGGING -> {

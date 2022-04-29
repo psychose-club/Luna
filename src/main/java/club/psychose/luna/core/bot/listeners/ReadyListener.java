@@ -46,8 +46,8 @@ public final class ReadyListener extends ListenerAdapter {
             ServerSetting serverSetting = serverSettingEntry.getValue();
 
             if (serverSetting != null) {
-                if ((serverSetting.getVerificationChannelID() != null) && (serverSetting.getBotInfoChannelID() != null)) {
-                    TextChannel botInformationTextChannel = DiscordUtils.getTextChannel(serverSetting.getBotInfoChannelID(), textChannelList);
+                if ((serverSetting.getVerificationChannelID() != null) && (serverSetting.getBotInformationChannelID() != null)) {
+                    TextChannel botInformationTextChannel = DiscordUtils.getTextChannel(serverSetting.getBotInformationChannelID(), textChannelList);
                     TextChannel verificationTextChannel = DiscordUtils.getTextChannel(serverSetting.getVerificationChannelID(), textChannelList);
 
                     if (botInformationTextChannel != null) {

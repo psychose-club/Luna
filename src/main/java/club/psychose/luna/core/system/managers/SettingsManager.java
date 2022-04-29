@@ -304,7 +304,7 @@ public final class SettingsManager {
                     String loggingChannelID = resultSet.getString("LOGGING_CHANNEL_ID");
                     String verificationChannelID = resultSet.getString("VERIFICATION_CHANNEL_ID");
 
-                    if ((serverSetting.getOwnerRoleID().equals(ownerRoleID)) && (serverSetting.getAdminRoleID().equals(adminRoleID)) && (serverSetting.getModeratorRoleID().equals(moderatorRoleID)) && (serverSetting.getVerificationRoleID().equals(verificationRoleID)) && (serverSetting.getBotInfoChannelID().equals(botInformationChannelID)) && (serverSetting.getLoggingChannelID().equals(loggingChannelID)) && (serverSetting.getVerificationChannelID().equals(verificationChannelID))) {
+                    if ((serverSetting.getOwnerRoleID().equals(ownerRoleID)) && (serverSetting.getAdminRoleID().equals(adminRoleID)) && (serverSetting.getModeratorRoleID().equals(moderatorRoleID)) && (serverSetting.getVerificationRoleID().equals(verificationRoleID)) && (serverSetting.getBotInformationChannelID().equals(botInformationChannelID)) && (serverSetting.getLoggingChannelID().equals(loggingChannelID)) && (serverSetting.getVerificationChannelID().equals(verificationChannelID))) {
                         if (!(savedServerSettingsArrayList.contains(serverID)))
                             savedServerSettingsArrayList.add(serverID);
                     }
@@ -337,7 +337,7 @@ public final class SettingsManager {
                     preparedStatement.setString(2, serverSetting.getAdminRoleID());
                     preparedStatement.setString(3, serverSetting.getModeratorRoleID());
                     preparedStatement.setString(4, serverSetting.getVerificationRoleID());
-                    preparedStatement.setString(5, serverSetting.getBotInfoChannelID());
+                    preparedStatement.setString(5, serverSetting.getBotInformationChannelID());
                     preparedStatement.setString(6, serverSetting.getLoggingChannelID());
                     preparedStatement.setString(7, serverSetting.getVerificationChannelID());
 
