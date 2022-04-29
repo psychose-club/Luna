@@ -18,7 +18,6 @@
 package club.psychose.luna.core.system.managers;
 
 import club.psychose.luna.utils.MySQLDatabase;
-import club.psychose.luna.utils.logging.ConsoleLogger;
 import club.psychose.luna.utils.logging.CrashLog;
 
 import java.sql.Connection;
@@ -36,14 +35,10 @@ public final class MySQLManager {
 
     // This method creates the MySQL tables.
     public void createTables () {
-        ConsoleLogger.debug("table");
-
         // Prepares the statements.
         String serversTable = "CREATE TABLE IF NOT EXISTS servers (ID VARCHAR(18), OWNER_ROLE_ID VARCHAR(18), ADMIN_ROLE_ID VARCHAR(18), MODERATOR_ROLE_ID VARCHAR(18), VERIFICATION_ROLE_ID VARCHAR(18), BOT_INFORMATION_CHANNEL_ID VARCHAR(18), LOGGING_CHANNEL_ID VARCHAR(18), VERIFICATION_CHANNEL_ID VARCHAR(18))";
 
         try (PreparedStatement serversTablePreparedStatement = Objects.requireNonNull(this.mySQLDatabase.getMySQLConnection()).prepareStatement(serversTable)) {
-            ConsoleLogger.debug("create");
-
             // Executes the request.
             serversTablePreparedStatement.executeUpdate();
         } catch (SQLException sqlException) {
