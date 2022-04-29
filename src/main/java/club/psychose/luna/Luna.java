@@ -19,21 +19,24 @@ package club.psychose.luna;
 
 import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.system.managers.FileManager;
+import club.psychose.luna.core.system.managers.MySQLManager;
 import club.psychose.luna.core.system.managers.SettingsManager;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.ConsoleLogger;
 
 public final class Luna {
     public static final FileManager FILE_MANAGER = new FileManager();
+    public static final MySQLManager MY_SQL_MANAGER = new MySQLManager();
     public static final SettingsManager SETTINGS_MANAGER = new SettingsManager();
 
     public static void main (String[] arguments) {
-        System.out.println("   __ \n" +
-                "  / / _   _ _ __   __ _ \n" +
-                " / / | | | | '_ \\ / _` |\n" +
-                "/ /__| |_| | | | | (_| |\n" +
-                "\\____/\\__,_|_| |_|\\__,_|\n" +
-                "\n");
+        System.out.println("""
+                   __\s
+                  / / _   _ _ __   __ _\s
+                 / / | | | | '_ \\ / _` |
+                / /__| |_| | | | | (_| |
+                \\____/\\__,_|_| |_|\\__,_|
+                """);
         ConsoleLogger.debug("Copyright © 2022 psychose.club");
         ConsoleLogger.debug("Version: " + Constants.VERSION);
         ConsoleLogger.debug("Build Version: " + Constants.BUILD);
