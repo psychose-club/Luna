@@ -18,15 +18,11 @@
 package club.psychose.luna.core.system.settings;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.entities.Role;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,16 +31,6 @@ public final class ServerSettings {
 
     public void addServerConfiguration (String serverID, ServerSetting serverSetting) {
         if (!(this.serverConfigurationHashMap.containsKey(serverID))) {
-            if (!(Files.exists(Constants.getLunaFolderPath("\\servers\\" + serverID)))) {
-                try {
-                    Files.createDirectories(Constants.getLunaFolderPath("\\servers\\" + serverID));
-                    Files.createDirectories(Constants.getLunaFolderPath("\\servers\\" + serverID + "\\settings\\"));
-                } catch (IOException ioException) {
-                    CrashLog.saveLogAsCrashLog(ioException, null);
-                    return;
-                }
-            }
-
             this.serverConfigurationHashMap.put(serverID, serverSetting);
             Luna.SETTINGS_MANAGER.saveServerSettings();
         }
@@ -52,14 +38,6 @@ public final class ServerSettings {
 
     public void removeServerConfiguration (String serverID) {
         if (this.serverConfigurationHashMap.containsKey(serverID)) {
-            if (Files.exists(Constants.getLunaFolderPath("\\servers\\" + serverID))) {
-                try {
-                    Files.deleteIfExists(Constants.getLunaFolderPath("\\servers\\" + serverID));
-                } catch (IOException ioException) {
-                    CrashLog.saveLogAsCrashLog(ioException, null);
-                }
-            }
-
             this.serverConfigurationHashMap.remove(serverID);
             Luna.SETTINGS_MANAGER.saveServerSettings();
         }
