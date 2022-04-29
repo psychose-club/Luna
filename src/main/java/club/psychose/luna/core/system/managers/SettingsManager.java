@@ -56,9 +56,10 @@ public final class SettingsManager {
                 JsonObject botSettingsJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\bot_settings.json"));
 
                 if (botSettingsJsonObject != null) {
-                    if ((botSettingsJsonObject.has("Bot Token") && (botSettingsJsonObject.has("YouTube API Key")) && (botSettingsJsonObject.has("Message Filter URL") && (botSettingsJsonObject.has("Message Whitelist Filter URL"))))) {
+                    if ((botSettingsJsonObject.has("Bot Token") && (botSettingsJsonObject.has("YouTube API Key")) && (botSettingsJsonObject.has("Bot Owner ID")) && (botSettingsJsonObject.has("Message Filter URL") && (botSettingsJsonObject.has("Message Whitelist Filter URL"))))) {
                         this.getBotSettings().setBotToken(botSettingsJsonObject.get("Bot Token").getAsString());
                         this.getBotSettings().setYoutubeAPIKey(botSettingsJsonObject.get("YouTube API Key").getAsString());
+                        this.getBotSettings().setBotOwnerID(botSettingsJsonObject.get("Bot Owner ID").getAsString());
                         this.getBotSettings().setMessageFilterURL(botSettingsJsonObject.get("Message Filter URL").getAsString());
                         this.getBotSettings().setMessageWhitelistFilterURL(botSettingsJsonObject.get("Message Whitelist Filter URL").getAsString());
                     } else {
@@ -250,6 +251,7 @@ public final class SettingsManager {
 
         botSettingsJsonObject.addProperty("Bot Token", this.getBotSettings().getBotToken());
         botSettingsJsonObject.addProperty("YouTube API Key", this.getBotSettings().getYoutubeAPIKey());
+        botSettingsJsonObject.addProperty("Bot Owner ID", this.getBotSettings().getBotOwnerID());
         botSettingsJsonObject.addProperty("Message Filter URL", this.getBotSettings().getMessageFilterURL());
         botSettingsJsonObject.addProperty("Message Whitelist Filter URL", this.getBotSettings().getMessageWhitelistFilterURL());
 

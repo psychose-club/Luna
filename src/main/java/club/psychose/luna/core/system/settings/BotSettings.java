@@ -20,11 +20,20 @@ package club.psychose.luna.core.system.settings;
 public final class BotSettings {
     private String botToken = "NULL";
     private String youtubeAPIKey = "NULL";
+    private String botOwnerID = "NULL";
     private String messageFilterURL = "NULL";
     private String messageWhitelistFilterURL = "NULL";
 
     public void setBotToken (String value) {
         this.botToken = value;
+    }
+
+    public void setYoutubeAPIKey (String value) {
+        this.youtubeAPIKey = value;
+    }
+
+    public void setBotOwnerID(String value) {
+        this.botOwnerID = value;
     }
 
     public void setMessageFilterURL (String value) {
@@ -35,16 +44,16 @@ public final class BotSettings {
         this.messageWhitelistFilterURL = value;
     }
 
-    public void setYoutubeAPIKey (String value) {
-        this.youtubeAPIKey = value;
-    }
-
     public String getBotToken () {
         return this.botToken;
     }
 
     public String getYoutubeAPIKey () {
         return this.youtubeAPIKey;
+    }
+
+    public String getBotOwnerID() {
+        return this.botOwnerID;
     }
 
     public String getMessageFilterURL () {
