@@ -21,7 +21,6 @@ import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.StringUtils;
-import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -42,12 +41,11 @@ public final class NukeLog {
         int channelSlowMode = textChannel.getSlowmode();
 
         String timestamp = StringUtils.getDateAndTime("LOG");
-        String cutTimeStamp = timestamp.replaceAll(" ", "").trim();
 
         messageHistoryArrayList.add("==================================================================================================");
         messageHistoryArrayList.add("                                             Nuke Log                                             ");
         messageHistoryArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        messageHistoryArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\nukes\\" + cutTimeStamp + ".txt"));
+        messageHistoryArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\nukes\\" + timestamp + ".txt"));
         messageHistoryArrayList.add("Channel name: " + channelName);
         messageHistoryArrayList.add("Channel topic: " + channelTopic);
         messageHistoryArrayList.add("Channel position: " + channelPosition);
@@ -64,12 +62,12 @@ public final class NukeLog {
         ConsoleLogger.debug(member.getEffectiveName() + " nuked -> " + channelName);
 
         HashMap<String, String> fieldHashMap = new HashMap<>();
-        fieldHashMap.put("Path in Luna folder", "\\logs\\nukes\\" + cutTimeStamp + ".txt");
+        fieldHashMap.put("Path in Luna folder", "\\logs\\nukes\\" + timestamp + ".txt");
         fieldHashMap.put("Timestamp: ", timestamp);
 
         DiscordUtils.sendBotInformationMessage(textChannel.getGuild().getId(), channelName + " nuked by " + member.getAsMention() + "!", fieldHashMap, "SYSTEM", textChannel.getGuild().getTextChannels());
 
-        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\nukes\\" + cutTimeStamp + ".txt"), messageHistoryArrayList);
+        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\nukes\\" + timestamp + ".txt"), messageHistoryArrayList);
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\nukes\\latest.txt"), messageHistoryArrayList);
     }
 }
