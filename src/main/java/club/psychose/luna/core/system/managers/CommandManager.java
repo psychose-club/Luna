@@ -18,7 +18,14 @@
 package club.psychose.luna.core.system.managers;
 
 import club.psychose.luna.core.bot.commands.DiscordCommand;
-import club.psychose.luna.core.bot.commands.executables.*;
+import club.psychose.luna.core.bot.commands.categories.admin.ClearTempFolderDiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.ReloadDiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.ServerConfigurationDiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.ViewLogsDiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.fun.MusicPlayerDiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.utility.HelpDiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.utility.NukeDiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.utility.VerificationDiscordCommand;
 
 import java.util.ArrayList;
 
@@ -26,12 +33,18 @@ public final class CommandManager {
     private final ArrayList<DiscordCommand> discordCommandsArrayList = new ArrayList<>();
 
     public void initializeCommands () {
+        // Admin category.
         this.discordCommandsArrayList.add(new ClearTempFolderDiscordCommand());
-        this.discordCommandsArrayList.add(new HelpDiscordCommand());
-        this.discordCommandsArrayList.add(new MusicPlayerDiscordCommand());
-        this.discordCommandsArrayList.add(new NukeDiscordCommand());
         this.discordCommandsArrayList.add(new ReloadDiscordCommand());
+        this.discordCommandsArrayList.add(new ServerConfigurationDiscordCommand());
         this.discordCommandsArrayList.add(new ViewLogsDiscordCommand());
+
+        // Fun category.
+        this.discordCommandsArrayList.add(new MusicPlayerDiscordCommand());
+
+        // Utility category.
+        this.discordCommandsArrayList.add(new HelpDiscordCommand());
+        this.discordCommandsArrayList.add(new NukeDiscordCommand());
         this.discordCommandsArrayList.add(new VerificationDiscordCommand());
     }
 
