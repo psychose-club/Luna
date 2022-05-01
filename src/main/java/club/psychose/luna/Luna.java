@@ -18,6 +18,7 @@
 package club.psychose.luna;
 
 import club.psychose.luna.core.bot.DiscordBot;
+import club.psychose.luna.core.system.managers.DiscordManager;
 import club.psychose.luna.core.system.managers.FileManager;
 import club.psychose.luna.core.system.managers.MySQLManager;
 import club.psychose.luna.core.system.managers.SettingsManager;
@@ -25,6 +26,7 @@ import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.ConsoleLogger;
 
 public final class Luna {
+    public static final DiscordManager DISCORD_MANAGER = new DiscordManager();
     public static final FileManager FILE_MANAGER = new FileManager();
     public static final MySQLManager MY_SQL_MANAGER = new MySQLManager();
     public static final SettingsManager SETTINGS_MANAGER = new SettingsManager();
