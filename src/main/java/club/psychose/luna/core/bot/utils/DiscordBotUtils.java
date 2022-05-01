@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.bot.utils.bot;
+package club.psychose.luna.core.bot.utils;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.enums.DiscordChannels;

@@ -20,7 +20,7 @@ package club.psychose.luna.core.system.managers;
 import club.psychose.luna.core.bot.utils.DiscordChannelUtils;
 import club.psychose.luna.core.bot.utils.DiscordMemberUtils;
 import club.psychose.luna.core.bot.utils.DiscordMessageUtils;
-import club.psychose.luna.core.bot.utils.bot.DiscordBotUtils;
+import club.psychose.luna.core.bot.utils.DiscordBotUtils;
 import club.psychose.luna.core.bot.utils.builder.message.DiscordMessageBuilder;
 import club.psychose.luna.core.bot.utils.DiscordRoleUtils;
 
