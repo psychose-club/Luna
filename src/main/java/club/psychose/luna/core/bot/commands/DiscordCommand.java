@@ -56,6 +56,10 @@ public abstract class DiscordCommand {
         return this.commandSyntax;
     }
 
+    protected String getSyntaxString () {
+        return "L!" + this.commandName + " " + this.commandSyntax;
+    }
+
     public String[] getAliases () {
         return this.aliases;
     }
