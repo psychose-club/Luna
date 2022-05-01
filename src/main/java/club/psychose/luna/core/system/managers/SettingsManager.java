@@ -286,6 +286,7 @@ public final class SettingsManager {
 
         ArrayList<String> serverIDExistsArrayList = new ArrayList<>();
         ArrayList<String> savedServerSettingsArrayList = new ArrayList<>();
+        ArrayList<String> deleteServerSettingsArrayList = new ArrayList<>();
         try (PreparedStatement preparedStatement = Luna.MY_SQL_MANAGER.getMySQLConnection().prepareStatement(mySQLStatement)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -310,6 +311,9 @@ public final class SettingsManager {
                         if (!(savedServerSettingsArrayList.contains(serverID)))
                             savedServerSettingsArrayList.add(serverID);
                     }
+                } else {
+                    if (!(deleteServerSettingsArrayList.contains(serverID)))
+                        deleteServerSettingsArrayList.add(serverID);
                 }
             }
 
@@ -334,14 +338,25 @@ public final class SettingsManager {
                 }
 
                 try (PreparedStatement preparedStatement = Luna.MY_SQL_MANAGER.getMySQLConnection().prepareStatement(mySQLStatement)) {
-                    preparedStatement.setString(!(updateEntry) ? 0 : 8, serverID);
-                    preparedStatement.setString(1, serverSetting.getOwnerRoleID());
-                    preparedStatement.setString(2, serverSetting.getAdminRoleID());
-                    preparedStatement.setString(3, serverSetting.getModeratorRoleID());
-                    preparedStatement.setString(4, serverSetting.getVerificationRoleID());
-                    preparedStatement.setString(5, serverSetting.getBotInformationChannelID());
-                    preparedStatement.setString(6, serverSetting.getLoggingChannelID());
-                    preparedStatement.setString(7, serverSetting.getVerificationChannelID());
+                    if (!(updateEntry)) {
+                        preparedStatement.setString(1, serverID);
+                        preparedStatement.setString(2, serverSetting.getOwnerRoleID());
+                        preparedStatement.setString(3, serverSetting.getAdminRoleID());
+                        preparedStatement.setString(4, serverSetting.getModeratorRoleID());
+                        preparedStatement.setString(5, serverSetting.getVerificationRoleID());
+                        preparedStatement.setString(6, serverSetting.getBotInformationChannelID());
+                        preparedStatement.setString(7, serverSetting.getLoggingChannelID());
+                        preparedStatement.setString(8, serverSetting.getVerificationChannelID());
+                    } else {
+                        preparedStatement.setString(1, serverSetting.getOwnerRoleID());
+                        preparedStatement.setString(2, serverSetting.getAdminRoleID());
+                        preparedStatement.setString(3, serverSetting.getModeratorRoleID());
+                        preparedStatement.setString(4, serverSetting.getVerificationRoleID());
+                        preparedStatement.setString(5, serverSetting.getBotInformationChannelID());
+                        preparedStatement.setString(6, serverSetting.getLoggingChannelID());
+                        preparedStatement.setString(7, serverSetting.getVerificationChannelID());
+                        preparedStatement.setString(8, serverID);
+                    }
 
                     preparedStatement.executeUpdate();
                     preparedStatement.close();
@@ -349,6 +364,20 @@ public final class SettingsManager {
                 } catch (SQLException sqlException) {
                     CrashLog.saveLogAsCrashLog(sqlException, null);
                 }
+            }
+        }
+
+        for (String serverID : deleteServerSettingsArrayList) {
+            mySQLStatement = "DELETE FROM servers WHERE ID = ?";
+
+            try (PreparedStatement preparedStatement = Luna.MY_SQL_MANAGER.getMySQLConnection().prepareStatement(mySQLStatement)) {
+                preparedStatement.setString(1, serverID);
+
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
+                Luna.MY_SQL_MANAGER.closeMySQLConnection();
+            } catch (SQLException sqlException) {
+                CrashLog.saveLogAsCrashLog(sqlException, null);
             }
         }
     }
