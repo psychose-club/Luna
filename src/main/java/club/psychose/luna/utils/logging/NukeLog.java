@@ -19,12 +19,12 @@ package club.psychose.luna.utils.logging;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.StringUtils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
 public final class NukeLog {
     public static void saveNukeLog (TextChannel textChannel, Member member) {
         ArrayList<String> messageHistoryArrayList = new ArrayList<>();
-        List<Message> messageHistoryList = DiscordUtils.getMessageHistory(textChannel, 100);
+        List<Message> messageHistoryList = Luna.DISCORD_MANAGER.getDiscordMessageUtils().getMessageHistory(textChannel, 100);
 
         String channelName = textChannel.getName();
         String channelTopic = textChannel.getTopic();
@@ -65,7 +65,7 @@ public final class NukeLog {
         fieldHashMap.put("Path in Luna folder", "\\logs\\nukes\\" + timestamp + ".txt");
         fieldHashMap.put("Timestamp: ", timestamp);
 
-        DiscordUtils.sendBotInformationMessage(textChannel.getGuild().getId(), channelName + " nuked by " + member.getAsMention() + "!", fieldHashMap, "SYSTEM", textChannel.getGuild().getTextChannels());
+        Luna.DISCORD_MANAGER.getDiscordBotUtils().sendBotInformationMessage(textChannel.getGuild().getId(), channelName + " nuked by " + member.getAsMention() + "!", fieldHashMap, Color.RED, textChannel.getGuild().getTextChannels());
 
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\nukes\\" + timestamp + ".txt"), messageHistoryArrayList);
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\nukes\\latest.txt"), messageHistoryArrayList);

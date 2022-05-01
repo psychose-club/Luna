@@ -17,7 +17,8 @@
 
 package club.psychose.luna.core.bot.musicplayer.scheduler;
 
-import club.psychose.luna.utils.DiscordUtils;
+import club.psychose.luna.Luna;
+import club.psychose.luna.enums.FooterType;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -57,7 +58,7 @@ public final class MusicPlayerTrackScheduler extends AudioEventAdapter {
             // Checks if the text channel is not null.
             if (this.textChannel != null) {
                 // Sends an embedded message.
-                DiscordUtils.sendEmbedMessage(this.textChannel, "Music Bot", "I play now the following song:\n" + this.audioPlayer.getPlayingTrack().getInfo().title + "\n" + this.audioPlayer.getPlayingTrack().getInfo().author, null, "", Color.WHITE);
+                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(this.textChannel, "Music Bot", "I'm playing now the following song:\n" + this.audioPlayer.getPlayingTrack().getInfo().title + "\n" + this.audioPlayer.getPlayingTrack().getInfo().author, FooterType.MUSIC, Color.WHITE);
             }
         }
     }

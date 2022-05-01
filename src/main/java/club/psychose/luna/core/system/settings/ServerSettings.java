@@ -20,10 +20,10 @@ package club.psychose.luna.core.system.settings;
 import club.psychose.luna.Luna;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,6 +42,20 @@ public final class ServerSettings {
             this.serverConfigurationHashMap.remove(serverID);
             Luna.SETTINGS_MANAGER.saveServerSettings();
         }
+    }
+
+    public void reloadServerConfiguration (String serverID) {
+
+    }
+
+    public boolean checkIfServerConfigurationExist (String serverID) {
+        return this.serverConfigurationHashMap.containsKey(serverID);
+    }
+
+    public ArrayList<String> getServerConfigurationIDsArrayList () {
+        ArrayList<String> serverConfigurationIDsArrayList = new ArrayList<>();
+        this.serverConfigurationHashMap.forEach((key, value) -> serverConfigurationIDsArrayList.add(key));
+        return serverConfigurationIDsArrayList;
     }
 
     public void replaceChannelConfiguration (String serverID, DiscordChannels discordChannel, String channelID) {
@@ -177,19 +191,19 @@ public final class ServerSettings {
             if (serverSetting != null) {
                 switch (permissionRole) {
                     case OWNER -> {
-                        return DiscordUtils.getRoleViaID(serverSetting.getOwnerRoleID(), roleList);
+                        return Luna.DISCORD_MANAGER.getDiscordRoleUtils().getRoleViaID(serverSetting.getOwnerRoleID(), roleList);
                     }
 
                     case ADMIN -> {
-                        return DiscordUtils.getRoleViaID(serverSetting.getAdminRoleID(), roleList);
+                        return Luna.DISCORD_MANAGER.getDiscordRoleUtils().getRoleViaID(serverSetting.getAdminRoleID(), roleList);
                     }
 
                     case MODERATOR -> {
-                        return DiscordUtils.getRoleViaID(serverSetting.getModeratorRoleID(), roleList);
+                        return Luna.DISCORD_MANAGER.getDiscordRoleUtils().getRoleViaID(serverSetting.getModeratorRoleID(), roleList);
                     }
 
                     case VERIFICATION -> {
-                        return DiscordUtils.getRoleViaID(serverSetting.getVerificationRoleID(), roleList);
+                        return Luna.DISCORD_MANAGER.getDiscordRoleUtils().getRoleViaID(serverSetting.getVerificationRoleID(), roleList);
                     }
                 }
             }

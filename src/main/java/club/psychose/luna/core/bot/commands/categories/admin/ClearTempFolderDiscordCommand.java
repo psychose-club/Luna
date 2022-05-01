@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.bot.commands.executables;
+package club.psychose.luna.core.bot.commands.categories.admin;
 
+import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.captcha.Captcha;
 import club.psychose.luna.enums.CommandCategory;
+import club.psychose.luna.enums.FooterType;
 import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -43,9 +44,9 @@ public final class ClearTempFolderDiscordCommand extends DiscordCommand {
     @Override
     public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
         if (this.clearTempFolder(messageReceivedEvent.getJDA().getGuilds())) {
-            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder cleared :)", "Everything is clean now :o", null, "stay safe! <3", Color.GREEN);
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder cleared :)", "Everything is clean now :o", FooterType.SUCCESS, Color.GREEN);
         } else {
-            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder already cleared :)", "No need to let the bot do the dirty stuff.", null, "stay safe! <3", Color.GREEN);
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder already cleared :)", "No need to let the bot do the dirty stuff.", FooterType.SUCCESS, Color.GREEN);
         }
     }
 

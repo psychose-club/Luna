@@ -23,11 +23,11 @@ import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.bot.filter.MessageFilter;
 import club.psychose.luna.core.bot.mute.Mute;
 import club.psychose.luna.core.captcha.Captcha;
+import club.psychose.luna.enums.FooterType;
 import club.psychose.luna.utils.logging.BadWordLog;
 import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.StringUtils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public final class MessageListener extends ListenerAdapter {
     private final MessageFilter messageFilter = new MessageFilter();
@@ -54,7 +55,7 @@ public final class MessageListener extends ListenerAdapter {
                  if (member != null) {
                      if (this.messageFilter.checkMessage(message)) {
                          if (message.startsWith("L!")) {
-                             String command = message.substring(1).trim();
+                             String command = message.substring(2).trim(); // TODO: Check length when adding custom prefix.
                              String[] commandArguments = null;
 
                              if (command.contains(" ")) {
@@ -84,11 +85,14 @@ public final class MessageListener extends ListenerAdapter {
                              }
 
                              if (commandFound) {
-                                 if (DiscordUtils.isChannelValidForTheDiscordCommand(messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getDiscordChannels())) {
-                                     if (DiscordUtils.hasUserPermissions(member, messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getPermissions())) {
-                                         foundDiscordCommand.onCommandExecution(commandArguments, messageReceivedEvent);
-                                     }
-                                 }
+                                 boolean skipServerCheck = Arrays.asList(foundDiscordCommand.getPermissions()).contains(PermissionRoles.BOT_OWNER);
+
+                                 if (!(skipServerCheck))
+                                     if (!(Luna.DISCORD_MANAGER.getDiscordChannelUtils().isChannelValidForTheDiscordCommand(messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getDiscordChannels())))
+                                         return;
+
+                                 if (Luna.DISCORD_MANAGER.getDiscordMemberUtils().checkUserPermission(member, messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getPermissions()))
+                                     foundDiscordCommand.onCommandExecution(commandArguments, messageReceivedEvent);
                              }
                          }
 
@@ -96,21 +100,7 @@ public final class MessageListener extends ListenerAdapter {
                          if (messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION)))
                              messageReceivedEvent.getMessage().delete().queue();
                      } else {
-                         messageReceivedEvent.getMessage().delete().queue();
-                         this.mute.addMuteCount(member);
-
-                         if (!(messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION))))
-                             DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Message removed!", "This message contains inappropriate words!\nWarnings: " + this.mute.getMuteCount(member), null, "\uD83D\uDC08", Color.RED);
-
-                         String timestamp = StringUtils.getDateAndTime("LOG");
-
-                         HashMap<String, String> fieldHashMap = new HashMap<>();
-                         fieldHashMap.put("Member", member.getAsMention());
-                         fieldHashMap.put("Mute Count", String.valueOf(this.mute.getMuteCount(member)));
-                         fieldHashMap.put("Detected Word", this.messageFilter.getLastBadWord());
-                         fieldHashMap.put("Log file", BadWordLog.createBadWordLog(member, messageReceivedEvent.getGuild().getId(), this.messageFilter.getLastBadWord(), message, timestamp));
-
-                         DiscordUtils.sendLoggingMessage(messageReceivedEvent.getGuild().getId(), "Inappropriate word detected!", fieldHashMap, "Timestamp: " + timestamp, messageReceivedEvent.getGuild().getTextChannels());
+                         this.warnMember(messageReceivedEvent.getMessage(), messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getTextChannels(), member);
                      }
                  }
              } else {
@@ -125,11 +115,11 @@ public final class MessageListener extends ListenerAdapter {
                              Guild serverGuild = messageReceivedEvent.getJDA().getGuilds().stream().filter(guild -> guild.getId().equals(captcha.getServerID())).findFirst().orElse(null);
 
                              if (serverGuild != null) {
-                                 if (!(DiscordUtils.hasUserPermission(user, serverGuild.getId(), PermissionRoles.VERIFICATION, user.getMutualGuilds()))) {
+                                 if (!(Luna.DISCORD_MANAGER.getDiscordMemberUtils().checkUserPermission(member, serverGuild.getId(), new PermissionRoles[] {PermissionRoles.VERIFICATION}))) {
                                      Role verificationRole = Luna.SETTINGS_MANAGER.getServerSettings().getDiscordServerRoleViaID(serverGuild.getId(), PermissionRoles.VERIFICATION, serverGuild.getRoles());
 
                                      if (verificationRole != null) {
-                                         DiscordUtils.addVerificationRoleToUser(user, captcha, verificationRole);
+                                         Luna.DISCORD_MANAGER.getDiscordRoleUtils().addVerificationRoleToUser(user, captcha, verificationRole);
 
                                          try {
                                              Files.deleteIfExists(captcha.getImageFile().toPath());
@@ -138,20 +128,20 @@ public final class MessageListener extends ListenerAdapter {
                                          }
 
                                          DiscordBot.CAPTCHA_MANAGER.removeCaptcha(captcha);
-                                         DiscordUtils.sendEmbedMessage(user, "Verification was successful!", "You are now verified!", null, "have fun and :)", Color.GREEN);
+                                         Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Verification was successful!", "You are now verified!", FooterType.SUCCESS, Color.GREEN);
                                      } else {
                                          CrashLog.saveLogAsCrashLog(new NullPointerException("Verification Role not found!"), serverGuild.getJDA().getGuilds());
-                                         DiscordUtils.sendEmbedMessage(user, "Something went wrong!", "Please try it again later!", null, "The developers got a notification to fix this issue!", Color.RED);
+                                         Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Something went wrong!", "Please try it again later!", FooterType.ERROR, Color.RED);
                                      }
                                  } else {
-                                     DiscordUtils.sendEmbedMessage(user, "Something went wrong!", "You are already verified!", null, "sketchy", Color.RED);
+                                     Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Something went wrong!", "You are already verified!", FooterType.ERROR, Color.RED);
                                  }
                              } else {
                                  CrashLog.saveLogAsCrashLog(new NullPointerException("Guild not found!"), null);
-                                 DiscordUtils.sendEmbedMessage(user, "Something went wrong!", "Please try it again later!", null, "The developers got a notification to fix this issue!", Color.RED);
+                                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Something went wrong!", "Please try it again later!", FooterType.ERROR, Color.RED);
                              }
                          } else {
-                             DiscordUtils.sendEmbedMessage(user, "Verification failed!", "You have entered an invalid captcha code!", null, "robot beep boop", Color.RED);
+                             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Verification failed!", "You have entered an invalid captcha code!", FooterType.ERROR, Color.RED);
                          }
                      }
                  }
@@ -167,25 +157,29 @@ public final class MessageListener extends ListenerAdapter {
                 String message = messageUpdateEvent.getMessage().getContentRaw();
 
                 if (member != null) {
-                    if (!(this.messageFilter.checkMessage(message))) {
-                        messageUpdateEvent.getMessage().delete().queue();
-                        this.mute.addMuteCount(member);
-
-                        if (!(messageUpdateEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageUpdateEvent.getGuild().getId(), DiscordChannels.VERIFICATION))))
-                            DiscordUtils.sendEmbedMessage(messageUpdateEvent.getTextChannel(), "Message removed!", "This message contains inappropriate words!\nWarnings: " + this.mute.getMuteCount(member), null, "\uD83D\uDC08", Color.RED);
-
-                        String timestamp = StringUtils.getDateAndTime("LOG");
-
-                        HashMap<String, String> fieldHashMap = new HashMap<>();
-                        fieldHashMap.put("Member", member.getAsMention());
-                        fieldHashMap.put("Mute Count", String.valueOf(this.mute.getMuteCount(member)));
-                        fieldHashMap.put("Detected Word", this.messageFilter.getLastBadWord());
-                        fieldHashMap.put("Log file", BadWordLog.createBadWordLog(member, messageUpdateEvent.getGuild().getId(), this.messageFilter.getLastBadWord(), message, timestamp));
-
-                        DiscordUtils.sendLoggingMessage(messageUpdateEvent.getGuild().getId(), "Inappropriate word detected!", fieldHashMap, "Timestamp: " + timestamp, messageUpdateEvent.getGuild().getTextChannels());
-                    }
+                    if (!(this.messageFilter.checkMessage(message)))
+                        this.warnMember(messageUpdateEvent.getMessage(), messageUpdateEvent.getGuild().getId(), messageUpdateEvent.getTextChannel(), messageUpdateEvent.getGuild().getTextChannels(), member);
                 }
             }
         }
+    }
+
+    private void warnMember (Message message, String guildID, TextChannel textChannel, List<TextChannel> textChannelList, Member member) {
+        message.delete().queue();
+        this.mute.addMuteCount(member);
+
+        if (!(textChannel.getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(guildID, DiscordChannels.VERIFICATION))))
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(textChannel, "Message removed!", "This message contains inappropriate words!\nWarnings: " + this.mute.getMuteCount(member), FooterType.ERROR, Color.RED);
+
+        String timestamp = StringUtils.getDateAndTime("LOG");
+
+        HashMap<String, String> fieldHashMap = new HashMap<>();
+        fieldHashMap.put("Member", member.getAsMention());
+        fieldHashMap.put("Mute Count", String.valueOf(this.mute.getMuteCount(member)));
+        fieldHashMap.put("Detected Word", this.messageFilter.getLastBadWord());
+        fieldHashMap.put("Log file", BadWordLog.createBadWordLog(member, guildID, this.messageFilter.getLastBadWord(), message.getContentRaw(), timestamp));
+        fieldHashMap.put("Timestamp: ", timestamp);
+
+        Luna.DISCORD_MANAGER.getDiscordBotUtils().sendLoggingMessage(guildID, "Inappropriate word detected!", fieldHashMap, textChannelList);
     }
 }

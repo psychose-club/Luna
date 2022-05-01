@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.bot.commands.executables;
+package club.psychose.luna.core.bot.commands.categories.utility;
 
+import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.utils.logging.NukeLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.concurrent.TimeUnit;
@@ -44,7 +44,7 @@ public final class NukeDiscordCommand extends DiscordCommand {
                 Thread.sleep(TimeUnit.SECONDS.toMillis(5));
             } catch (InterruptedException ignored) {}
 
-            DiscordUtils.deleteChannelHistory(messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel());
+            Luna.DISCORD_MANAGER.getDiscordChannelUtils().deleteChannelHistory(messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel());
         } else {
             CrashLog.saveLogAsCrashLog(new NullPointerException("Member not found!"), messageReceivedEvent.getJDA().getGuilds());
         }

@@ -19,16 +19,17 @@ package club.psychose.luna.utils.logging;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.StringUtils;
 import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public final class CrashLog {
+    // TODO: Channel initialization.
     public static void saveLogAsCrashLog (Exception exception, List<Guild> guildList) {
         ArrayList<String> crashLogArrayList = new ArrayList<>();
 
@@ -51,7 +52,7 @@ public final class CrashLog {
             fieldHashMap.put("Path in Luna folder", "\\logs\\crashes\\" + timestamp + ".txt");
             fieldHashMap.put("Timestamp: ", timestamp);
 
-            guildList.forEach(guild -> DiscordUtils.sendBotInformationMessage(guild.getId(), "Oh no!\nA crash occurred!\nPlease contact CrashedLife!", fieldHashMap, "SYSTEM", guild.getTextChannels()));
+            guildList.forEach(guild -> Luna.DISCORD_MANAGER.getDiscordBotUtils().sendBotInformationMessage(guild.getId(), "Oh no!\nA crash occurred!\nPlease create on GitHub an issue!", fieldHashMap, Color.ORANGE, guild.getTextChannels()));
         }
 
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crashes\\" + timestamp + ".txt"), crashLogArrayList);

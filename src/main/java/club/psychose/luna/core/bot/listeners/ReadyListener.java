@@ -24,7 +24,6 @@ import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.utils.logging.exceptions.InvalidConfigurationDataException;
 import club.psychose.luna.core.system.settings.ServerSetting;
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -47,12 +46,12 @@ public final class ReadyListener extends ListenerAdapter {
 
             if (serverSetting != null) {
                 if ((serverSetting.getVerificationChannelID() != null) && (serverSetting.getBotInformationChannelID() != null)) {
-                    TextChannel botInformationTextChannel = DiscordUtils.getTextChannel(serverSetting.getBotInformationChannelID(), textChannelList);
-                    TextChannel verificationTextChannel = DiscordUtils.getTextChannel(serverSetting.getVerificationChannelID(), textChannelList);
+                    TextChannel botInformationTextChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(serverSetting.getBotInformationChannelID(), textChannelList);
+                    TextChannel verificationTextChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(serverSetting.getVerificationChannelID(), textChannelList);
 
                     if (botInformationTextChannel != null) {
                         if (verificationTextChannel != null) {
-                            DiscordUtils.refreshVerificationChannel(serverID, verificationTextChannel, botInformationTextChannel, verificationTextChannel.getGuild());
+                            Luna.DISCORD_MANAGER.getDiscordBotUtils().checkVerificationChannel(serverID, verificationTextChannel, botInformationTextChannel, verificationTextChannel.getGuild());
                         } else {
                             CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found for the server with the id " + serverID +  "!"), readyEvent.getJDA().getGuilds());
                         }

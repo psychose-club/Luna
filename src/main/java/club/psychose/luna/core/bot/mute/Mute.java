@@ -17,8 +17,9 @@
 
 package club.psychose.luna.core.bot.mute;
 
+import club.psychose.luna.Luna;
+import club.psychose.luna.enums.FooterType;
 import club.psychose.luna.utils.logging.CrashLog;
-import club.psychose.luna.utils.DiscordUtils;
 import club.psychose.luna.utils.StringUtils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -41,7 +42,8 @@ public final class Mute {
             fieldHashMap.put("Timestamp", timestamp);
             fieldHashMap.put("Mute Time", "12 Hours");
 
-            member.getJDA().getGuilds().stream().filter(guild -> guild.isMember(member.getUser())).forEachOrdered(guild -> DiscordUtils.sendLoggingMessage(guild.getId(), "Member muted!", fieldHashMap, "SYSTEM", guild.getTextChannels()));
+            // TODO: Let user choose which time the user should get muted.
+            member.getJDA().getGuilds().stream().filter(guild -> guild.isMember(member.getUser())).forEachOrdered(guild -> Luna.DISCORD_MANAGER.getDiscordBotUtils().sendLoggingMessage(guild.getId(), "Member muted!", fieldHashMap, guild.getTextChannels()));
 
             try {
                 member.timeoutFor(Duration.ofHours(12)).reason("Multiple usage of inappropriate words!").queue();
@@ -49,7 +51,7 @@ public final class Mute {
                 CrashLog.saveLogAsCrashLog(hierarchyException, member.getJDA().getGuilds());
             }
 
-            DiscordUtils.sendEmbedMessage(member.getUser(), "You got muted!", "You got automatically muted from any server that contains this bot!\nReason:\nMultiple usages of inappropriate words!\n\nIf you think this is a mistake please contact the administration!", fieldHashMap, "SYSTEM", Color.RED);
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(member.getUser(), "You got muted!", "You got automatically muted from any server that contains this bot!\nReason:\nMultiple usages of inappropriate words!\n\nIf you think this is a mistake please contact the administration!", fieldHashMap, FooterType.ERROR, Color.RED);
         }
 
         muteCount ++;

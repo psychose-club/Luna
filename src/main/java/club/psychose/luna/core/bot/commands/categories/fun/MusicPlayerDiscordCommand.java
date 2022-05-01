@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.bot.commands.executables;
+package club.psychose.luna.core.bot.commands.categories.fun;
 
+import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.bot.musicplayer.MusicPlayer;
 import club.psychose.luna.core.bot.musicplayer.youtube.YouTubeVideo;
 import club.psychose.luna.core.bot.musicplayer.youtube.YoutubeSearch;
 import club.psychose.luna.enums.CommandCategory;
+import club.psychose.luna.enums.FooterType;
 import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.DiscordUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -42,6 +43,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
+
+// TODO: Add ILoveRadio
+// TODO: Fix not playing on join.
 
 public final class MusicPlayerDiscordCommand extends DiscordCommand {
     private final YoutubeSearch youtubeSearch = new YoutubeSearch();
@@ -87,25 +91,25 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                                                 fieldHashMap.put("Identifier: ", youTubeVideo.getYoutubeURL());
 
                                                 trackURL = "https://www.youtube.com/watch?v=" + youTubeVideo.getYoutubeURL();
-                                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "We found this video:", "", fieldHashMap,"1234", Color.RED);
+                                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "We found this video:", "", fieldHashMap, FooterType.ERROR, Color.RED);
                                             } else {
                                                 if (youTubeVideo.isLivestream()) {
-                                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Please don't search for livestreams, load these directly!", "This is a sample text.", null, "1234", Color.RED);
+                                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Please don't search for livestreams, load these directly!", "This is a sample text.", FooterType.ERROR, Color.RED);
                                                 } else {
-                                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", null, "00000", Color.RED);
+                                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", FooterType.ERROR, Color.RED);
                                                 }
 
                                                 cancel = true;
                                             }
                                         } else {
-                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Video not found!", "We didn't find the YouTube video!\nPlease try another keywords!", null, "damn", Color.RED);
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Video not found!", "We didn't find the YouTube video!\nPlease try another keywords!", FooterType.ERROR, Color.RED);
                                             cancel = true;
                                         }
                                     } catch (MalformedURLException malformedURLException) {
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid characters!", "YouTube didn't like special characters that much!\nPlease use no emojis or other special characters.", null, "https://www.youtube.com/watch?v=dQw4w9WgXcQ", Color.RED);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid characters!", "YouTube didn't like special characters that much!\nPlease use no emojis or other special characters.", FooterType.ERROR, Color.RED);
                                         cancel = true;
                                     } catch (IOException ioException) {
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", null, "damn", Color.RED);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", FooterType.ERROR, Color.RED);
                                         CrashLog.saveLogAsCrashLog(ioException, messageReceivedEvent.getJDA().getGuilds());
                                         cancel = true;
                                     }
@@ -130,7 +134,7 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                                             musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack);
 
                                             // Sends an embed message to the text channel.
-                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added song to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added song to queue!", fieldHashMap, FooterType.MUSIC, Color.WHITE);
                                         }
 
                                         @Override
@@ -147,23 +151,23 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                                             audioPlaylist.getTracks().forEach(audioTrack -> musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack));
 
                                             // Sends an embed message to the text channel.
-                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added playlist to queue!", fieldHashMap, "Fetched cover from amogus by R3AP3", Color.WHITE);
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added playlist to queue!", fieldHashMap, FooterType.MUSIC, Color.WHITE);
                                         }
 
                                         @Override
                                         public void noMatches () {
-                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Song not found :(", null, "searched whole internet and nothing found :(", Color.WHITE);
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Song not found :(", FooterType.MUSIC, Color.WHITE);
                                         }
 
                                         @Override
                                         public void loadFailed (FriendlyException friendlyException) {
                                             CrashLog.saveLogAsCrashLog(friendlyException, messageReceivedEvent.getJDA().getGuilds());
-                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", null, "The developers already got a notification!", Color.RED);
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", FooterType.ERROR, Color.RED);
                                         }
                                     });
                                 }
                             } else {
-                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
                         }
 
@@ -172,27 +176,27 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                                 String volumeString = arguments[1].trim();
 
                                 if (volumeString.equalsIgnoreCase("status")) {
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Current volume level: " + this.musicPlayer.getAudioPlayer().getVolume(), null, "catfish on the internet right now...", Color.WHITE);
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Current volume level: " + this.musicPlayer.getAudioPlayer().getVolume(), FooterType.MUSIC, Color.WHITE);
                                 } else {
                                     try {
                                         int volume = Integer.parseInt(volumeString);
 
                                         if ((volume >= 0) && (volume <= 100)) {
                                             this.musicPlayer.getAudioPlayer().setVolume(volume);
-                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "New volume set to " + this.musicPlayer.getAudioPlayer().getVolume() + "!", null, "party", Color.WHITE);
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "New volume set to " + this.musicPlayer.getAudioPlayer().getVolume() + "!", FooterType.MUSIC, Color.WHITE);
                                         } else {
-                                            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid volume number!", "Please enter a number from 0 - 100!", null, "oh no qwq", Color.RED);
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid volume number!", "Please enter a number from 0 - 100!", FooterType.ERROR, Color.RED);
                                         }
                                     } catch (NumberFormatException numberFormatException) {
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid volume number!", "Please enter a number from 0 - 100!", null, "oh no qwq", Color.RED);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid volume number!", "Please enter a number from 0 - 100!", FooterType.ERROR, Color.RED);
                                     }
                                 }
                             } else {
-                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
                         }
 
-                        default -> DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", null, "oh no qwq", Color.RED);
+                        default -> Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", FooterType.ERROR, Color.RED);
                     }
                 } else {
                     switch (mode) {
@@ -212,13 +216,13 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                                         fieldHashMap.put("Next Song: ", this.musicPlayer.getMusicPlayerTrackScheduler().getQueue().get(0).getInfo().title);
 
                                     // Sends an embed message to the text channel.
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Queue", "Current queue:", fieldHashMap, "owo", Color.WHITE);
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Queue", "Current queue:", fieldHashMap, FooterType.MUSIC, Color.WHITE);
 
                                 } else {
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Queue", "No song is currently playing!", null, "fox uwu", Color.WHITE);
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Queue", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
                                 }
                             } else {
-                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
                         }
 
@@ -227,15 +231,15 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                                 if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
                                     if (!(this.musicPlayer.getAudioPlayer().isPaused())) {
                                         this.musicPlayer.getAudioPlayer().setPaused(true);
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player paused!", null, "mp3 player!", Color.WHITE);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player paused!", FooterType.MUSIC, Color.WHITE);
                                     } else {
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player already paused!", null, "mp3 player?", Color.WHITE);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player already paused!", FooterType.MUSIC, Color.WHITE);
                                     }
                                 } else {
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", null, "fox uwu", Color.WHITE);
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
                                 }
                             } else {
-                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
                         }
 
@@ -244,15 +248,15 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                                 if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
                                     if (this.musicPlayer.getAudioPlayer().isPaused()) {
                                         this.musicPlayer.getAudioPlayer().setPaused(false);
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player resumed!", null, "mommy :o", Color.WHITE);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player resumed!", FooterType.MUSIC, Color.WHITE);
                                     } else {
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player is not paused!", null, "visit kescher.at", Color.WHITE);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player is not paused!", FooterType.MUSIC, Color.WHITE);
                                     }
                                 } else {
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", null, "fox uwu", Color.WHITE);
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
                                 }
                             } else {
-                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
                         }
 
@@ -260,15 +264,15 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                             if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
                                 if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
                                     if (this.musicPlayer.getMusicPlayerTrackScheduler().playNextTrack()) {
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Why skipping this killer beat?\nOkay... skip!", null, "beats provided by jvlix666", Color.WHITE);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Why skipping this killer beat?\nOkay... skip!", FooterType.MUSIC, Color.WHITE);
                                     } else {
-                                        DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Can't skip the track because it's the last in the queue!", null, "sponsored by SoSBunker", Color.WHITE);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Can't skip the track because it's the last in the queue!", FooterType.MUSIC, Color.WHITE);
                                     }
                                 } else {
-                                    DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", null, "fox uwu", Color.WHITE);
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
                                 }
                             } else {
-                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
                         }
 
@@ -277,20 +281,20 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
                                 this.musicPlayer.getMusicPlayerTrackScheduler().stopMusicBot();
                                 this.musicPlayer = null;
 
-                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Hermine stepped on the stop button!\nBot stopped :c", null, "https://damian.psychose.club/", Color.WHITE);
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Party stopped!", FooterType.MUSIC, Color.WHITE);
                             } else {
-                                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", null, "fox uwu", Color.RED);
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
                         }
 
-                        default -> DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", null, "oh no qwq", Color.RED);
+                        default -> Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", FooterType.ERROR, Color.RED);
                     }
                 }
             } else {
-                DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", null, "oh no qwq", Color.RED);
+                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", FooterType.ERROR, Color.RED);
             }
         } else {
-            DiscordUtils.sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", null, "oh no qwq", Color.RED);
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", FooterType.ERROR, Color.RED);
         }
     }
 
@@ -301,7 +305,7 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
             // Checks if the member is not null and if the voice state of the member is not null.
             if ((messageReceivedEvent.getMember() != null) && (messageReceivedEvent.getMember().getVoiceState() != null)) {
                 // Tries to fetch the member voice channel.
-                VoiceChannel memberVoiceChannel = DiscordUtils.getVoiceChannel(messageReceivedEvent.getMember(), messageReceivedEvent.getGuild());
+                VoiceChannel memberVoiceChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getVoiceChannel(messageReceivedEvent.getMember(), messageReceivedEvent.getGuild());
 
                 // Checks if the voice channel is not null.
                 if (memberVoiceChannel != null) {
