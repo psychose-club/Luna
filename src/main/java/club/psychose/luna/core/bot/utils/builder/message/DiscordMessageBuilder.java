@@ -19,12 +19,14 @@ package club.psychose.luna.core.bot.utils.builder.message;
 
 import club.psychose.luna.core.bot.utils.builder.embed.DiscordEmbedBuilder;
 import club.psychose.luna.enums.FooterType;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 public final class DiscordMessageBuilder {
     public void sendTextChannelMessage (TextChannel textChannel, String message, String splitCharacter, boolean markdown) {
@@ -83,23 +85,47 @@ public final class DiscordMessageBuilder {
         textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue();
     }
 
+    public void sendEmbedMessage (TextChannel textChannel, String title, String description, FooterType footerType, Color color, Consumer<? super Message> messageConsumer) {
+        textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue(messageConsumer);
+    }
+
     public void sendEmbedMessage (TextChannel textChannel, String title, String description, HashMap<String, String> fieldHashMap, FooterType footerType, Color color) {
         textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerType, color).build().build()).queue();
+    }
+
+    public void sendEmbedMessage (TextChannel textChannel, String title, String description, HashMap<String, String> fieldHashMap, FooterType footerType, Color color, Consumer<? super Message> messageConsumer) {
+        textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerType, color).build().build()).queue(messageConsumer);
     }
 
     public void sendEmbedMessage (TextChannel textChannel, String title, String description, String footerText, Color color) {
         textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, footerText, color).build().build()).queue();
     }
 
+    public void sendEmbedMessage (TextChannel textChannel, String title, String description, String footerText, Color color, Consumer<? super Message> messageConsumer) {
+        textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, footerText, color).build().build()).queue(messageConsumer);
+    }
+
     public void sendEmbedMessage (TextChannel textChannel, String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color) {
         textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerText, color).build().build()).queue();
+    }
+
+    public void sendEmbedMessage (TextChannel textChannel, String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color, Consumer<? super Message> messageConsumer) {
+        textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerText, color).build().build()).queue(messageConsumer);
     }
 
     public void sendEmbedMessage (User user, String title, String description, HashMap<String, String> fieldHashMap, FooterType footerType, Color color) {
         user.openPrivateChannel().queue((privateChannel -> privateChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerType, color).build().build()).queue()));
     }
 
+    public void sendEmbedMessage (User user, String title, String description, HashMap<String, String> fieldHashMap, FooterType footerType, Color color, Consumer<? super Message> messageConsumer) {
+        user.openPrivateChannel().queue((privateChannel -> privateChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerType, color).build().build()).queue(messageConsumer)));
+    }
+
     public void sendEmbedMessage (User user, String title, String description, FooterType footerType, Color color) {
         user.openPrivateChannel().queue((privateChannel -> privateChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue()));
+    }
+
+    public void sendEmbedMessage (User user, String title, String description, FooterType footerType, Color color, Consumer<? super Message> messageConsumer) {
+        user.openPrivateChannel().queue((privateChannel -> privateChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue(messageConsumer)));
     }
 }
