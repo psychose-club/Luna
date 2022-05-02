@@ -35,12 +35,14 @@ public final class MessageReactionListener extends ListenerAdapter {
                     if (discordCommandReaction != null) {
                         if (discordCommandReaction.getMemberID().equals(messageReactionAddEvent.getMember().getId())) {
                             if (discordCommandReaction.getMessageID().equals(messageReactionAddEvent.getReaction().getMessageId())) {
-                                if (discordCommandReaction.getReactionEmoji().equals(messageReactionAddEvent.getReaction().getReactionEmote().getEmoji())) {
-                                    if (discordCommand.onMessageReaction(discordCommandReaction, messageReactionAddEvent)) {
-                                        removeMemberReactionsDiscordCommand = discordCommand;
-                                        break;
+                                try {
+                                    if (discordCommandReaction.getReactionEmoji().equals(messageReactionAddEvent.getReaction().getReactionEmote().getEmoji())) {
+                                        if (discordCommand.onMessageReaction(discordCommandReaction, messageReactionAddEvent)) {
+                                            removeMemberReactionsDiscordCommand = discordCommand;
+                                            break;
+                                        }
                                     }
-                                }
+                                } catch (IllegalStateException ignored) {}
                             }
                         }
                     }
