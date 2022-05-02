@@ -17,6 +17,7 @@
 
 package club.psychose.luna.core.bot.utils;
 
+import club.psychose.luna.core.bot.utils.records.DiscordCommandReaction;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -24,6 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class DiscordMessageUtils {
+    public void addReaction (TextChannel textChannel, String messageID, DiscordCommandReaction discordCommandReaction) {
+        if (messageID != null)
+            textChannel.addReactionById(messageID, discordCommandReaction.getReactionEmoji()).queue();
+    }
+
     public List<Message> getMessageHistory (TextChannel textChannel, int messages) {
         return new ArrayList<>(textChannel.getHistory().retrievePast(messages).complete());
     }
