@@ -81,6 +81,38 @@ public final class DiscordMessageBuilder {
         }
     }
 
+    public void editEmbedMessage (Message message, String title, String description, FooterType footerType, Color color) {
+        message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue();
+    }
+
+    public void editEmbedMessage (Message message, String title, String description, FooterType footerType, Color color, Consumer<? super Message> messageConsumer) {
+        message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue(messageConsumer);
+    }
+
+    public void editEmbedMessage (Message message, String title, String description, HashMap<String, String> fieldHashMap, FooterType footerType, Color color) {
+        message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerType, color).build().build()).queue();
+    }
+
+    public void editEmbedMessage (Message message, String title, String description, HashMap<String, String> fieldHashMap, FooterType footerType, Color color, Consumer<? super Message> messageConsumer) {
+        message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerType, color).build().build()).queue(messageConsumer);
+    }
+
+    public void editEmbedMessage (Message message, String title, String description, String footerText, Color color) {
+        message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, footerText, color).build().build()).queue();
+    }
+
+    public void editEmbedMessage (Message message, String title, String description, String footerText, Color color, Consumer<? super Message> messageConsumer) {
+        message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, footerText, color).build().build()).queue(messageConsumer);
+    }
+
+    public void editEmbedMessage (Message message, String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color) {
+        message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerText, color).build().build()).queue();
+    }
+
+    public void editEmbedMessage (Message message, String title, String description, HashMap<String, String> fieldHashMap, String footerText, Color color, Consumer<? super Message> messageConsumer) {
+        message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerText, color).build().build()).queue(messageConsumer);
+    }
+
     public void sendEmbedMessage (TextChannel textChannel, String title, String description, FooterType footerType, Color color) {
         textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue();
     }
