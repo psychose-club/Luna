@@ -26,8 +26,7 @@ import java.util.List;
 
 public final class DiscordMessageUtils {
     public void addReaction (TextChannel textChannel, String messageID, DiscordCommandReaction discordCommandReaction) {
-        if (messageID != null)
-            textChannel.addReactionById(messageID, discordCommandReaction.getReactionEmoji()).queue();
+        textChannel.addReactionById(messageID, discordCommandReaction.getReactionEmoji()).queue();
     }
 
     public List<Message> getMessageHistory (TextChannel textChannel, int messages) {
