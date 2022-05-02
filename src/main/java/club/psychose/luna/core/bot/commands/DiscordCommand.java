@@ -17,10 +17,16 @@
 
 package club.psychose.luna.core.bot.commands;
 
+import club.psychose.luna.Luna;
+import club.psychose.luna.core.bot.utils.records.DiscordCommandReaction;
 import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+
+import java.util.ArrayList;
 
 public abstract class DiscordCommand {
     private final String commandName;
@@ -30,6 +36,8 @@ public abstract class DiscordCommand {
     private final CommandCategory commandCategory;
     private final PermissionRoles[] permissions;
     private final DiscordChannels[] discordChannels;
+
+    private final ArrayList<DiscordCommandReaction> discordCommandReactionArrayList = new ArrayList<>();
 
     @Deprecated
     public DiscordCommand (String commandName, String commandDescription, String commandSyntax, String[] aliases, CommandCategory commandCategory, PermissionRoles[] permissions, DiscordChannels[] discordChannels) {
@@ -43,6 +51,25 @@ public abstract class DiscordCommand {
     }
 
     public abstract void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent);
+
+    public void onMessageReaction (DiscordCommandReaction discordCommandReaction, MessageReactionAddEvent messageReactionAddEvent) {}
+
+    protected void addReaction (TextChannel textChannel, String reactionEmoji, String memberID, String messageID, String buffer) {
+        DiscordCommandReaction discordCommandReaction = new DiscordCommandReaction(reactionEmoji, memberID, messageID, buffer);
+
+        if (!(this.discordCommandReactionArrayList.contains(discordCommandReaction))) {
+            this.discordCommandReactionArrayList.add(discordCommandReaction);
+            Luna.DISCORD_MANAGER.getDiscordMessageUtils().addReaction(textChannel, messageID, discordCommandReaction);
+        }
+    }
+
+    protected void removeReaction (DiscordCommandReaction discordCommandReaction) {
+        this.discordCommandReactionArrayList.remove(discordCommandReaction);
+    }
+
+    public ArrayList<DiscordCommandReaction> getDiscordCommandReactionArrayList () {
+        return this.discordCommandReactionArrayList;
+    }
 
     public String getCommandName () {
         return this.commandName;
