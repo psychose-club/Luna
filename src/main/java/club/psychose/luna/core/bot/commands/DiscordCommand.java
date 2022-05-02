@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public abstract class DiscordCommand {
     private final String commandName;
@@ -63,8 +64,9 @@ public abstract class DiscordCommand {
         }
     }
 
-    protected void removeReaction (DiscordCommandReaction discordCommandReaction) {
-        this.discordCommandReactionArrayList.remove(discordCommandReaction);
+    public void removeMemberReactions (String memberID, String messageID) {
+       ArrayList<DiscordCommandReaction> removeDiscordCommandReactionsArrayList = this.discordCommandReactionArrayList.stream().filter(discordCommandReaction -> discordCommandReaction.getMemberID().equals(memberID)).filter(discordCommandReaction -> discordCommandReaction.getMessageID().equals(messageID)).collect(Collectors.toCollection(ArrayList::new));
+       removeDiscordCommandReactionsArrayList.forEach(this.discordCommandReactionArrayList::remove);
     }
 
     public ArrayList<DiscordCommandReaction> getDiscordCommandReactionArrayList () {
@@ -83,7 +85,7 @@ public abstract class DiscordCommand {
         return this.commandSyntax;
     }
 
-    protected String getSyntaxString () {
+    public String getSyntaxString() {
         return "L!" + this.commandName + " " + this.commandSyntax;
     }
 
