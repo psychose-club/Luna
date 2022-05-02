@@ -55,7 +55,7 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
     private MusicPlayer musicPlayer = null;
 
     public MusicPlayerDiscordCommand () {
-        super("music", "Music player for the server!", "!music <play | queue | pause | resume | skip | stop | volume> <Keywords | URL | (status | Value (0-100))>", new String[] {"m", "mp", "player"}, CommandCategory.FUN, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("music", "Music player for the server!", "<play | queue | pause | resume | skip | stop | volume> <Keywords | URL | (status | Value (0-100))>", new String[] {"m", "mp", "player"}, CommandCategory.FUN, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
 
         // Initialize the audio player manager.
         this.audioPlayerManager = new DefaultAudioPlayerManager();

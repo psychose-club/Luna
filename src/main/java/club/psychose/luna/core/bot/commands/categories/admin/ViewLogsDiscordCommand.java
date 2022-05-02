@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 public final class ViewLogsDiscordCommand extends DiscordCommand {
     public ViewLogsDiscordCommand () {
-        super("viewlogs", "Views logs!", "!viewlogs <crash | detection | nuke> <list | File Name>", new String[] {"vl", "logs"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("viewlogs", "Views logs!", "<crash | detection | nuke> <list | file>", new String[] {"vl", "logs"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     @Override

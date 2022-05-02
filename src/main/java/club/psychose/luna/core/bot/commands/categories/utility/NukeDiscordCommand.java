@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class NukeDiscordCommand extends DiscordCommand {
     public NukeDiscordCommand () {
-        super("nuke", "Deletes the complete channel history from a channel.", "!nuke", new String[] {"clear"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.OWNER, PermissionRoles.ADMIN, PermissionRoles.MODERATOR}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("nuke", "Deletes the complete channel history from a channel.", "", new String[] {"clear"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.OWNER, PermissionRoles.ADMIN, PermissionRoles.MODERATOR}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     @Override

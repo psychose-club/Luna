@@ -29,7 +29,7 @@ import java.awt.*;
 
 public final class ReloadDiscordCommand extends DiscordCommand {
     public ReloadDiscordCommand () {
-        super("reload", "Reload specific configurations", "!reload <filter | settings>", new String[] {"rl", "rel"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("reload", "Reload specific configurations", "<filter | settings>", new String[] {"rl", "rel"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     @Override

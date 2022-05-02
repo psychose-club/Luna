@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 public final class HelpDiscordCommand extends DiscordCommand {
     public HelpDiscordCommand () {
-        super("help", "Shows the help usage of other commands!", "!help", new String[] {"?"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("help", "Shows the help usage of other commands!", "", new String[] {"?"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     @Override
