@@ -18,6 +18,8 @@
 package club.psychose.luna.core.bot.listeners;
 
 import club.psychose.luna.core.bot.DiscordBot;
+import club.psychose.luna.core.bot.commands.DiscordCommand;
+import club.psychose.luna.core.bot.utils.records.DiscordCommandReaction;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -26,7 +28,30 @@ public final class MessageReactionListener extends ListenerAdapter {
     public void onMessageReactionAdd (MessageReactionAddEvent messageReactionAddEvent) {
         assert messageReactionAddEvent.getMember() == null;
 
-        if (!(messageReactionAddEvent.getMember().getUser().isBot()))
-            DiscordBot.COMMAND_MANAGER.getDiscordCommandsArrayList().forEach(discordCommand -> discordCommand.getDiscordCommandReactionArrayList().stream().filter(discordCommandReaction -> discordCommandReaction.getMemberID().equals(messageReactionAddEvent.getMember().getId())).filter(discordCommandReaction -> discordCommandReaction.getMessageID().equals(messageReactionAddEvent.getReaction().getMessageId())).forEachOrdered(discordCommandReaction -> discordCommand.onMessageReaction(discordCommandReaction, messageReactionAddEvent)));
+        if (!(messageReactionAddEvent.getMember().getUser().isBot())) {
+            DiscordCommand removeMemberReactionsDiscordCommand = null;
+            for (DiscordCommand discordCommand : DiscordBot.COMMAND_MANAGER.getDiscordCommandsArrayList()) {
+                for (DiscordCommandReaction discordCommandReaction : discordCommand.getDiscordCommandReactionArrayList()) {
+                    if (discordCommandReaction != null) {
+                        if (discordCommandReaction.getMemberID().equals(messageReactionAddEvent.getMember().getId())) {
+                            if (discordCommandReaction.getMessageID().equals(messageReactionAddEvent.getReaction().getMessageId())) {
+                                if (discordCommandReaction.getReactionEmoji().equals(messageReactionAddEvent.getReaction().getReactionEmote().getEmoji())) {
+                                    if (discordCommand.onMessageReaction(discordCommandReaction, messageReactionAddEvent)) {
+                                        removeMemberReactionsDiscordCommand = discordCommand;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (removeMemberReactionsDiscordCommand != null)
+                    break;
+            }
+
+            if (removeMemberReactionsDiscordCommand != null)
+                removeMemberReactionsDiscordCommand.removeMemberReactions(messageReactionAddEvent.getMember().getId(), messageReactionAddEvent.getMessageId());
+        }
     }
 }
