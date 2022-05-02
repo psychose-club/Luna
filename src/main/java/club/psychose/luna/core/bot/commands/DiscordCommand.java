@@ -53,7 +53,9 @@ public abstract class DiscordCommand {
 
     public abstract void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent);
 
-    public void onMessageReaction (DiscordCommandReaction discordCommandReaction, MessageReactionAddEvent messageReactionAddEvent) {}
+    public boolean onMessageReaction (DiscordCommandReaction discordCommandReaction, MessageReactionAddEvent messageReactionAddEvent) {
+        return false;
+    }
 
     protected void addReaction (TextChannel textChannel, String reactionEmoji, String memberID, String messageID, String buffer) {
         DiscordCommandReaction discordCommandReaction = new DiscordCommandReaction(reactionEmoji, memberID, messageID, buffer);
