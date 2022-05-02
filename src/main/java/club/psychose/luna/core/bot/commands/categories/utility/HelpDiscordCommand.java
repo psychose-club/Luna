@@ -20,12 +20,17 @@ package club.psychose.luna.core.bot.commands.categories.utility;
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
+import club.psychose.luna.core.bot.utils.records.DiscordCommandReaction;
 import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
+import club.psychose.luna.utils.Constants;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -34,14 +39,39 @@ public final class HelpDiscordCommand extends DiscordCommand {
         super("help", "Shows the help usage of other commands!", "!help", new String[] {"?"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
-    // TODO: Add reaction with the emojis.
-    // TODO: Write tool to filter wordlist.
+    @Override
+    public boolean onMessageReaction (DiscordCommandReaction discordCommandReaction, MessageReactionAddEvent messageReactionAddEvent) {
+        assert messageReactionAddEvent.getMember() == null;
+
+        Message message = messageReactionAddEvent.retrieveMessage().complete();
+
+        if (message != null) {
+            message.clearReactions().queue();
+
+            if (discordCommandReaction.getReactionEmoji().equals(Constants.GO_BACK_EMOJI.getName())) {
+                HashMap<String, String> commandCategoryHashMap = Arrays.stream(CommandCategory.values()).collect(Collectors.toMap(Enum::name, commandCategory -> commandCategory.getEmoji().getName(), (a, b) -> b, HashMap::new));
+
+                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().editEmbedMessage(message, "Command - Help", "Please select a category below to see the usage of the commands.", commandCategoryHashMap, "\uD83D\uDC08 L U N A \uD83D\uDC08", Color.MAGENTA, (queueMessage) -> Arrays.stream(CommandCategory.values()).forEachOrdered(commandCategory -> this.addReaction(queueMessage.getTextChannel(), commandCategory.getEmoji().getName(), messageReactionAddEvent.getMember().getId(), queueMessage.getId(), null)));
+            } else {
+                for (CommandCategory commandCategory : CommandCategory.values()) {
+                    if (discordCommandReaction.getReactionEmoji().equals(commandCategory.getEmoji().getName())) {
+                        HashMap<String, String> commandCategoryHashMap = DiscordBot.COMMAND_MANAGER.getDiscordCommandsArrayList().stream().filter(discordCommand -> discordCommand.getCommandCategory().equals(commandCategory)).collect(Collectors.toMap(DiscordCommand::getSyntaxString, DiscordCommand::getCommandDescription, (a, b) -> b, HashMap::new));
+
+                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().editEmbedMessage(message, commandCategory.name() + " - Help", "Usages:", commandCategoryHashMap, "\uD83D\uDC08 L U N A \uD83D\uDC08", Color.MAGENTA, (queueMessage) -> this.addReaction(queueMessage.getTextChannel(), Constants.GO_BACK_EMOJI.getName(), messageReactionAddEvent.getMember().getId(), queueMessage.getId(), null));
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
-        // Creates a command help hashmap from the available commands.
-        HashMap<String, String> commandHelpHashMap = DiscordBot.COMMAND_MANAGER.getDiscordCommandsArrayList().stream().collect(Collectors.toMap(DiscordCommand::getCommandName, discordCommand -> discordCommand.getCommandDescription() + " | " + discordCommand.getCommandSyntax(), (a, b) -> b, HashMap::new));
-
-        // Sends an embed message.
-        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Command - Help", "Command usage:", commandHelpHashMap, "\uD83D\uDC08 L U N A \uD83D\uDC08", Color.MAGENTA);
+        HashMap<String, String> commandCategoryHashMap = Arrays.stream(CommandCategory.values()).collect(Collectors.toMap(Enum::name, commandCategory -> commandCategory.getEmoji().getName(), (a, b) -> b, HashMap::new));
+        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Command - Help", "Please select a category below to see the usage of the commands.", commandCategoryHashMap, "\uD83D\uDC08 L U N A \uD83D\uDC08", Color.MAGENTA, (message) -> {
+            Arrays.stream(CommandCategory.values()).forEachOrdered(commandCategory -> this.addReaction(messageReceivedEvent.getTextChannel(), commandCategory.getEmoji().getName(), messageReceivedEvent.getAuthor().getId(), message.getId(), null));
+        });
     }
 }
