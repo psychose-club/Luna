@@ -33,7 +33,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public final class SettingsManager {
     private final BotSettings botSettings = new BotSettings();
@@ -56,12 +58,25 @@ public final class SettingsManager {
                 JsonObject botSettingsJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\bot_settings.json"));
 
                 if (botSettingsJsonObject != null) {
-                    if ((botSettingsJsonObject.has("Bot Token") && (botSettingsJsonObject.has("YouTube API Key")) && (botSettingsJsonObject.has("Bot Owner ID")) && (botSettingsJsonObject.has("Message Filter URL") && (botSettingsJsonObject.has("Message Whitelist Filter URL"))))) {
+                    if ((botSettingsJsonObject.has("Bot Token") && (botSettingsJsonObject.has("YouTube API Key")) && (botSettingsJsonObject.has("Bot Owner ID")) && (botSettingsJsonObject.has("Message Filter URL") && (botSettingsJsonObject.has("Message Whitelist Filter URL")) && (botSettingsJsonObject.has("Syntax Prefix")) && (botSettingsJsonObject.has("Time Period")) && (botSettingsJsonObject.has("Time Unit"))))) {
                         this.getBotSettings().setBotToken(botSettingsJsonObject.get("Bot Token").getAsString());
                         this.getBotSettings().setYoutubeAPIKey(botSettingsJsonObject.get("YouTube API Key").getAsString());
                         this.getBotSettings().setBotOwnerID(botSettingsJsonObject.get("Bot Owner ID").getAsString());
                         this.getBotSettings().setMessageFilterURL(botSettingsJsonObject.get("Message Filter URL").getAsString());
                         this.getBotSettings().setMessageWhitelistFilterURL(botSettingsJsonObject.get("Message Whitelist Filter URL").getAsString());
+                        this.getBotSettings().setPrefix(botSettingsJsonObject.get("Syntax Prefix").getAsString());
+
+                        int timePeriod = 10;
+                        try {
+                            timePeriod = botSettingsJsonObject.get("Time Period").getAsInt();
+                        } catch (NumberFormatException ignored) {}
+
+                        this.getBotSettings().setTimePeriod(timePeriod);
+
+                        String timeUnitString = botSettingsJsonObject.get("Time Unit").getAsString();
+                        TimeUnit timeUnit = Arrays.stream(TimeUnit.values()).filter(validTimeUnit -> validTimeUnit.name().equalsIgnoreCase(timeUnitString)).findFirst().orElse(TimeUnit.MINUTES);
+
+                        this.getBotSettings().setTimeUnit(timeUnit);
                     } else {
                         CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Bot settings are invalid!"), null);
                         System.exit(1);
@@ -254,6 +269,9 @@ public final class SettingsManager {
         botSettingsJsonObject.addProperty("Bot Owner ID", this.getBotSettings().getBotOwnerID());
         botSettingsJsonObject.addProperty("Message Filter URL", this.getBotSettings().getMessageFilterURL());
         botSettingsJsonObject.addProperty("Message Whitelist Filter URL", this.getBotSettings().getMessageWhitelistFilterURL());
+        botSettingsJsonObject.addProperty("Syntax Prefix", this.getBotSettings().getPrefix());
+        botSettingsJsonObject.addProperty("Time Period", this.getBotSettings().getTimePeriod());
+        botSettingsJsonObject.addProperty("Time Unit", this.getBotSettings().getTimeUnit().name());
 
         Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\bot_settings.json"), botSettingsJsonObject);
     }
