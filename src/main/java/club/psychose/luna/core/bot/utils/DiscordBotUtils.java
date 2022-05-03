@@ -85,6 +85,6 @@ public final class DiscordBotUtils {
     }
 
     private void sendChangelog (TextChannel botInformationChannel) {
-        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "[+] Added MySQL support\n[+] Added ServerConfiguration command\n[+] Commands are now in categories\n[=] Reworked commands\n[=] Many internal changes and bug fixes\nThis update contain many internal changes because the next update will probably the open source release of the bot, so this update didn't contain many new features!", "Luna was developed by psychose.club", Color.MAGENTA);
+        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "[=] Verification Bugfix", "Luna was developed by psychose.club", Color.MAGENTA);
     }
 }
