@@ -50,6 +50,10 @@ public final class Luna {
         SETTINGS_MANAGER.loadSettings();
         ConsoleLogger.debug("Settings loaded!");
         ConsoleLogger.printEmptyLine();
+        ConsoleLogger.debug("Start scheduler...");
+        DISCORD_MANAGER.getReactionScheduler().startScheduler();
+        ConsoleLogger.debug("Scheduler started!");
+        ConsoleLogger.printEmptyLine();
         ConsoleLogger.debug("Starting bot...");
         new DiscordBot().startDiscordBot();
     }
