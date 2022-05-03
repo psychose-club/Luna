@@ -17,6 +17,7 @@
 
 package club.psychose.luna.core.bot.listeners;
 
+import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.bot.utils.records.DiscordCommandReaction;
@@ -31,7 +32,7 @@ public final class MessageReactionListener extends ListenerAdapter {
         if (!(messageReactionAddEvent.getMember().getUser().isBot())) {
             DiscordCommand removeMemberReactionsDiscordCommand = null;
             for (DiscordCommand discordCommand : DiscordBot.COMMAND_MANAGER.getDiscordCommandsArrayList()) {
-                for (DiscordCommandReaction discordCommandReaction : discordCommand.getDiscordCommandReactionArrayList()) {
+                for (DiscordCommandReaction discordCommandReaction : Luna.DISCORD_MANAGER.getReactionScheduler().getDiscordCommandReactionArrayList(discordCommand)) {
                     if (discordCommandReaction != null) {
                         if (discordCommandReaction.getMemberID().equals(messageReactionAddEvent.getMember().getId())) {
                             if (discordCommandReaction.getMessageID().equals(messageReactionAddEvent.getReaction().getMessageId())) {
@@ -53,7 +54,7 @@ public final class MessageReactionListener extends ListenerAdapter {
             }
 
             if (removeMemberReactionsDiscordCommand != null)
-                removeMemberReactionsDiscordCommand.removeMemberReactions(messageReactionAddEvent.getMember().getId(), messageReactionAddEvent.getMessageId());
+                Luna.DISCORD_MANAGER.getReactionScheduler().removeMemberReactions(removeMemberReactionsDiscordCommand, messageReactionAddEvent.getMember().getId(), messageReactionAddEvent.getMessageId());
         }
     }
 }
