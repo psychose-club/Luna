@@ -54,8 +54,8 @@ public final class MessageListener extends ListenerAdapter {
              if (!(messageReceivedEvent.getChannelType().equals(ChannelType.PRIVATE))) {
                  if (member != null) {
                      if (this.messageFilter.checkMessage(message)) {
-                         if (message.startsWith("L!")) {
-                             String command = message.substring(2).trim(); // TODO: Check length when adding custom prefix.
+                         if (message.startsWith(Luna.SETTINGS_MANAGER.getBotSettings().getPrefix())) {
+                             String command = message.substring(Luna.SETTINGS_MANAGER.getBotSettings().getPrefix().length()).trim();
                              String[] commandArguments = null;
 
                              if (command.contains(" ")) {
@@ -96,7 +96,6 @@ public final class MessageListener extends ListenerAdapter {
                              }
                          }
 
-                         // TODO: Fix bot sent things in verification channel.
                          if (messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION)))
                              messageReceivedEvent.getMessage().delete().queue();
                      } else {
