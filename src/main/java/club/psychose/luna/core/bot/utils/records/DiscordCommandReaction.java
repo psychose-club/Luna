@@ -17,4 +17,4 @@
 
 package club.psychose.luna.core.bot.utils.records;
 
-public record DiscordCommandReaction (String getReactionEmoji, String getMemberID, String getMessageID, String getBuffer) {}
+public record DiscordCommandReaction (String getReactionEmoji, String getMemberID, String getMessageID, String getBuffer, long getMilliseconds) {}
