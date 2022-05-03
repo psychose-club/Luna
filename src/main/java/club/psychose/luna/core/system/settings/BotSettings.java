@@ -17,12 +17,17 @@
 
 package club.psychose.luna.core.system.settings;
 
+import java.util.concurrent.TimeUnit;
+
 public final class BotSettings {
     private String botToken = "NULL";
     private String youtubeAPIKey = "NULL";
     private String botOwnerID = "NULL";
     private String messageFilterURL = "NULL";
     private String messageWhitelistFilterURL = "NULL";
+    private String prefix = "L!";
+    private int timePeriod = 10;
+    private TimeUnit timeUnit = TimeUnit.MINUTES;
 
     public void setBotToken (String value) {
         this.botToken = value;
@@ -44,6 +49,18 @@ public final class BotSettings {
         this.messageWhitelistFilterURL = value;
     }
 
+    public void setPrefix (String value) {
+        this.prefix = value;
+    }
+
+    public void setTimePeriod (int value) {
+        this.timePeriod = value;
+    }
+
+    public void setTimeUnit (TimeUnit value) {
+        this.timeUnit = value;
+    }
+
     public String getBotToken () {
         return this.botToken;
     }
@@ -62,5 +79,17 @@ public final class BotSettings {
 
     public String getMessageWhitelistFilterURL () {
         return this.messageWhitelistFilterURL;
+    }
+
+    public String getPrefix () {
+        return this.prefix;
+    }
+
+    public int getTimePeriod () {
+        return this.timePeriod;
+    }
+
+    public TimeUnit getTimeUnit () {
+        return this.timeUnit;
     }
 }
