@@ -38,7 +38,7 @@ public final class DiscordBot {
     public void startDiscordBot () {
         if (!(Luna.SETTINGS_MANAGER.getBotSettings().getBotToken().equals("null"))) {
             JDABuilder jdaBuilder = JDABuilder.createDefault(Luna.SETTINGS_MANAGER.getBotSettings().getBotToken());
-            jdaBuilder.setActivity(Activity.watching("Sailor Moon | L!help for help!"));
+            jdaBuilder.setActivity(Activity.watching("Sailor Moon | " + Luna.SETTINGS_MANAGER.getBotSettings().getPrefix() + "help for help!"));
             jdaBuilder.setStatus(OnlineStatus.ONLINE);
 
             jdaBuilder.addEventListeners(new ReadyListener());
