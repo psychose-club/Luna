@@ -37,7 +37,7 @@ import java.io.IOException;
 
 public final class VerificationDiscordCommand extends DiscordCommand {
     public VerificationDiscordCommand () {
-        super("verification", "Verify your self to gain access to the server!", "", new String[] {"verify", "v"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.VERIFICATION});
+        super("verification", "Verify your self to gain access to the server!", "", new String[] {"verify", "v"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.VERIFICATION});
     }
 
     @Override
