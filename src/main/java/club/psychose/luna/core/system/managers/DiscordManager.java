@@ -17,6 +17,7 @@
 
 package club.psychose.luna.core.system.managers;
 
+import club.psychose.luna.core.bot.schedulers.ReactionScheduler;
 import club.psychose.luna.core.bot.utils.DiscordChannelUtils;
 import club.psychose.luna.core.bot.utils.DiscordMemberUtils;
 import club.psychose.luna.core.bot.utils.DiscordMessageUtils;
@@ -31,6 +32,7 @@ public final class DiscordManager {
     private final DiscordMessageUtils discordMessageUtils = new DiscordMessageUtils();
     private final DiscordMemberUtils discordMemberUtils = new DiscordMemberUtils();
     private final DiscordRoleUtils discordRoleUtils = new DiscordRoleUtils();
+    private final ReactionScheduler reactionScheduler = new ReactionScheduler();
 
     public DiscordBotUtils getDiscordBotUtils () {
         return this.discordBotUtils;
@@ -54,5 +56,9 @@ public final class DiscordManager {
 
     public DiscordRoleUtils getDiscordRoleUtils () {
         return this.discordRoleUtils;
+    }
+
+    public ReactionScheduler getReactionScheduler () {
+        return this.reactionScheduler;
     }
 }
