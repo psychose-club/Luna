@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 package club.psychose.luna.core.system.managers;
 
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -58,7 +58,7 @@ public final class FileManager {
             if (!(Files.exists(Constants.getLunaFolderPath("\\temp\\"))))
                 Files.createDirectories(Constants.getLunaFolderPath("\\temp\\"));
         } catch (IOException ioException) {
-            StringUtils.debug("IOException while creating the directories!");
+            ConsoleLogger.debug("IOException while creating the directories!");
             ioException.printStackTrace();
         }
     }
@@ -72,7 +72,7 @@ public final class FileManager {
             try (FileReader fileReader = new FileReader(path.toFile())) {
                 return gson.fromJson(fileReader, JsonObject.class);
             } catch (IOException ioException) {
-                StringUtils.debug("IOException while reading the JsonObject!");
+                ConsoleLogger.debug("IOException while reading the JsonObject!");
                 ioException.printStackTrace();
             }
         }
@@ -91,7 +91,7 @@ public final class FileManager {
         try {
             Files.write(outputPath, stringBuilder.toString().getBytes());
         } catch (IOException ioException) {
-            StringUtils.debug("IOException while saving an ArrayList to a file!");
+            ConsoleLogger.debug("IOException while saving an ArrayList to a file!");
             ioException.printStackTrace();
         }
     }
@@ -104,7 +104,7 @@ public final class FileManager {
         try (FileWriter fileWriter = new FileWriter(path.toFile())) {
             gson.toJson(jsonObject, fileWriter);
         } catch (IOException ioException) {
-            StringUtils.debug("IOException while saving the JsonObject!");
+            ConsoleLogger.debug("IOException while saving the JsonObject!");
             ioException.printStackTrace();
         }
     }

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.logging.exceptions;
+package club.psychose.luna.utils.logging.exceptions;
 
 public final class InvalidConfigurationDataException extends Exception{
     public InvalidConfigurationDataException (String message) {

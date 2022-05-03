@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,12 @@
 package club.psychose.luna.core.system.settings;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.core.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 
-import java.io.IOException;
-import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,16 +32,6 @@ public final class ServerSettings {
 
     public void addServerConfiguration (String serverID, ServerSetting serverSetting) {
         if (!(this.serverConfigurationHashMap.containsKey(serverID))) {
-            if (!(Files.exists(Constants.getLunaFolderPath("\\servers\\" + serverID)))) {
-                try {
-                    Files.createDirectories(Constants.getLunaFolderPath("\\servers\\" + serverID));
-                    Files.createDirectories(Constants.getLunaFolderPath("\\servers\\" + serverID + "\\settings\\"));
-                } catch (IOException ioException) {
-                    CrashLog.saveLogAsCrashLog(ioException, null);
-                    return;
-                }
-            }
-
             this.serverConfigurationHashMap.put(serverID, serverSetting);
             Luna.SETTINGS_MANAGER.saveServerSettings();
         }
@@ -52,17 +39,23 @@ public final class ServerSettings {
 
     public void removeServerConfiguration (String serverID) {
         if (this.serverConfigurationHashMap.containsKey(serverID)) {
-            if (Files.exists(Constants.getLunaFolderPath("\\servers\\" + serverID))) {
-                try {
-                    Files.deleteIfExists(Constants.getLunaFolderPath("\\servers\\" + serverID));
-                } catch (IOException ioException) {
-                    CrashLog.saveLogAsCrashLog(ioException, null);
-                }
-            }
-
             this.serverConfigurationHashMap.remove(serverID);
             Luna.SETTINGS_MANAGER.saveServerSettings();
         }
+    }
+
+    public void reloadServerConfiguration (String serverID) {
+
+    }
+
+    public boolean checkIfServerConfigurationExist (String serverID) {
+        return this.serverConfigurationHashMap.containsKey(serverID);
+    }
+
+    public ArrayList<String> getServerConfigurationIDsArrayList () {
+        ArrayList<String> serverConfigurationIDsArrayList = new ArrayList<>();
+        this.serverConfigurationHashMap.forEach((key, value) -> serverConfigurationIDsArrayList.add(key));
+        return serverConfigurationIDsArrayList;
     }
 
     public void replaceChannelConfiguration (String serverID, DiscordChannels discordChannel, String channelID) {
@@ -72,8 +65,8 @@ public final class ServerSettings {
             if (serverSetting != null) {
                 switch (discordChannel) {
                     case BOT_INFORMATION -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), channelID, serverSetting.getLoggingChannelID(), serverSetting.getVerificationChannelID()));
-                    case LOGGING -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), serverSetting.getBotInfoChannelID(), channelID, serverSetting.getVerificationChannelID()));
-                    case VERIFICATION -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), serverSetting.getBotInfoChannelID(), serverSetting.getLoggingChannelID(), channelID));
+                    case LOGGING -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), serverSetting.getBotInformationChannelID(), channelID, serverSetting.getVerificationChannelID()));
+                    case VERIFICATION -> this.getServerConfigurationHashMap().replace(serverID, new ServerSetting(serverSetting.getOwnerRoleID(), serverSetting.getAdminRoleID(), serverSetting.getModeratorRoleID(), serverSetting.getVerificationRoleID(), serverSetting.getBotInformationChannelID(), serverSetting.getLoggingChannelID(), channelID));
                 }
 
                 Luna.SETTINGS_MANAGER.saveServerSettings();
@@ -81,7 +74,7 @@ public final class ServerSettings {
         }
     }
 
-    public boolean containsPermission (String serverID, List<Role> roles, PermissionRoles[] permissionRoles) {
+    public boolean containsPermission (String serverID, User user, List<Role> roles, PermissionRoles[] permissionRoles) {
         if ((roles != null) && (permissionRoles != null)) {
             ServerSetting serverSetting = this.getServerConfigurationHashMap().getOrDefault(serverID, null);
 
@@ -89,6 +82,11 @@ public final class ServerSettings {
                 for (Role role : roles) {
                     for (PermissionRoles permissionRole : permissionRoles) {
                         switch (permissionRole) {
+                            case BOT_OWNER -> {
+                                if (Luna.SETTINGS_MANAGER.getBotSettings().getBotOwnerID().equals(user.getId()))
+                                    return true;
+                            }
+
                             case OWNER -> {
                                 if (serverSetting.getOwnerRoleID().equals(role.getId()))
                                     return true;
@@ -133,7 +131,7 @@ public final class ServerSettings {
                         }
 
                         case BOT_INFORMATION -> {
-                            if (serverSetting.getBotInfoChannelID().equals(textChannelID))
+                            if (serverSetting.getBotInformationChannelID().equals(textChannelID))
                                 return true;
                         }
 
@@ -165,7 +163,7 @@ public final class ServerSettings {
                     }
 
                     case BOT_INFORMATION -> {
-                        return serverSetting.getBotInfoChannelID();
+                        return serverSetting.getBotInformationChannelID();
                     }
 
                     case LOGGING -> {
@@ -193,19 +191,19 @@ public final class ServerSettings {
             if (serverSetting != null) {
                 switch (permissionRole) {
                     case OWNER -> {
-                        return DiscordUtils.getRoleViaID(serverSetting.getOwnerRoleID(), roleList);
+                        return Luna.DISCORD_MANAGER.getDiscordRoleUtils().getRoleViaID(serverSetting.getOwnerRoleID(), roleList);
                     }
 
                     case ADMIN -> {
-                        return DiscordUtils.getRoleViaID(serverSetting.getAdminRoleID(), roleList);
+                        return Luna.DISCORD_MANAGER.getDiscordRoleUtils().getRoleViaID(serverSetting.getAdminRoleID(), roleList);
                     }
 
                     case MODERATOR -> {
-                        return DiscordUtils.getRoleViaID(serverSetting.getModeratorRoleID(), roleList);
+                        return Luna.DISCORD_MANAGER.getDiscordRoleUtils().getRoleViaID(serverSetting.getModeratorRoleID(), roleList);
                     }
 
                     case VERIFICATION -> {
-                        return DiscordUtils.getRoleViaID(serverSetting.getVerificationRoleID(), roleList);
+                        return Luna.DISCORD_MANAGER.getDiscordRoleUtils().getRoleViaID(serverSetting.getVerificationRoleID(), roleList);
                     }
                 }
             }

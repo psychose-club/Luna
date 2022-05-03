@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,5 +18,5 @@
 package club.psychose.luna.enums;
 
 public enum PermissionRoles {
-    OWNER, ADMIN, MODERATOR, VERIFICATION, EVERYONE
+    BOT_OWNER, OWNER, ADMIN, MODERATOR, VERIFICATION, EVERYONE
 }

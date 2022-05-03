@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,28 @@
 
 package club.psychose.luna.core.system.settings;
 
+import java.util.concurrent.TimeUnit;
+
 public final class BotSettings {
     private String botToken = "NULL";
     private String youtubeAPIKey = "NULL";
+    private String botOwnerID = "NULL";
     private String messageFilterURL = "NULL";
     private String messageWhitelistFilterURL = "NULL";
+    private String prefix = "L!";
+    private int timePeriod = 10;
+    private TimeUnit timeUnit = TimeUnit.MINUTES;
 
     public void setBotToken (String value) {
         this.botToken = value;
+    }
+
+    public void setYoutubeAPIKey (String value) {
+        this.youtubeAPIKey = value;
+    }
+
+    public void setBotOwnerID(String value) {
+        this.botOwnerID = value;
     }
 
     public void setMessageFilterURL (String value) {
@@ -35,8 +49,16 @@ public final class BotSettings {
         this.messageWhitelistFilterURL = value;
     }
 
-    public void setYoutubeAPIKey (String value) {
-        this.youtubeAPIKey = value;
+    public void setPrefix (String value) {
+        this.prefix = value;
+    }
+
+    public void setTimePeriod (int value) {
+        this.timePeriod = value;
+    }
+
+    public void setTimeUnit (TimeUnit value) {
+        this.timeUnit = value;
     }
 
     public String getBotToken () {
@@ -47,11 +69,27 @@ public final class BotSettings {
         return this.youtubeAPIKey;
     }
 
+    public String getBotOwnerID() {
+        return this.botOwnerID;
+    }
+
     public String getMessageFilterURL () {
         return this.messageFilterURL;
     }
 
     public String getMessageWhitelistFilterURL () {
         return this.messageWhitelistFilterURL;
+    }
+
+    public String getPrefix () {
+        return this.prefix;
+    }
+
+    public int getTimePeriod () {
+        return this.timePeriod;
+    }
+
+    public TimeUnit getTimeUnit () {
+        return this.timeUnit;
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public final class StringUtils {
-    // Prints an empty line in the console.
-    public static void printEmptyLine () {
-        System.out.println(" ");
-    }
-
-    // These methods are for debugging.
-    public static void debug (String output) {
-        System.out.println(getDateAndTime("CONSOLE") + " | [Luna]: " + output);
-    }
-
     // This method returns a date and time string.
     public static String getDateAndTime (String formatMode) {
         Date date = new Date();

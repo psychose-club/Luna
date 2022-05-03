@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.logging;
+package club.psychose.luna.utils.logging;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.entities.Member;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -29,12 +29,10 @@ public final class BadWordLog {
     public static String createBadWordLog (Member member, String serverID, String badWord, String message, String timestamp) {
         ArrayList<String> badWordLogArrayList = new ArrayList<>();
 
-        String cutTimeStamp = timestamp.replaceAll(" ", "").trim();
-
         badWordLogArrayList.add("==================================================================================================");
         badWordLogArrayList.add("                                         Bad Word Log                                             ");
         badWordLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        badWordLogArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\detections\\" + cutTimeStamp + ".txt"));
+        badWordLogArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\detections\\" + timestamp + ".txt"));
         badWordLogArrayList.add("Timestamp: " + timestamp);
         badWordLogArrayList.add("Server ID: " + serverID);
         badWordLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -48,13 +46,13 @@ public final class BadWordLog {
         badWordLogArrayList.add("==================================================================================================");
 
         HashMap<String, String> fieldHashMap = new HashMap<>();
-        fieldHashMap.put("Path in Luna folder", "\\logs\\detections\\" + cutTimeStamp + ".txt");
+        fieldHashMap.put("Path in Luna folder", "\\logs\\detections\\" + timestamp + ".txt");
         fieldHashMap.put("Timestamp: ", timestamp);
-        DiscordUtils.sendBotInformationMessage(serverID, "Bad Word Log saved!", fieldHashMap, "SYSTEM", member.getGuild().getTextChannels());
+        Luna.DISCORD_MANAGER.getDiscordBotUtils().sendBotInformationMessage(serverID, "Bad Word Log saved!", fieldHashMap, Color.RED, member.getGuild().getTextChannels());
 
-        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\detections\\" + cutTimeStamp + ".txt"), badWordLogArrayList);
+        Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\detections\\" + timestamp + ".txt"), badWordLogArrayList);
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\detections\\latest.txt"), badWordLogArrayList);
 
-        return "\\logs\\detections\\" + cutTimeStamp + ".txt";
+        return "\\logs\\detections\\" + timestamp + ".txt";
     }
 }

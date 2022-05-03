@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.bot.commands.executables;
+package club.psychose.luna.core.bot.commands.categories.utility;
 
+import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
-import club.psychose.luna.core.logging.CrashLog;
-import club.psychose.luna.core.logging.NukeLog;
+import club.psychose.luna.enums.CommandCategory;
+import club.psychose.luna.utils.logging.CrashLog;
+import club.psychose.luna.utils.logging.NukeLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.DiscordUtils;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.concurrent.TimeUnit;
 
 public final class NukeDiscordCommand extends DiscordCommand {
     public NukeDiscordCommand () {
-        super("nuke", "Deletes the complete channel history from a channel.", "!nuke", new String[] {"clear"}, new PermissionRoles[] {PermissionRoles.OWNER, PermissionRoles.ADMIN, PermissionRoles.MODERATOR}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("nuke", "Deletes the complete channel history from a channel.", "", new String[] {"clear"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.OWNER, PermissionRoles.ADMIN, PermissionRoles.MODERATOR}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     @Override
@@ -43,7 +44,7 @@ public final class NukeDiscordCommand extends DiscordCommand {
                 Thread.sleep(TimeUnit.SECONDS.toMillis(5));
             } catch (InterruptedException ignored) {}
 
-            DiscordUtils.deleteChannelHistory(messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel());
+            Luna.DISCORD_MANAGER.getDiscordChannelUtils().deleteChannelHistory(messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel());
         } else {
             CrashLog.saveLogAsCrashLog(new NullPointerException("Member not found!"), messageReceivedEvent.getJDA().getGuilds());
         }

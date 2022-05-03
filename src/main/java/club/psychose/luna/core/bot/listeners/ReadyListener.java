@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@ package club.psychose.luna.core.bot.listeners;
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.captcha.Captcha;
-import club.psychose.luna.core.logging.CrashLog;
-import club.psychose.luna.core.logging.exceptions.InvalidConfigurationDataException;
+import club.psychose.luna.utils.logging.CrashLog;
+import club.psychose.luna.utils.logging.exceptions.InvalidConfigurationDataException;
 import club.psychose.luna.core.system.settings.ServerSetting;
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.DiscordUtils;
-import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -46,13 +45,13 @@ public final class ReadyListener extends ListenerAdapter {
             ServerSetting serverSetting = serverSettingEntry.getValue();
 
             if (serverSetting != null) {
-                if ((serverSetting.getVerificationChannelID() != null) && (serverSetting.getBotInfoChannelID() != null)) {
-                    TextChannel botInformationTextChannel = DiscordUtils.getTextChannel(serverSetting.getBotInfoChannelID(), textChannelList);
-                    TextChannel verificationTextChannel = DiscordUtils.getTextChannel(serverSetting.getVerificationChannelID(), textChannelList);
+                if ((serverSetting.getVerificationChannelID() != null) && (serverSetting.getBotInformationChannelID() != null)) {
+                    TextChannel botInformationTextChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(serverSetting.getBotInformationChannelID(), textChannelList);
+                    TextChannel verificationTextChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(serverSetting.getVerificationChannelID(), textChannelList);
 
                     if (botInformationTextChannel != null) {
                         if (verificationTextChannel != null) {
-                            DiscordUtils.refreshVerificationChannel(serverID, verificationTextChannel, botInformationTextChannel, verificationTextChannel.getGuild());
+                            Luna.DISCORD_MANAGER.getDiscordBotUtils().checkVerificationChannel(serverID, verificationTextChannel, botInformationTextChannel, verificationTextChannel.getGuild());
                         } else {
                             CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found for the server with the id " + serverID +  "!"), readyEvent.getJDA().getGuilds());
                         }
@@ -93,7 +92,7 @@ public final class ReadyListener extends ListenerAdapter {
             }
         }
 
-        StringUtils.debug("Bot started successfully!");
-        StringUtils.printEmptyLine();
+        ConsoleLogger.debug("Bot started successfully!");
+        ConsoleLogger.printEmptyLine();
     }
 }

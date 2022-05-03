@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,5 +17,4 @@
 
 package club.psychose.luna.core.system.settings;
 
-
-public record ServerSetting (String getOwnerRoleID, String getAdminRoleID, String getModeratorRoleID, String getVerificationRoleID, String getBotInfoChannelID, String getLoggingChannelID, String getVerificationChannelID)  {}
+public record ServerSetting (String getOwnerRoleID, String getAdminRoleID, String getModeratorRoleID, String getVerificationRoleID, String getBotInformationChannelID, String getLoggingChannelID, String getVerificationChannelID)  {}

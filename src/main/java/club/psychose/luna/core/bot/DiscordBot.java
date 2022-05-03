@@ -1,6 +1,6 @@
 /*
  * Copyright © 2022 psychose.club
- * Contact: psychose.club@gmail.com
+ * Discord: https://www.psychose.club/discord
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ package club.psychose.luna.core.bot;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.listeners.MessageListener;
+import club.psychose.luna.core.bot.listeners.MessageReactionListener;
 import club.psychose.luna.core.bot.listeners.ReadyListener;
 import club.psychose.luna.core.system.managers.CaptchaManager;
 import club.psychose.luna.core.system.managers.CommandManager;
-import club.psychose.luna.core.logging.CrashLog;
+import club.psychose.luna.utils.logging.CrashLog;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -36,19 +38,21 @@ public final class DiscordBot {
     public void startDiscordBot () {
         if (!(Luna.SETTINGS_MANAGER.getBotSettings().getBotToken().equals("null"))) {
             JDABuilder jdaBuilder = JDABuilder.createDefault(Luna.SETTINGS_MANAGER.getBotSettings().getBotToken());
-            jdaBuilder.setActivity(Activity.watching("Sailor Moon"));
+            jdaBuilder.setActivity(Activity.watching("Sailor Moon | " + Luna.SETTINGS_MANAGER.getBotSettings().getPrefix() + "help for help!"));
             jdaBuilder.setStatus(OnlineStatus.ONLINE);
 
             jdaBuilder.addEventListeners(new ReadyListener());
             jdaBuilder.addEventListeners(new MessageListener());
+            jdaBuilder.addEventListeners(new MessageReactionListener());
 
             COMMAND_MANAGER.initializeCommands();
 
             try {
-                jdaBuilder.build();
+                JDA jda = jdaBuilder.build();
                 jdaBuilder.setAutoReconnect(true);
-            } catch (LoginException loginException) {
-                CrashLog.saveLogAsCrashLog(loginException, null);
+                jda.awaitReady();
+            } catch (LoginException | InterruptedException exception) {
+                CrashLog.saveLogAsCrashLog(exception, null);
             }
         } else {
             CrashLog.saveLogAsCrashLog(new NullPointerException("Bot token is null!"), null);
