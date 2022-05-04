@@ -264,6 +264,7 @@ public final class SettingsManager {
     public void saveBotSettings () {
         JsonObject botSettingsJsonObject = new JsonObject();
 
+        botSettingsJsonObject.addProperty("Config", "1.0.0");
         botSettingsJsonObject.addProperty("Bot Token", this.getBotSettings().getBotToken());
         botSettingsJsonObject.addProperty("YouTube API Key", this.getBotSettings().getYoutubeAPIKey());
         botSettingsJsonObject.addProperty("Bot Owner ID", this.getBotSettings().getBotOwnerID());
@@ -279,6 +280,7 @@ public final class SettingsManager {
     public void saveMySQLSettings () {
         JsonObject mySQLJsonObject = new JsonObject();
 
+        mySQLJsonObject.addProperty("Config", "1.0.0");
         mySQLJsonObject.addProperty("MySQL Hostname", this.getMySQLSettings().getMySQLHostname());
         mySQLJsonObject.addProperty("MySQL Port", this.getMySQLSettings().getMySQLPort());
         mySQLJsonObject.addProperty("MySQL Username", this.getMySQLSettings().getMySQLUsername());
