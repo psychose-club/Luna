@@ -22,6 +22,8 @@ import club.psychose.luna.core.bot.utils.records.DiscordCommandReaction;
 import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
+import club.psychose.luna.utils.logging.CrashLog;
+import club.psychose.luna.utils.logging.exceptions.InvalidPermissionUsageException;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -42,7 +44,6 @@ public abstract class DiscordCommand {
 
 
     // Public constructor.
-    @Deprecated (forRemoval = true)
     public DiscordCommand (String commandName, String commandDescription, String commandSyntax, String[] aliases, CommandCategory commandCategory, PermissionRoles[] permissions, DiscordChannels[] discordChannels) {
         this.commandName = commandName;
         this.commandDescription = commandDescription;
@@ -51,6 +52,18 @@ public abstract class DiscordCommand {
         this.commandCategory = commandCategory;
         this.permissions = permissions;
         this.discordChannels = discordChannels;
+
+        // If more than one permission is added it'll check if bot owner is added and throws an exception then.
+        // For more information see the InvalidPermissionUsageException class.
+        if (permissions.length > 1) {
+            try {
+                for (PermissionRoles permissionRole : permissions)
+                    if (permissionRole.equals(PermissionRoles.BOT_OWNER))
+                        throw new InvalidPermissionUsageException("Invalid permission usage for " + this.commandName + "!");
+            } catch (InvalidPermissionUsageException invalidPermissionUsageException) {
+                CrashLog.saveLogAsCrashLog(invalidPermissionUsageException, null);
+            }
+        }
     }
 
     // Command execution method.
