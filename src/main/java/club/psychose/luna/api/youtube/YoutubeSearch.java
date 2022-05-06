@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.bot.musicplayer.youtube;
+package club.psychose.luna.api.youtube;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.logging.CrashLog;
