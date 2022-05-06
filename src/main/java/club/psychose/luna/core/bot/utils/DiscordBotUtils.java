@@ -58,7 +58,7 @@ public final class DiscordBotUtils {
         if (verificationChannel != null) {
             verificationChannel.sendMessage("Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD).queue();
 
-            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(verificationChannel, "Verification Process", "Welcome to this server!\nYou need to get verified to gain access to all of the server channels!\nYou accept automatically the server rules by verifying you with the bot and that the bot can maybe collect messages to improve the experience and stability!\n\nYou need to enable your PMs you'll not get any captcha if you disable your PMs!\nTo enable your PMs -> Server Menu -> Privacy Settings -> Allow direct messages from server members. -> Toggle on\n\nEnter L!verify to receive a PM!\n\nIf you need help to get verify please contact a server administrator!", "Luna was developed by psychose.club", Color.MAGENTA);
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(verificationChannel, "Verification Process", "Welcome to this server!\nYou need to get verified to gain access to all of the server channels!\nYou accept automatically the server rules by verifying you with the bot and that the bot can maybe collect messages to improve the experience and stability!\n\nYou need to enable your PMs you'll not get any captcha if you disable your PMs!\nTo enable your PMs -> Server Menu -> Privacy Settings -> Allow direct messages from server members. -> Toggle on\n\nEnter " + Luna.SETTINGS_MANAGER.getBotSettings().getPrefix() + "verification to receive a PM!\n\nIf you need help to get verify please contact a server administrator!", "Luna was developed by psychose.club", Color.MAGENTA);
             this.sendChangelog(botInformationChannel);
         } else {
             CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found after refresh on the server with the server id " + serverID + "!"), null);
@@ -97,6 +97,6 @@ public final class DiscordBotUtils {
 
     // This method sends the latest changelog.
     private void sendChangelog (TextChannel botInformationChannel) {
-        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "[=] Verification Bugfix", "Luna was developed by psychose.club", Color.MAGENTA);
+        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "[+] Documentation\n[=] Bugfixes", "Luna was developed by psychose.club", Color.MAGENTA);
     }
 }
