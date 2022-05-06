@@ -43,7 +43,7 @@ import java.util.List;
 public final class ClearTempFolderDiscordCommand extends DiscordCommand {
     // Public constructor.
     public ClearTempFolderDiscordCommand () {
-        super("cleartempfolder", "Clears the temporary folder on the bot server!", "", new String[] {"cltmp"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("cleartempfolder", "Clears the temporary folder on the bot server!", "", new String[] {"clear", "cleartemp", "ctf"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     // Command execution method.
