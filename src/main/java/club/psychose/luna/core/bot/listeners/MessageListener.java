@@ -100,6 +100,15 @@ public final class MessageListener extends ListenerAdapter {
 
                              // Checks if the command was found.
                              if (commandFound) {
+                                 // Here we'll check if the command was not executed in the verification channel to prevent a bug that the bot send messages in the verification channel.
+                                 if (messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION))) {
+                                     // Only the verification command is allowed on the channel to let the verification process begin. (yeah good logic lmao)
+                                     if (!(foundDiscordCommand.getCommandName().equals("verification"))) {
+                                         messageReceivedEvent.getMessage().delete().queue();
+                                         return;
+                                     }
+                                 }
+
                                  // Here we'll check if the command requires the bot owner permission.
                                  boolean skipServerCheck = Arrays.asList(foundDiscordCommand.getPermissions()).contains(PermissionRoles.BOT_OWNER);
 
