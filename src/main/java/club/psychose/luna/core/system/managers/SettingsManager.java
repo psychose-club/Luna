@@ -94,7 +94,7 @@ public final class SettingsManager {
                 }
             } else {
                 this.retryBotSettings ++;
-                this.saveSettings();
+                this.saveBotSettings();
                 this.loadBotSettings();
             }
         } else {
