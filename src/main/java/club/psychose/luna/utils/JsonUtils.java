@@ -26,18 +26,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+/*
+ * This class contains methods for json.
+ */
+
 public final class JsonUtils {
-    // Method to fetch the JsonObject.
+    // This method fetches and converts a JsonObject from an url.
     public static JsonObject fetchOnlineJsonObject (String url) throws IOException {
+        // Setups the variables to read the JsonObject.
         InputStream inputStream = new URL(url).openStream();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder stringBuilder = new StringBuilder();
 
+        // Reads the website content.
         int line;
         while ((line = bufferedReader.read()) != -1) {
             stringBuilder.append((char) line);
         }
 
+        // Converts the JsonObject and returns it.
         return new Gson().fromJson(stringBuilder.toString().trim(), JsonObject.class);
     }
 }

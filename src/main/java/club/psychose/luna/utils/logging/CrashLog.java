@@ -28,8 +28,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+ * This class handles the crash logging.
+ */
+
 public final class CrashLog {
-    // TODO: Channel initialization.
+    // This method saves the exception to a txt file.
     public static void saveLogAsCrashLog (Exception exception, List<Guild> guildList) {
         ArrayList<String> crashLogArrayList = new ArrayList<>();
 

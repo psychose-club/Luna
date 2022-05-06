@@ -30,22 +30,31 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+ * This class provides the utils for the Discord bot.
+ */
+
 public final class DiscordBotUtils {
+    // This method checks if the verification channel is on the latest version.
     public void checkVerificationChannel (String serverID, TextChannel verificationChannel, TextChannel botInformationChannel, Guild guild) {
         List<Message> messageList = verificationChannel.getIterableHistory().complete();
 
-        for (Message message : messageList) {
+        // Checks if the version message exist and if it's exist it'll check if it's on the latest version.
+        for (Message message : messageList)
             if (message.getContentRaw().equals("Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD))
                 return;
-        }
 
+        // If not it'll delete the channel history.
         Luna.DISCORD_MANAGER.getDiscordChannelUtils().deleteChannelHistory(serverID, verificationChannel);
 
+        // Fetches the channel id.
         String channelID = Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(serverID, DiscordChannels.VERIFICATION);
 
+        // Checks if the channel id is not equals to the verification channel and fetches the new channel id.
         if (!(channelID.equals(verificationChannel.getId())))
             verificationChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(channelID, guild.getTextChannels());
 
+        // Checks if the channel is not null and sends the bot messages.
         if (verificationChannel != null) {
             verificationChannel.sendMessage("Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD).queue();
 
@@ -56,6 +65,7 @@ public final class DiscordBotUtils {
         }
     }
 
+    // This method sends a bot information message.
     public void sendBotInformationMessage (String serverID, String message, HashMap<String, String> fieldHashMap, Color color, List<TextChannel> textChannelList) {
         String botInformationChannelID = Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(serverID, DiscordChannels.BOT_INFORMATION);
 
@@ -68,6 +78,7 @@ public final class DiscordBotUtils {
         }
     }
 
+    // This method sends a message to the logging channel.
     public void sendLoggingMessage (String serverID, String message, HashMap<String, String> fieldHashMap, List<TextChannel> textChannelList) {
         String loggingChannelID = Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(serverID, DiscordChannels.LOGGING);
 
@@ -84,6 +95,7 @@ public final class DiscordBotUtils {
         }
     }
 
+    // This method sends the latest changelog.
     private void sendChangelog (TextChannel botInformationChannel) {
         Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "[=] Verification Bugfix", "Luna was developed by psychose.club", Color.MAGENTA);
     }

@@ -44,9 +44,9 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-// TODO: Add ILoveRadio
-// TODO: Fix not playing on join.
-
+/*
+ * This class provides the methods for a specific discord bot command.
+ */
 public final class MusicPlayerDiscordCommand extends DiscordCommand {
     private final YoutubeSearch youtubeSearch = new YoutubeSearch();
 
@@ -54,6 +54,7 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
     private int reInitializeMusicPlayerTrys = 0;
     private MusicPlayer musicPlayer = null;
 
+    // Public constructor.
     public MusicPlayerDiscordCommand () {
         super("music", "Music player for the server!", "<play | queue | pause | resume | skip | stop | volume> <Keywords | URL | (status | Value (0-100))>", new String[] {"m", "mp", "player"}, CommandCategory.FUN, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
 
@@ -65,233 +66,264 @@ public final class MusicPlayerDiscordCommand extends DiscordCommand {
         AudioSourceManagers.registerLocalSource(this.audioPlayerManager);
     }
 
+    // Command execution method.
     @Override
     public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
-        if (arguments != null) {
-            if (arguments.length >= 1) {
-                String mode = arguments[0].trim();
+        // Checks if arguments are provided.
+        if ((arguments != null) && (arguments.length >= 1)) {
+            String mode = arguments[0].trim();
 
-                if (arguments.length >= 2) {
-                    switch (mode) {
-                        case "play" -> {
-                            if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
-                                String trackURL = arguments[1].trim();
+            // If more arguments than 2 provided it'll only allow the modes "play" and "volume".
+            // If only one is provided the modes "queue", "pause", "resume", "skip and "stop" are valid.
+            if (arguments.length >= 2) {
+                // Checks which mode is selected.
+                switch (mode) {
+                    // Play mode.
+                    case "play" -> {
+                        // Initialize the music player.
+                        if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
+                            String trackURL = arguments[1].trim();
+                            boolean cancel = false;
 
-                                boolean cancel = false;
-                                if ((!(trackURL.startsWith("https://") && (trackURL.contains("youtube") || (trackURL.contains("youtu.be")) || (trackURL.contains("soundcloud")))))) {
-                                    String[] keywords = Arrays.copyOfRange(arguments, 1, arguments.length);
+                            // Checks if the url starts with a YouTube link.
+                            if ((!(trackURL.startsWith("https://") && (trackURL.contains("youtube") || (trackURL.contains("youtu.be")))))) {
+                                // Parses the keywords.
+                                String[] keywords = Arrays.copyOfRange(arguments, 1, arguments.length);
 
-                                    try {
-                                        YouTubeVideo youTubeVideo = this.youtubeSearch.searchYouTubeVideo(keywords);
+                                try {
+                                    // Gets the YouTube video.
+                                    YouTubeVideo youTubeVideo = this.youtubeSearch.searchYouTubeVideo(keywords);
 
-                                        if (youTubeVideo != null) {
-                                            if ((youTubeVideo.getTitleURL() != null) && (youTubeVideo.getYoutubeURL() != null)) {
-                                                HashMap<String, String> fieldHashMap = new HashMap<>();
-                                                fieldHashMap.put("Title: ", youTubeVideo.getTitleURL());
-                                                fieldHashMap.put("Identifier: ", youTubeVideo.getYoutubeURL());
+                                    // Builds the needed message.
+                                    if (youTubeVideo != null) {
+                                        if ((youTubeVideo.getTitleURL() != null) && (youTubeVideo.getYoutubeURL() != null)) {
+                                            HashMap<String, String> fieldHashMap = new HashMap<>();
+                                            fieldHashMap.put("Title: ", youTubeVideo.getTitleURL());
+                                            fieldHashMap.put("Identifier: ", youTubeVideo.getYoutubeURL());
 
-                                                trackURL = "https://www.youtube.com/watch?v=" + youTubeVideo.getYoutubeURL();
-                                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "We found this video:", "", fieldHashMap, FooterType.ERROR, Color.RED);
-                                            } else {
-                                                if (youTubeVideo.isLivestream()) {
-                                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Please don't search for livestreams, load these directly!", "This is a sample text.", FooterType.ERROR, Color.RED);
-                                                } else {
-                                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", FooterType.ERROR, Color.RED);
-                                                }
-
-                                                cancel = true;
-                                            }
+                                            trackURL = "https://www.youtube.com/watch?v=" + youTubeVideo.getYoutubeURL();
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "We found this video:", "", fieldHashMap, FooterType.ERROR, Color.RED);
                                         } else {
-                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Video not found!", "We didn't find the YouTube video!\nPlease try another keywords!", FooterType.ERROR, Color.RED);
+                                            if (youTubeVideo.isLivestream()) {
+                                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Please don't search for livestreams, load these directly!", "This is a sample text.", FooterType.ERROR, Color.RED);
+                                            } else {
+                                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", FooterType.ERROR, Color.RED);
+                                            }
+
                                             cancel = true;
                                         }
-                                    } catch (MalformedURLException malformedURLException) {
-                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid characters!", "YouTube didn't like special characters that much!\nPlease use no emojis or other special characters.", FooterType.ERROR, Color.RED);
-                                        cancel = true;
-                                    } catch (IOException ioException) {
-                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", FooterType.ERROR, Color.RED);
-                                        CrashLog.saveLogAsCrashLog(ioException, messageReceivedEvent.getJDA().getGuilds());
+                                    } else {
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Video not found!", "We didn't find the YouTube video!\nPlease try another keywords!", FooterType.ERROR, Color.RED);
                                         cancel = true;
                                     }
+                                } catch (MalformedURLException malformedURLException) {
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid characters!", "YouTube didn't like special characters that much!\nPlease use no emojis or other special characters.", FooterType.ERROR, Color.RED);
+                                    cancel = true;
+                                } catch (IOException ioException) {
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", FooterType.ERROR, Color.RED);
+                                    CrashLog.saveLogAsCrashLog(ioException, messageReceivedEvent.getJDA().getGuilds());
+                                    cancel = true;
                                 }
-
-                                if (!(cancel)) {
-                                    String finalTrackURL = trackURL;
-                                    this.musicPlayer.getAudioPlayerManager().loadItemOrdered(this.musicPlayer, trackURL, new AudioLoadResultHandler () {
-                                        @Override
-                                        public void trackLoaded (AudioTrack audioTrack) {
-                                            // Initialize variable.
-                                            HashMap<String, String> fieldHashMap = new HashMap<>();
-
-                                            // FieldHashMap inputs.
-                                            fieldHashMap.put("Title: ", audioTrack.getInfo().title);
-                                            fieldHashMap.put("Author: ", audioTrack.getInfo().author);
-                                            fieldHashMap.put("URL: ", finalTrackURL);
-                                            fieldHashMap.put("Stream: ", String.valueOf(audioTrack.getInfo().isStream));
-                                            fieldHashMap.put("Identifier: ", audioTrack.getInfo().identifier);
-
-                                            // Adds the track to the queue.
-                                            musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack);
-
-                                            // Sends an embed message to the text channel.
-                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added song to queue!", fieldHashMap, FooterType.MUSIC, Color.WHITE);
-                                        }
-
-                                        @Override
-                                        public void playlistLoaded (AudioPlaylist audioPlaylist) {
-                                            // Initialize variable.
-                                            HashMap<String, String> fieldHashMap = new HashMap<>();
-
-                                            // FieldHashMap inputs.
-                                            fieldHashMap.put("Playlist Name: ", audioPlaylist.getName());
-                                            fieldHashMap.put("Playlist Songs: ", String.valueOf(audioPlaylist.getTracks().size()));
-                                            fieldHashMap.put("URL: ", finalTrackURL);;
-
-                                            // Adds the tracks to the queue.
-                                            audioPlaylist.getTracks().forEach(audioTrack -> musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack));
-
-                                            // Sends an embed message to the text channel.
-                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added playlist to queue!", fieldHashMap, FooterType.MUSIC, Color.WHITE);
-                                        }
-
-                                        @Override
-                                        public void noMatches () {
-                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Song not found :(", FooterType.MUSIC, Color.WHITE);
-                                        }
-
-                                        @Override
-                                        public void loadFailed (FriendlyException friendlyException) {
-                                            CrashLog.saveLogAsCrashLog(friendlyException, messageReceivedEvent.getJDA().getGuilds());
-                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", FooterType.ERROR, Color.RED);
-                                        }
-                                    });
-                                }
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
+
+                            // If the playback is not cancelled it'll start to load the song.
+                            if (!(cancel)) {
+                                String finalTrackURL = trackURL;
+                                this.musicPlayer.getAudioPlayerManager().loadItemOrdered(this.musicPlayer, trackURL, new AudioLoadResultHandler () {
+                                    @Override
+                                    public void trackLoaded (AudioTrack audioTrack) {
+                                        // Initialize variable.
+                                        HashMap<String, String> fieldHashMap = new HashMap<>();
+
+                                        // FieldHashMap inputs.
+                                        fieldHashMap.put("Title: ", audioTrack.getInfo().title);
+                                        fieldHashMap.put("Author: ", audioTrack.getInfo().author);
+                                        fieldHashMap.put("URL: ", finalTrackURL);
+                                        fieldHashMap.put("Stream: ", String.valueOf(audioTrack.getInfo().isStream));
+                                        fieldHashMap.put("Identifier: ", audioTrack.getInfo().identifier);
+
+                                        // Adds the track to the queue.
+                                        musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack);
+
+                                        // Sends an embed message to the text channel.
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added song to queue!", fieldHashMap, FooterType.MUSIC, Color.WHITE);
+                                    }
+
+                                    @Override
+                                    public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                                        // Initialize variable.
+                                        HashMap<String, String> fieldHashMap = new HashMap<>();
+
+                                        // FieldHashMap inputs.
+                                        fieldHashMap.put("Playlist Name: ", audioPlaylist.getName());
+                                        fieldHashMap.put("Playlist Songs: ", String.valueOf(audioPlaylist.getTracks().size()));
+                                        fieldHashMap.put("URL: ", finalTrackURL);;
+
+                                        // Adds the tracks to the queue.
+                                        audioPlaylist.getTracks().forEach(audioTrack -> musicPlayer.getMusicPlayerTrackScheduler().addToQueue(audioTrack));
+
+                                        // Sends an embed message to the text channel.
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Added playlist to queue!", fieldHashMap, FooterType.MUSIC, Color.WHITE);
+                                    }
+
+                                    @Override
+                                    public void noMatches () {
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Song not found :(", FooterType.MUSIC, Color.WHITE);
+                                    }
+
+                                    @Override
+                                    public void loadFailed (FriendlyException friendlyException) {
+                                        CrashLog.saveLogAsCrashLog(friendlyException, messageReceivedEvent.getJDA().getGuilds());
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", FooterType.ERROR, Color.RED);
+                                    }
+                                });
+                            }
+                        } else {
+                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                         }
+                    }
 
-                        case "volume" -> {
-                            if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
-                                String volumeString = arguments[1].trim();
+                    // Volume mode.
+                    case "volume" -> {
+                        // Initialize the music player.
+                        if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
+                            String volumeString = arguments[1].trim();
 
-                                if (volumeString.equalsIgnoreCase("status")) {
-                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Current volume level: " + this.musicPlayer.getAudioPlayer().getVolume(), FooterType.MUSIC, Color.WHITE);
-                                } else {
-                                    try {
-                                        int volume = Integer.parseInt(volumeString);
+                            // If the status argument is provided it'll send the volume level else it'll try to set the volume.
+                            if (volumeString.equalsIgnoreCase("status")) {
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Current volume level: " + this.musicPlayer.getAudioPlayer().getVolume(), FooterType.MUSIC, Color.WHITE);
+                            } else {
+                                try {
+                                    int volume = Integer.parseInt(volumeString);
 
-                                        if ((volume >= 0) && (volume <= 100)) {
-                                            this.musicPlayer.getAudioPlayer().setVolume(volume);
-                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "New volume set to " + this.musicPlayer.getAudioPlayer().getVolume() + "!", FooterType.MUSIC, Color.WHITE);
-                                        } else {
-                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid volume number!", "Please enter a number from 0 - 100!", FooterType.ERROR, Color.RED);
-                                        }
-                                    } catch (NumberFormatException numberFormatException) {
+                                    if ((volume >= 0) && (volume <= 100)) {
+                                        this.musicPlayer.getAudioPlayer().setVolume(volume);
+                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "New volume set to " + this.musicPlayer.getAudioPlayer().getVolume() + "!", FooterType.MUSIC, Color.WHITE);
+                                    } else {
                                         Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid volume number!", "Please enter a number from 0 - 100!", FooterType.ERROR, Color.RED);
                                     }
+                                } catch (NumberFormatException numberFormatException) {
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid volume number!", "Please enter a number from 0 - 100!", FooterType.ERROR, Color.RED);
                                 }
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                             }
+                        } else {
+                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
                         }
-
-                        default -> Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", FooterType.ERROR, Color.RED);
                     }
-                } else {
-                    switch (mode) {
-                        case "queue" -> {
-                            if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
-                                if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
-                                    // Initialize variable.
-                                    HashMap<String, String> fieldHashMap = new HashMap<>();
 
-                                    // FieldHashMap inputs.
-                                    fieldHashMap.put("Songs: ", String.valueOf(this.musicPlayer.getMusicPlayerTrackScheduler().getQueue().size() + 1));
-                                    fieldHashMap.put("Current Song: ", this.musicPlayer.getAudioPlayer().getPlayingTrack().getInfo().title);
-
-                                    // Checks if the queue size is bigger or equals 1.
-                                    // It's adds then another FieldHashMap input.
-                                    if (this.musicPlayer.getMusicPlayerTrackScheduler().getQueue().size() >= 1)
-                                        fieldHashMap.put("Next Song: ", this.musicPlayer.getMusicPlayerTrackScheduler().getQueue().get(0).getInfo().title);
-
-                                    // Sends an embed message to the text channel.
-                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Queue", "Current queue:", fieldHashMap, FooterType.MUSIC, Color.WHITE);
-
-                                } else {
-                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Queue", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
-                                }
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
-                            }
-                        }
-
-                        case "pause" -> {
-                            if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
-                                if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
-                                    if (!(this.musicPlayer.getAudioPlayer().isPaused())) {
-                                        this.musicPlayer.getAudioPlayer().setPaused(true);
-                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player paused!", FooterType.MUSIC, Color.WHITE);
-                                    } else {
-                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player already paused!", FooterType.MUSIC, Color.WHITE);
-                                    }
-                                } else {
-                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
-                                }
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
-                            }
-                        }
-
-                        case "resume" -> {
-                            if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
-                                if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
-                                    if (this.musicPlayer.getAudioPlayer().isPaused()) {
-                                        this.musicPlayer.getAudioPlayer().setPaused(false);
-                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player resumed!", FooterType.MUSIC, Color.WHITE);
-                                    } else {
-                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player is not paused!", FooterType.MUSIC, Color.WHITE);
-                                    }
-                                } else {
-                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
-                                }
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
-                            }
-                        }
-
-                        case "skip" -> {
-                            if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
-                                if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
-                                    if (this.musicPlayer.getMusicPlayerTrackScheduler().playNextTrack()) {
-                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Why skipping this killer beat?\nOkay... skip!", FooterType.MUSIC, Color.WHITE);
-                                    } else {
-                                        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Can't skip the track because it's the last in the queue!", FooterType.MUSIC, Color.WHITE);
-                                    }
-                                } else {
-                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
-                                }
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
-                            }
-                        }
-
-                        case "stop" -> {
-                            if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
-                                this.musicPlayer.getMusicPlayerTrackScheduler().stopMusicBot();
-                                this.musicPlayer = null;
-
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Party stopped!", FooterType.MUSIC, Color.WHITE);
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
-                            }
-                        }
-
-                        default -> Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", FooterType.ERROR, Color.RED);
-                    }
+                    default -> Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", FooterType.ERROR, Color.RED);
                 }
             } else {
-                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", FooterType.ERROR, Color.RED);
+                // Checks which mode is selected.
+                switch (mode) {
+                    // Queue mode.
+                    case "queue" -> {
+                        // Initialize the music player.
+                        if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
+                            // Checks if a track is currently played.
+                            if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
+                                HashMap<String, String> fieldHashMap = new HashMap<>();
+
+                                // FieldHashMap inputs.
+                                fieldHashMap.put("Songs: ", String.valueOf(this.musicPlayer.getMusicPlayerTrackScheduler().getQueue().size() + 1));
+                                fieldHashMap.put("Current Song: ", this.musicPlayer.getAudioPlayer().getPlayingTrack().getInfo().title);
+
+                                // Checks if the queue size is bigger or equals 1.
+                                // It's adds then to the HashMao.
+                                if (this.musicPlayer.getMusicPlayerTrackScheduler().getQueue().size() >= 1)
+                                    fieldHashMap.put("Next Song: ", this.musicPlayer.getMusicPlayerTrackScheduler().getQueue().get(0).getInfo().title);
+
+                                // Sends an embed message to the text channel.
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Queue", "Current queue:", fieldHashMap, FooterType.MUSIC, Color.WHITE);
+
+                            } else {
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Queue", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
+                            }
+                        } else {
+                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
+                        }
+                    }
+
+                    // Pause mode.
+                    case "pause" -> {
+                        // Initialize the music player.
+                        if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
+                            // Checks if a song is currently playing.
+                            if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
+                                // Checks if the song is not already paused.
+                                if (!(this.musicPlayer.getAudioPlayer().isPaused())) {
+                                    // Pauses the song.
+                                    this.musicPlayer.getAudioPlayer().setPaused(true);
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player paused!", FooterType.MUSIC, Color.WHITE);
+                                } else {
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player already paused!", FooterType.MUSIC, Color.WHITE);
+                                }
+                            } else {
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
+                            }
+                        } else {
+                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
+                        }
+                    }
+
+                    // Resume mode.
+                    case "resume" -> {
+                        // Initialize the music player.
+                        if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
+                            // Checks if a song is currently playing.
+                            if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
+                                // Checks if the song is paused.
+                                if (this.musicPlayer.getAudioPlayer().isPaused()) {
+                                    // Resumes the song.
+                                    this.musicPlayer.getAudioPlayer().setPaused(false);
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player resumed!", FooterType.MUSIC, Color.WHITE);
+                                } else {
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Music player is not paused!", FooterType.MUSIC, Color.WHITE);
+                                }
+                            } else {
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
+                            }
+                        } else {
+                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
+                        }
+                    }
+
+                    // Skip mode.
+                    case "skip" -> {
+                        // Initialize the music player.
+                        if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
+                            // Checks if a song is currently playing.
+                            if (this.musicPlayer.getAudioPlayer().getPlayingTrack() != null) {
+                                // Plays the next track.
+                                if (this.musicPlayer.getMusicPlayerTrackScheduler().playNextTrack()) {
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Why skipping this killer beat?\nOkay... skip!", FooterType.MUSIC, Color.WHITE);
+                                } else {
+                                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Can't skip the track because it's the last in the queue!", FooterType.MUSIC, Color.WHITE);
+                                }
+                            } else {
+                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "No song is currently playing!", FooterType.MUSIC, Color.WHITE);
+                            }
+                        } else {
+                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
+                        }
+                    }
+
+                    // Stop mode.
+                    case "stop" -> {
+                        // Initialize the music player.
+                        if (this.checkMusicPlayer(messageReceivedEvent, messageReceivedEvent.getTextChannel())) {
+                            // Stops the music bot.
+                            this.musicPlayer.getMusicPlayerTrackScheduler().stopMusicBot();
+                            this.musicPlayer = null;
+
+                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "Party stopped!", FooterType.MUSIC, Color.WHITE);
+                        } else {
+                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Forbidden action!", "You need to be in a voice channel or make sure that the bot is not currently in another voice channel!", FooterType.ERROR, Color.RED);
+                        }
+                    }
+
+                    default -> Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", FooterType.ERROR, Color.RED);
+                }
             }
         } else {
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", FooterType.ERROR, Color.RED);

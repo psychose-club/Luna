@@ -24,6 +24,10 @@ import java.awt.*;
 import java.security.SecureRandom;
 import java.util.HashMap;
 
+/*
+ * This method builds the embedded message.
+ */
+
 public final class DiscordEmbedBuilder {
     private final SecureRandom secureRandom = new SecureRandom();
     private final EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -38,6 +42,7 @@ public final class DiscordEmbedBuilder {
     private final String footerText;
     private final Color embedColor;
 
+    // Public constructors.
     public DiscordEmbedBuilder (String embedTitle, String embedDescription, FooterType footerType, Color embedColor) {
         this.embedTitle = embedTitle;
         this.embedDescription = embedDescription;
@@ -74,6 +79,7 @@ public final class DiscordEmbedBuilder {
         this.embedColor = embedColor;
     }
 
+    // Builds the EmbedBuilder.
     public EmbedBuilder build () {
         this.embedBuilder.setTitle(this.embedTitle);
         this.embedBuilder.setDescription(this.embedDescription);
@@ -84,6 +90,7 @@ public final class DiscordEmbedBuilder {
         if (this.fieldHashMap != null)
             this.fieldHashMap.forEach((key, value) -> this.embedBuilder.addField(key, value, false));
 
+        // This method selects a random footer text.
         if (this.footerType != null) {
             switch (this.footerType) {
                 case SUCCESS -> this.embedBuilder.setFooter(this.successFooterText[this.secureRandom.nextInt(this.successFooterText.length)]);

@@ -24,12 +24,17 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
+/*
+ * This class is the MusicPlayer.
+ */
+
 public final class MusicPlayer {
     private final AudioPlayer audioPlayer;
     private final AudioPlayerManager audioPlayerManager;
     private final MusicAudioSendHandler musicAudioSendHandler;
     private final MusicPlayerTrackScheduler musicPlayerTrackScheduler;
 
+    // Public constructor.
     public MusicPlayer (AudioPlayerManager audioPlayerManager, AudioManager audioManager, VoiceChannel voiceChannel) {
         // Initialize audio player manager.
         this.audioPlayerManager = audioPlayerManager;

@@ -35,22 +35,34 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
+/*
+ * This class handles the ready event when the bot is started and connected successfully to the Discord websocket.
+ */
+
 public final class ReadyListener extends ListenerAdapter {
+    // Ready event.
     @Override
     public void onReady (ReadyEvent readyEvent) {
+        // Fetches all text channels.
         List<TextChannel> textChannelList = readyEvent.getJDA().getTextChannels();
 
+        // Gets the server configurations.
         for (Map.Entry<String, ServerSetting> serverSettingEntry : Luna.SETTINGS_MANAGER.getServerSettings().getServerConfigurationHashMap().entrySet()) {
             String serverID = serverSettingEntry.getKey();
             ServerSetting serverSetting = serverSettingEntry.getValue();
 
+            // Checks if the setting is not null.
             if (serverSetting != null) {
+                // Checks if the verification and bot information channel exist.
                 if ((serverSetting.getVerificationChannelID() != null) && (serverSetting.getBotInformationChannelID() != null)) {
+                    // Gets the channels.
                     TextChannel botInformationTextChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(serverSetting.getBotInformationChannelID(), textChannelList);
                     TextChannel verificationTextChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(serverSetting.getVerificationChannelID(), textChannelList);
 
+                    // Checks if the channels are not null.
                     if (botInformationTextChannel != null) {
                         if (verificationTextChannel != null) {
+                            // Checks the version state of the verification channel.
                             Luna.DISCORD_MANAGER.getDiscordBotUtils().checkVerificationChannel(serverID, verificationTextChannel, botInformationTextChannel, verificationTextChannel.getGuild());
                         } else {
                             CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found for the server with the id " + serverID +  "!"), readyEvent.getJDA().getGuilds());
@@ -66,32 +78,34 @@ public final class ReadyListener extends ListenerAdapter {
             }
         }
 
-        if (Files.exists(Constants.getLunaFolderPath("\\temp\\captchas\\"))) {
-            File[] tempFiles = Constants.getLunaFolderPath("\\temp\\captchas\\").toFile().listFiles();
+        // Checks if the temp folder exist and fetches the folder content.
+        if (Files.exists(Constants.getLunaFolderPath("\\temp\\"))) {
+            File[] tempFiles = Constants.getLunaFolderPath("\\temp\\").toFile().listFiles();
 
+            // Checks if the folder has contents available.
             if (tempFiles != null) {
+                // Deletes the file if it's not a bot used captcha file.
                 for (File file : tempFiles) {
-                    if (file.isFile()) {
-                        boolean isCaptchaFile = false;
-                        for (Captcha captcha : DiscordBot.CAPTCHA_MANAGER.getCaptchaArrayList()) {
-                            if (captcha.getImageFile().equals(file)) {
-                                isCaptchaFile = true;
-                                break;
-                            }
+                    boolean isCaptchaFile = false;
+                    for (Captcha captcha : DiscordBot.CAPTCHA_MANAGER.getCaptchaArrayList()) {
+                        if (captcha.getImageFile().equals(file)) {
+                            isCaptchaFile = true;
+                            break;
                         }
+                    }
 
-                        if (!(isCaptchaFile)) {
-                            try {
-                                Files.deleteIfExists(file.toPath());
-                            } catch (IOException ioException) {
-                                CrashLog.saveLogAsCrashLog(ioException, readyEvent.getJDA().getGuilds());
-                            }
+                    if (!(isCaptchaFile)) {
+                        try {
+                            Files.deleteIfExists(file.toPath());
+                        } catch (IOException ioException) {
+                            CrashLog.saveLogAsCrashLog(ioException, readyEvent.getJDA().getGuilds());
                         }
                     }
                 }
             }
         }
 
+        // Debug stuff.
         ConsoleLogger.debug("Bot started successfully!");
         ConsoleLogger.printEmptyLine();
     }

@@ -20,7 +20,6 @@ package club.psychose.luna.core.bot.commands.categories.utility;
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.enums.CommandCategory;
-import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.utils.logging.NukeLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
@@ -28,25 +27,34 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.concurrent.TimeUnit;
 
+/*
+ * This class provides the methods for a specific discord bot command.
+ */
+
 public final class NukeDiscordCommand extends DiscordCommand {
+    // Public constructor.
     public NukeDiscordCommand () {
         super("nuke", "Deletes the complete channel history from a channel.", "", new String[] {"clear"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.OWNER, PermissionRoles.ADMIN, PermissionRoles.MODERATOR}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
+    // Command execution method.
     @Override
     public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
-        if (messageReceivedEvent.getMember() != null) {
-            NukeLog.saveNukeLog(messageReceivedEvent.getTextChannel(), messageReceivedEvent.getMember());
+        // If the member is null it'll stop the method execution.
+        assert messageReceivedEvent.getMember() == null;
 
-            messageReceivedEvent.getTextChannel().sendMessage("Channel hit by a nuke :(\nhttps://media.giphy.com/media/3o7abwbzKeaRksvVaE/giphy.gif").queue();
+        // Creates a nuke log.
+        NukeLog.saveNukeLog(messageReceivedEvent.getTextChannel(), messageReceivedEvent.getMember());
 
-            try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
-            } catch (InterruptedException ignored) {}
+        // Sends the nuke message.
+        messageReceivedEvent.getTextChannel().sendMessage("Channel hit by a nuke :(\nhttps://media.giphy.com/media/3o7abwbzKeaRksvVaE/giphy.gif").queue();
 
-            Luna.DISCORD_MANAGER.getDiscordChannelUtils().deleteChannelHistory(messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel());
-        } else {
-            CrashLog.saveLogAsCrashLog(new NullPointerException("Member not found!"), messageReceivedEvent.getJDA().getGuilds());
-        }
+        // Waits 5 seconds.
+        try {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+        } catch (InterruptedException ignored) {}
+
+        // Deletes the channel history.
+        Luna.DISCORD_MANAGER.getDiscordChannelUtils().deleteChannelHistory(messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel());
     }
 }

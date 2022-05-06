@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.audio.AudioSendHandler;
 
 import java.nio.ByteBuffer;
 
-/**
- ** This is the MusicAudioSendHandler.
- ** It's necessary since JDA 4+
- **/
+/*
+ * This is the MusicAudioSendHandler.
+ * It's necessary since JDA 4+
+ */
 
-public record MusicAudioSendHandler (AudioPlayer audioPlayer) implements AudioSendHandler {
+public record MusicAudioSendHandler (AudioPlayer getAudioPlayer) implements AudioSendHandler {
     // Initialize last audio frame.
     private static AudioFrame lastAudioFrame = null;
 
@@ -36,7 +36,7 @@ public record MusicAudioSendHandler (AudioPlayer audioPlayer) implements AudioSe
     @Override
     public boolean canProvide () {
         // Provides the last audio frame (Prevents frame loses).
-        lastAudioFrame = this.audioPlayer.provide();
+        lastAudioFrame = this.getAudioPlayer.provide();
 
         // Returns the state.
         return lastAudioFrame != null;

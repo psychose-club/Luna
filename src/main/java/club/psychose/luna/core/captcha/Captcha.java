@@ -21,4 +21,8 @@ import net.dv8tion.jda.api.entities.Member;
 
 import java.io.File;
 
+/*
+ * This record contains information about a captcha.
+ */
+
 public record Captcha (String getServerID, File getImageFile, String getCaptchaCode, Member getMember) {}

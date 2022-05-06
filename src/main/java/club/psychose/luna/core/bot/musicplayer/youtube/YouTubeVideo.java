@@ -17,5 +17,9 @@
 
 package club.psychose.luna.core.bot.musicplayer.youtube;
 
-@Deprecated // This will probably be replaced in the future.
+/*
+ * This record contains information about a YouTube video that is fetched.
+ */
+
+@Deprecated (forRemoval = true) // This will probably be replaced in the future.
 public record YouTubeVideo (String getTitleURL, String getYoutubeURL, boolean isLivestream) {}

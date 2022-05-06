@@ -31,6 +31,10 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import java.awt.*;
 import java.util.ArrayList;
 
+/*
+ * This class is the MusicPlayerTrackScheduler and handles the AudioPlayer.
+ */
+
 public final class MusicPlayerTrackScheduler extends AudioEventAdapter {
     private final ArrayList<AudioTrack> musicPlayerQueueArrayList = new ArrayList<>();
     private final AudioPlayer audioPlayer;

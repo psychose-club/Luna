@@ -19,6 +19,10 @@ package club.psychose.luna.enums;
 
 import net.dv8tion.jda.api.entities.Emoji;
 
+/*
+ * This enum contains the command categories.
+ */
+
 public enum CommandCategory {
     ADMIN (Emoji.fromUnicode("\uD83D\uDE94")),
     FUN (Emoji.fromUnicode("\uD83C\uDFB3")),

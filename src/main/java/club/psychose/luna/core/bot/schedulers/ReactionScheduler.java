@@ -29,14 +29,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/*
+ * This class provides a scheduler to handle the reactions.
+ */
+
 public final class ReactionScheduler {
     private final HashMap<DiscordCommand, ArrayList<DiscordCommandReaction>> discordCommandReactionHashMap = new HashMap<>();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
+    // This method starts the scheduler.
     public void startScheduler () {
         int timePeriod = Luna.SETTINGS_MANAGER.getBotSettings().getTimePeriod();
         TimeUnit timeUnit = Luna.SETTINGS_MANAGER.getBotSettings().getTimeUnit();
 
+        // Starts the scheduler.
         this.scheduledExecutorService.scheduleAtFixedRate(() -> {
             this.discordCommandReactionHashMap.forEach((key, discordCommandReactionArrayList) -> {
                 if (((discordCommandReactionArrayList != null) && (discordCommandReactionArrayList.size() != 0))) {
@@ -102,6 +108,7 @@ public final class ReactionScheduler {
                             timePassed = true;
                         }
 
+                        // Removes the reactions when the time is passed.
                         if (timePassed)
                             discordCommandReactionIterator.remove();
                     }
@@ -110,6 +117,7 @@ public final class ReactionScheduler {
         }, 0, timePeriod, timeUnit);
     }
 
+    // This method adds a user reaction to a message.
     public void addDiscordCommandReaction (DiscordCommand discordCommand, TextChannel textChannel, String reactionEmoji, String memberID, String messageID, String buffer) {
         ArrayList<DiscordCommandReaction> discordCommandReactionArrayList = this.discordCommandReactionHashMap.getOrDefault(discordCommand, null);
         DiscordCommandReaction discordCommandReaction = new DiscordCommandReaction(reactionEmoji, memberID, messageID, buffer, System.currentTimeMillis());
@@ -126,6 +134,7 @@ public final class ReactionScheduler {
         }
     }
 
+    // This method removes all member reactions from a message.
     public void removeMemberReactions (DiscordCommand discordCommand, String memberID, String messageID) {
         ArrayList<DiscordCommandReaction> removeDiscordCommandReactionsArrayList = this.discordCommandReactionHashMap.getOrDefault(discordCommand, null);
 
@@ -148,6 +157,7 @@ public final class ReactionScheduler {
         }
     }
 
+    // This method returns the reactions.
     public ArrayList<DiscordCommandReaction> getDiscordCommandReactionArrayList (DiscordCommand discordCommand) {
         return this.discordCommandReactionHashMap.getOrDefault(discordCommand, new ArrayList<>());
     }

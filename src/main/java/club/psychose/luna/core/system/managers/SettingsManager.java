@@ -37,7 +37,12 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/*
+ * This class manages the settings from the application.
+ */
+
 public final class SettingsManager {
+    // Initializing the settings.
     private final BotSettings botSettings = new BotSettings();
     private final FilterSettings filterSettings = new FilterSettings();
     private final MySQLSettings mySQLSettings = new MySQLSettings();
@@ -46,12 +51,14 @@ public final class SettingsManager {
     private int retryBotSettings = 0;
     private int retryMySQLSettings = 0;
 
+    // This method loads all settings.
     public void loadSettings () {
         this.loadBotSettings();
         this.loadMySQLSettings();
         this.loadFilterSettings();
     }
 
+    // This method loads the bot settings.
     public void loadBotSettings () {
         if (this.retryBotSettings <= 1) {
             if (Files.exists(Constants.getLunaFolderPath("\\settings\\bot_settings.json"))) {
@@ -96,6 +103,7 @@ public final class SettingsManager {
         }
     }
 
+    // This method loads the MySQL settings.
     public void loadMySQLSettings () {
         if (this.retryMySQLSettings <= 1) {
             if (Files.exists(Constants.getLunaFolderPath("\\settings\\mysql_settings.json"))) {
@@ -114,42 +122,46 @@ public final class SettingsManager {
                                 if (mySQLSettingsJsonObject.has("MySQL Password")) {
                                     this.getMySQLSettings().setMySQLPassword(mySQLSettingsJsonObject.get("MySQL Password").getAsString());
 
-                                    if (mySQLSettingsJsonObject.has("MySQL JDBC URL")) {
-                                        this.getMySQLSettings().setMySQLJDBCURL(mySQLSettingsJsonObject.get("MySQL JDBC URL").getAsString());
+                                    if (mySQLSettingsJsonObject.has("MySQL Database Name")) {
+                                        this.getMySQLSettings().setMySQLDatabaseName(mySQLSettingsJsonObject.get("MySQL Database Name").getAsString());
 
-                                        if (mySQLSettingsJsonObject.has("MySQL Cache Prepared Statement")) {
-                                            this.getMySQLSettings().setCachePrepStmts(mySQLSettingsJsonObject.get("MySQL Cache Prepared Statement").getAsString());
+                                        if (mySQLSettingsJsonObject.has("MySQL JDBC URL")) {
+                                            this.getMySQLSettings().setMySQLJDBCURL(mySQLSettingsJsonObject.get("MySQL JDBC URL").getAsString());
 
-                                            if (mySQLSettingsJsonObject.has("MySQL Prepared Statement Cache Size")) {
-                                                this.getMySQLSettings().setPrepStmtCacheSize(mySQLSettingsJsonObject.get("MySQL Prepared Statement Cache Size").getAsString());
+                                            if (mySQLSettingsJsonObject.has("MySQL Cache Prepared Statement")) {
+                                                this.getMySQLSettings().setCachePrepStmts(mySQLSettingsJsonObject.get("MySQL Cache Prepared Statement").getAsString());
 
-                                                if (mySQLSettingsJsonObject.has("MySQL Prepared Statement Cache SQL Limit")) {
-                                                    this.getMySQLSettings().setPrepStmtCacheSqlLimit(mySQLSettingsJsonObject.get("MySQL Prepared Statement Cache SQL Limit").getAsString());
+                                                if (mySQLSettingsJsonObject.has("MySQL Prepared Statement Cache Size")) {
+                                                    this.getMySQLSettings().setPrepStmtCacheSize(mySQLSettingsJsonObject.get("MySQL Prepared Statement Cache Size").getAsString());
 
-                                                    if (mySQLSettingsJsonObject.has("MySQL Minimum Idle")) {
-                                                        this.getMySQLSettings().setMinimumIdle(mySQLSettingsJsonObject.get("MySQL Minimum Idle").getAsString());
+                                                    if (mySQLSettingsJsonObject.has("MySQL Prepared Statement Cache SQL Limit")) {
+                                                        this.getMySQLSettings().setPrepStmtCacheSqlLimit(mySQLSettingsJsonObject.get("MySQL Prepared Statement Cache SQL Limit").getAsString());
 
-                                                        if (mySQLSettingsJsonObject.has("MySQL Maximum Pool Size")) {
-                                                            this.getMySQLSettings().setMaximumPoolSize(mySQLSettingsJsonObject.get("MySQL Maximum Pool Size").getAsString());
+                                                        if (mySQLSettingsJsonObject.has("MySQL Minimum Idle")) {
+                                                            this.getMySQLSettings().setMinimumIdle(mySQLSettingsJsonObject.get("MySQL Minimum Idle").getAsString());
 
-                                                            if (mySQLSettingsJsonObject.has("MySQL Idle Timeout")) {
-                                                                this.getMySQLSettings().setIdleTimeOut(mySQLSettingsJsonObject.get("MySQL Idle Timeout").getAsString());
+                                                            if (mySQLSettingsJsonObject.has("MySQL Maximum Pool Size")) {
+                                                                this.getMySQLSettings().setMaximumPoolSize(mySQLSettingsJsonObject.get("MySQL Maximum Pool Size").getAsString());
 
-                                                                if (mySQLSettingsJsonObject.has("MySQL Leak Detection Threshold")) {
-                                                                    this.getMySQLSettings().setLeakDetectionThreshold(mySQLSettingsJsonObject.get("MySQL Leak Detection Threshold").getAsString());
+                                                                if (mySQLSettingsJsonObject.has("MySQL Idle Timeout")) {
+                                                                    this.getMySQLSettings().setIdleTimeOut(mySQLSettingsJsonObject.get("MySQL Idle Timeout").getAsString());
 
-                                                                    if (mySQLSettingsJsonObject.has("MySQL Connection Timeout")) {
-                                                                        this.getMySQLSettings().setConnectionTimeout(mySQLSettingsJsonObject.get("MySQL Connection Timeout").getAsString());
+                                                                    if (mySQLSettingsJsonObject.has("MySQL Leak Detection Threshold")) {
+                                                                        this.getMySQLSettings().setLeakDetectionThreshold(mySQLSettingsJsonObject.get("MySQL Leak Detection Threshold").getAsString());
 
-                                                                        if (mySQLSettingsJsonObject.has("MySQL Validation Timeout")) {
-                                                                            this.getMySQLSettings().setValidationTimeout(mySQLSettingsJsonObject.get("MySQL Validation Timeout").getAsString());
+                                                                        if (mySQLSettingsJsonObject.has("MySQL Connection Timeout")) {
+                                                                            this.getMySQLSettings().setConnectionTimeout(mySQLSettingsJsonObject.get("MySQL Connection Timeout").getAsString());
 
-                                                                            if (mySQLSettingsJsonObject.has("MySQL Max Lifetime")) {
-                                                                                this.getMySQLSettings().setMaxLifetime(mySQLSettingsJsonObject.get("MySQL Max Lifetime").getAsString());
+                                                                            if (mySQLSettingsJsonObject.has("MySQL Validation Timeout")) {
+                                                                                this.getMySQLSettings().setValidationTimeout(mySQLSettingsJsonObject.get("MySQL Validation Timeout").getAsString());
 
-                                                                                Luna.MY_SQL_MANAGER.setupHikariConfig();
-                                                                                Luna.MY_SQL_MANAGER.createTables();
-                                                                                this.loadServerSettings();
+                                                                                if (mySQLSettingsJsonObject.has("MySQL Max Lifetime")) {
+                                                                                    this.getMySQLSettings().setMaxLifetime(mySQLSettingsJsonObject.get("MySQL Max Lifetime").getAsString());
+
+                                                                                    Luna.MY_SQL_MANAGER.setupHikariConfig();
+                                                                                    Luna.MY_SQL_MANAGER.createTables();
+                                                                                    this.loadServerSettings();
+                                                                                }
                                                                             }
                                                                         }
                                                                     }
@@ -177,6 +189,7 @@ public final class SettingsManager {
         }
     }
 
+    // This method loads the server settings.
     public void loadServerSettings () {
         String mySQLStatement = "SELECT * FROM servers";
 
@@ -206,6 +219,14 @@ public final class SettingsManager {
         }
     }
 
+    // This method loads the filter settings.
+    public void loadFilterSettings () {
+        this.updateWhitelist();
+        this.updateBlacklist();
+        this.updateFilters();
+    }
+
+    // This method updates the whitelist.
     public void updateWhitelist () {
         try {
             URL url = new URL(this.getBotSettings().getMessageWhitelistFilterURL());
@@ -218,12 +239,7 @@ public final class SettingsManager {
         }
     }
 
-    public void loadFilterSettings () {
-        this.updateWhitelist();
-        this.updateBlacklist();
-        this.updateFilters();
-    }
-
+    // This method updates the blacklist.
     public void updateBlacklist () {
         try {
             URL url = new URL(this.getBotSettings().getMessageFilterURL());
@@ -245,6 +261,7 @@ public final class SettingsManager {
         }
     }
 
+    // This method updates the filters.
     public void updateFilters () {
         JsonObject filterJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\filter.json"));
 
@@ -255,12 +272,14 @@ public final class SettingsManager {
         }
     }
 
+    // This method saves the settings.
     public void saveSettings () {
         this.saveBotSettings();
         this.saveMySQLSettings();
         this.saveServerSettings();
     }
 
+    // This method saves the bot settings.
     public void saveBotSettings () {
         JsonObject botSettingsJsonObject = new JsonObject();
 
@@ -277,6 +296,7 @@ public final class SettingsManager {
         Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\bot_settings.json"), botSettingsJsonObject);
     }
 
+    // This method saves the MySQL settings.
     public void saveMySQLSettings () {
         JsonObject mySQLJsonObject = new JsonObject();
 
@@ -301,6 +321,7 @@ public final class SettingsManager {
         Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\mysql_settings.json"), mySQLJsonObject);
     }
 
+    // This method saves the server settings.
     public void saveServerSettings () {
         String mySQLStatement = "SELECT * FROM servers";
 
@@ -402,6 +423,7 @@ public final class SettingsManager {
         }
     }
 
+    // Returns the settings.
     public BotSettings getBotSettings () {
         return this.botSettings;
     }

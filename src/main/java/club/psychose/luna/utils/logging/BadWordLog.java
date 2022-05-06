@@ -25,7 +25,12 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/*
+ * This class handles the bad word logging.
+ */
+
 public final class BadWordLog {
+    // This method saves the log to a txt file.
     public static String createBadWordLog (Member member, String serverID, String badWord, String message, String timestamp) {
         ArrayList<String> badWordLogArrayList = new ArrayList<>();
 

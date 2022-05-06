@@ -28,12 +28,19 @@ import java.awt.*;
 import java.time.Duration;
 import java.util.HashMap;
 
+/*
+ * This class provides the methods to mute a member.
+ */
+
 public final class Mute {
     private final HashMap<Member, Integer> memberMuteCountHashMap = new HashMap<>();
 
+    // This method adds the mute count up.
     public void addMuteCount (Member member) {
-        int muteCount = this.memberMuteCountHashMap.getOrDefault(member, 0);
+        // Fetches the users mute count.
+        int muteCount = this.getMuteCount(member);
 
+        // If the mute count is more than 3 it'll mute the user automatically for 12 hours.
         if (muteCount >= 3) {
             String timestamp = StringUtils.getDateAndTime("LOG");
             HashMap<String, String> fieldHashMap = new HashMap<>();
@@ -42,7 +49,6 @@ public final class Mute {
             fieldHashMap.put("Timestamp", timestamp);
             fieldHashMap.put("Mute Time", "12 Hours");
 
-            // TODO: Let user choose which time the user should get muted.
             member.getJDA().getGuilds().stream().filter(guild -> guild.isMember(member.getUser())).forEachOrdered(guild -> Luna.DISCORD_MANAGER.getDiscordBotUtils().sendLoggingMessage(guild.getId(), "Member muted!", fieldHashMap, guild.getTextChannels()));
 
             try {
@@ -54,8 +60,10 @@ public final class Mute {
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(member.getUser(), "You got muted!", "You got automatically muted from any server that contains this bot!\nReason:\nMultiple usages of inappropriate words!\n\nIf you think this is a mistake please contact the administration!", fieldHashMap, FooterType.ERROR, Color.RED);
         }
 
+        // Counts the mute count up.
         muteCount ++;
 
+        // Replaces the member mute count.
         if (this.memberMuteCountHashMap.containsKey(member)) {
             this.memberMuteCountHashMap.replace(member, muteCount);
         } else {
@@ -63,6 +71,7 @@ public final class Mute {
         }
     }
 
+    // This method returns the member mute count. (Default: 0)
     public int getMuteCount (Member member) {
         return this.memberMuteCountHashMap.getOrDefault(member, 0);
     }

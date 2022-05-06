@@ -28,10 +28,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
+/*
+ * This class builds a message.
+ */
+
 public final class DiscordMessageBuilder {
+    // This method sends a message to the discord channel.
     public void sendTextChannelMessage (TextChannel textChannel, String message, String splitCharacter, boolean markdown) {
         int discordMessageCharacterLimit = 2000;
 
+        // Checks if the character limit is exceeded.
         if (message.length() > discordMessageCharacterLimit) {
             String markdownType = null;
             String[] messageSplit = message.split(splitCharacter);
@@ -42,7 +48,7 @@ public final class DiscordMessageBuilder {
                 markdownType = messageSplit[0].trim();
                 markdownType = markdownType.substring(2);
 
-                // 6 -> ``` | 2 -> \n
+                // 6 -> (``` * 2) | 2 -> \n
                 markdownLength = 8 + markdownType.length();
 
                 messageSplit = Arrays.copyOfRange(messageSplit, 1, messageSplit.length - 1);
@@ -81,6 +87,7 @@ public final class DiscordMessageBuilder {
         }
     }
 
+    // These methods edit the embedded messages.
     public void editEmbedMessage (Message message, String title, String description, FooterType footerType, Color color) {
         message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue();
     }
@@ -113,6 +120,7 @@ public final class DiscordMessageBuilder {
         message.editMessageEmbeds(new DiscordEmbedBuilder(title, description, fieldHashMap, footerText, color).build().build()).queue(messageConsumer);
     }
 
+    // These methods sends an embedded message.
     public void sendEmbedMessage (TextChannel textChannel, String title, String description, FooterType footerType, Color color) {
         textChannel.sendMessageEmbeds(new DiscordEmbedBuilder(title, description, footerType, color).build().build()).queue();
     }

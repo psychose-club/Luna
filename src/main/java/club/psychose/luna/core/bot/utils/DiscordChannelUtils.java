@@ -27,6 +27,10 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import java.util.Arrays;
 import java.util.List;
 
+/*
+ * This class provides the utils for the Discord channels.
+ */
+
 public final class DiscordChannelUtils {
     // Method to delete a complete channel History.
     public void deleteChannelHistory (String serverID, TextChannel textChannel) {
@@ -54,18 +58,22 @@ public final class DiscordChannelUtils {
         copyOfTheOriginalChannel.getManager().setPosition(textChannelPosition).queue();
     }
 
+    // This method checks if a text channel exist on a specific server.
     public boolean checkIfTextChannelExistOnServer (String serverID, String textChannelID, List<Guild> guildList) {
         return guildList.stream().filter(guild -> guild.getId().equals(serverID)).flatMap(guild -> guild.getTextChannels().stream()).anyMatch(textChannel -> textChannel.getId().equals(textChannelID));
     }
 
+    // This method checks if a text channel is valid for the discord command.
     public boolean isChannelValidForTheDiscordCommand (TextChannel textChannel, String serverID, DiscordChannels[] discordChannels) {
         return ((textChannel != null) && (Luna.SETTINGS_MANAGER.getServerSettings().isValidChannel(serverID, textChannel.getId(), discordChannels)));
     }
 
+    // This method gets a text channel over a channel id.
     public TextChannel getTextChannel (String channelID, List<TextChannel> textChannelList) {
         return textChannelList.stream().filter(textChannel -> textChannel.getId().equals(channelID)).findFirst().orElse(null);
     }
 
+    // This method gets a voice channel over a channel id.
     public VoiceChannel getVoiceChannel (Member member, Guild guild) {
         return guild.getVoiceChannels().stream().filter(voiceChannel -> voiceChannel.getMembers().stream().anyMatch(joinedMember -> joinedMember.getId().equals(member.getId()))).findFirst().orElse(null);
     }

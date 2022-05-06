@@ -20,7 +20,12 @@ package club.psychose.luna.core.system.settings;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/*
+ * This class contains the settings for the filter usage.
+ */
+
 public final class FilterSettings {
+    // These are the default values for the settings.
     private final ArrayList<String> blacklistedWords = new ArrayList<>();
     private final ArrayList<String> whitelistedWords = new ArrayList<>();
     private final HashMap<String, String> bypassDetectionHashMap = new HashMap<>();

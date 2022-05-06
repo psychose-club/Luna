@@ -36,13 +36,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+/*
+ * This class provides the methods for a specific discord bot command.
+ */
+
 public final class ClearTempFolderDiscordCommand extends DiscordCommand {
+    // Public constructor.
     public ClearTempFolderDiscordCommand () {
         super("cleartempfolder", "Clears the temporary folder on the bot server!", "", new String[] {"cltmp"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
+    // Command execution method.
     @Override
     public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
+        // Clears the temp folder.
         if (this.clearTempFolder(messageReceivedEvent.getJDA().getGuilds())) {
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder cleared :)", "Everything is clean now :o", FooterType.SUCCESS, Color.GREEN);
         } else {
@@ -50,11 +57,15 @@ public final class ClearTempFolderDiscordCommand extends DiscordCommand {
         }
     }
 
+    // Method to clears the temp folder.
     private boolean clearTempFolder (List<Guild> guildList) {
+        // Checks if the temp folder exist and fetches the folder content.
         if (Files.exists(Constants.getLunaFolderPath("\\temp\\"))) {
             File[] tempFiles = Constants.getLunaFolderPath("\\temp\\").toFile().listFiles();
 
+            // Checks if the folder has contents available.
             if (tempFiles != null) {
+                // Deletes the file if it's not a bot used captcha file.
                 for (File file : tempFiles) {
                     boolean isCaptchaFile = false;
                     for (Captcha captcha : DiscordBot.CAPTCHA_MANAGER.getCaptchaArrayList()) {

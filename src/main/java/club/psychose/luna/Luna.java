@@ -25,12 +25,18 @@ import club.psychose.luna.core.system.managers.SettingsManager;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.ConsoleLogger;
 
+/*
+ * This is the main class of the application.
+ */
+
 public final class Luna {
+    // Initialize the managers.
     public static final DiscordManager DISCORD_MANAGER = new DiscordManager();
     public static final FileManager FILE_MANAGER = new FileManager();
     public static final MySQLManager MY_SQL_MANAGER = new MySQLManager();
     public static final SettingsManager SETTINGS_MANAGER = new SettingsManager();
 
+    // This is the main method of the application.
     public static void main (String[] arguments) {
         System.out.println("""
                    __\s

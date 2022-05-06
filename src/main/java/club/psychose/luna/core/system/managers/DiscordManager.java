@@ -25,7 +25,12 @@ import club.psychose.luna.core.bot.utils.DiscordBotUtils;
 import club.psychose.luna.core.bot.utils.builder.message.DiscordMessageBuilder;
 import club.psychose.luna.core.bot.utils.DiscordRoleUtils;
 
+/*
+ * This class manages the Discord utils.
+ */
+
 public final class DiscordManager {
+    // These methods initialized the utils.
     private final DiscordBotUtils discordBotUtils = new DiscordBotUtils();
     private final DiscordChannelUtils discordChannelUtils = new DiscordChannelUtils();
     private final DiscordMessageBuilder discordMessageBuilder = new DiscordMessageBuilder();
@@ -34,6 +39,7 @@ public final class DiscordManager {
     private final DiscordRoleUtils discordRoleUtils = new DiscordRoleUtils();
     private final ReactionScheduler reactionScheduler = new ReactionScheduler();
 
+    // These methods return the utils.
     public DiscordBotUtils getDiscordBotUtils () {
         return this.discordBotUtils;
     }

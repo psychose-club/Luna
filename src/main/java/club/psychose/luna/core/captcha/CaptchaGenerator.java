@@ -28,12 +28,17 @@ import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.stream.IntStream;
 
+/*
+ * This class generates a captcha.
+ */
+
 public final class CaptchaGenerator {
     private final SecureRandom secureRandom = new SecureRandom();
 
     private final Color[] characterColors = new Color[] {Color.PINK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.RED, Color.WHITE, Color.YELLOW};
     private final String[] imageFonts = new String[] {"Monospaced", "SansSerif", "Serif"};
 
+    // This method saves the captcha file.
     public File saveCaptchaFile (BufferedImage bufferedImage) throws IOException {
         if (!(Files.exists(Constants.getLunaFolderPath("\\temp\\captchas\\"))))
             Files.createDirectories(Constants.getLunaFolderPath("\\temp\\captchas\\"));
@@ -48,6 +53,7 @@ public final class CaptchaGenerator {
         }
     }
 
+    // This method generates the captcha image.
     public BufferedImage getCaptchaImage (String captchaCode) {
         BufferedImage captchaBufferedImage = new BufferedImage(800, 800, 3);
         Graphics graphics = captchaBufferedImage.createGraphics();
@@ -71,6 +77,7 @@ public final class CaptchaGenerator {
         return captchaBufferedImage;
     }
 
+    // This method generates the captcha code.
     public String generateCaptchaCode () {
         char[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
         char[] captchaCode = new char[6];

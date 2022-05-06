@@ -22,17 +22,26 @@ import club.psychose.luna.utils.logging.CrashLog;
 
 import java.util.Map;
 
+/*
+ * This classes filters the message.
+ */
+
 public final class MessageFilter {
+    // Saves the last blacklisted word.
     private String lastBadWord = null;
 
+    // This method checks the message.
     public boolean checkMessage (String message) {
+        // Replace all spaces to prevent bypasses.
         message = message.replaceAll(" ", "").trim();
 
+        // Throws an exception if the blacklist is empty.
         if (Luna.SETTINGS_MANAGER.getFilterSettings().getBlacklistedWords().isEmpty()) {
             CrashLog.saveLogAsCrashLog(new NullPointerException("Blacklist is empty!"), null);
             return true;
         }
 
+        // This method checks if a specific message has a special character and replace it with the right character to prevent word bypasses.
         for (Map.Entry<String, String> replaceFilterMapEntry : Luna.SETTINGS_MANAGER.getFilterSettings().getBypassDetectionHashMap().entrySet()) {
             String character = replaceFilterMapEntry.getKey();
             String replaceWith = replaceFilterMapEntry.getValue();
@@ -51,9 +60,12 @@ public final class MessageFilter {
             }
         }
 
+        // Checks if the word is whitelisted, if it's whitelisted it'll remove the word from the message.
         for (String whitelistedWord : Luna.SETTINGS_MANAGER.getFilterSettings().getWhitelistedWords())
             message = message.replaceAll(whitelistedWord, "").trim();
 
+        // Wait why is this duplicated here. IDK it's work so yeah. Will check this later.
+        // TODO: Check why this exist.
         for (Map.Entry<String, String> replaceFilterMapEntry : Luna.SETTINGS_MANAGER.getFilterSettings().getBypassDetectionHashMap().entrySet()) {
             String character = replaceFilterMapEntry.getKey();
             String replaceWith = replaceFilterMapEntry.getValue();
@@ -71,6 +83,7 @@ public final class MessageFilter {
                 temporaryMessage = message.replaceAll(replaceWith, "").trim();
             }
 
+            // Checks if the word is blacklisted.
             for (String blacklistedWord : Luna.SETTINGS_MANAGER.getFilterSettings().getBlacklistedWords()) {
                 if (temporaryMessage.equalsIgnoreCase(blacklistedWord)) {
                     this.lastBadWord = blacklistedWord;

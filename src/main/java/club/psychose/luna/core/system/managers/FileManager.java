@@ -18,7 +18,7 @@
 package club.psychose.luna.core.system.managers;
 
 import club.psychose.luna.utils.Constants;
-import club.psychose.luna.utils.logging.ConsoleLogger;
+import club.psychose.luna.utils.logging.CrashLog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -29,10 +29,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+/*
+ * This class manage files and creates automatically the needed directories for the application content.
+ */
 
 public final class FileManager {
-    // This is the public constructor. If the application calls the FileManager it'll try to create automatically the folders.
+    // Public constructor.
     public FileManager () {
+        // Creates the directories.
         try {
             if (!(Files.exists(Constants.getLunaFolderPath(null))))
                 Files.createDirectories(Constants.getLunaFolderPath(null));
@@ -58,54 +64,54 @@ public final class FileManager {
             if (!(Files.exists(Constants.getLunaFolderPath("\\temp\\"))))
                 Files.createDirectories(Constants.getLunaFolderPath("\\temp\\"));
         } catch (IOException ioException) {
-            ConsoleLogger.debug("IOException while creating the directories!");
-            ioException.printStackTrace();
+            CrashLog.saveLogAsCrashLog(ioException, null);
         }
     }
 
     // This method reads json files and convert them to a JsonObject.
     public JsonObject readJsonObject (Path path) {
+        // Checks if the file exists.
         if (Files.exists(path)) {
+            // Setup Gson.
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.setPrettyPrinting().create();
 
+            // Reads the file content and convert it to a JsonObject.
             try (FileReader fileReader = new FileReader(path.toFile())) {
                 return gson.fromJson(fileReader, JsonObject.class);
             } catch (IOException ioException) {
-                ConsoleLogger.debug("IOException while reading the JsonObject!");
-                ioException.printStackTrace();
+                CrashLog.saveLogAsCrashLog(ioException, null);
             }
         }
 
         return null;
     }
 
-    // This method saves an ArrayList to a file. Optional it provides encryption for the content from the ArrayList.
-    public void saveArrayListToAFile (Path outputPath, ArrayList<String> arrayListToSave) {
-        StringBuilder stringBuilder = new StringBuilder();
 
-        for (String line : arrayListToSave) {
-            stringBuilder.append(line).append("\n");
-        }
+    // This method saves an ArrayList to a file.
+    public void saveArrayListToAFile (Path outputPath, ArrayList<String> arrayListToSave) {
+        // Collects the content from the ArrayList and converts it to a string.
+        String contentString = arrayListToSave.stream().map(line -> line + "\n").collect(Collectors.joining());
 
         try {
-            Files.write(outputPath, stringBuilder.toString().getBytes());
+            // Creates the file and write the string.
+            Files.write(outputPath, contentString.getBytes());
         } catch (IOException ioException) {
-            ConsoleLogger.debug("IOException while saving an ArrayList to a file!");
-            ioException.printStackTrace();
+            CrashLog.saveLogAsCrashLog(ioException, null);
         }
     }
 
     // This method saves a JsonObject to a file.
     public void saveJsonObject (Path path, JsonObject jsonObject) {
+        // Setup Gson.
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.setPrettyPrinting().create();
 
+        // Creates the file and writes the JsonObject to it.
         try (FileWriter fileWriter = new FileWriter(path.toFile())) {
             gson.toJson(jsonObject, fileWriter);
         } catch (IOException ioException) {
-            ConsoleLogger.debug("IOException while saving the JsonObject!");
-            ioException.printStackTrace();
+            CrashLog.saveLogAsCrashLog(ioException, null);
         }
     }
 }

@@ -17,6 +17,10 @@
 
 package club.psychose.luna.enums;
 
+/*
+ * This enum provides the footer types.
+ */
+
 public enum FooterType {
     SUCCESS, ERROR, MUSIC
 }

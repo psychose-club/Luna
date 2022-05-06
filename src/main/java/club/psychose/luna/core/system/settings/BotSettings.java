@@ -19,7 +19,12 @@ package club.psychose.luna.core.system.settings;
 
 import java.util.concurrent.TimeUnit;
 
+/*
+ * This class contains the settings for the bot usage.
+ */
+
 public final class BotSettings {
+    // These are the default values for the settings.
     private String botToken = "NULL";
     private String youtubeAPIKey = "NULL";
     private String botOwnerID = "NULL";

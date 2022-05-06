@@ -17,6 +17,10 @@
 
 package club.psychose.luna.utils.logging.exceptions;
 
+/*
+ * This exception will be thrown if the configuration is invalid.
+ */
+
 public final class InvalidConfigurationDataException extends Exception{
     public InvalidConfigurationDataException (String message) {
         super(message, new Throwable());

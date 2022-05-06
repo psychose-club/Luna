@@ -17,4 +17,8 @@
 
 package club.psychose.luna.core.bot.utils.records;
 
+/*
+ * This record contains information about a message reaction that added by a command.
+ */
+
 public record DiscordCommandReaction (String getReactionEmoji, String getMemberID, String getMessageID, String getBuffer, long getMilliseconds) {}

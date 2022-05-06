@@ -22,12 +22,19 @@ import net.dv8tion.jda.api.entities.Emoji;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/*
+ * This class contains all constants.
+ */
+
 public final class Constants {
+    // Version constants.
     public static final String VERSION = "1.0.5";
     public static final String BUILD = "6";
 
+    // Emoji constant.
     public static final Emoji GO_BACK_EMOJI = Emoji.fromUnicode("\uD83D\uDD19");
 
+    // Luna folder constant.
     public static Path getLunaFolderPath (String additionalPath) {
         return additionalPath != null ? StringUtils.getOSPath(Paths.get(System.getProperty("user.home") + "\\psychose.club\\Luna\\" + additionalPath)) : StringUtils.getOSPath(Paths.get(System.getProperty("user.home") + "\\psychose.club\\Luna\\"));
     }

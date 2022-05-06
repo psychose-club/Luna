@@ -53,11 +53,12 @@ public final class MySQLManager {
         }
     }
 
+    // This method setups the Hikari configuration.
     public void setupHikariConfig () {
         this.mySQLDatabase.setupHikariConfig();
     }
 
-    // Returns the MySQL connection.
+    // This method returns the MySQL connection.
     public Connection getMySQLConnection () throws SQLException {
         return this.mySQLDatabase.getMySQLConnection();
     }
