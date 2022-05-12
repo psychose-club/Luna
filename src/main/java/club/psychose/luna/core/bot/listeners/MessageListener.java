@@ -20,6 +20,7 @@ package club.psychose.luna.core.bot.listeners;
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
+import club.psychose.luna.core.bot.commands.DiscordSubCommand;
 import club.psychose.luna.core.bot.filter.MessageFilter;
 import club.psychose.luna.core.bot.mute.Mute;
 import club.psychose.luna.core.captcha.Captcha;
@@ -119,8 +120,43 @@ public final class MessageListener extends ListenerAdapter {
                                          return;
 
                                  // Here we check if the user has the permissions to execute the command.
-                                 if (Luna.DISCORD_MANAGER.getDiscordMemberUtils().checkUserPermission(member, messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getPermissions()))
+                                 // We'll check if arguments are provided and if a specific command has subcommands.
+                                 // If a command has subcommands it'll parse the arguments and checks the "selected mode" and execute the subcommand.
+                                 // If not it'll execute the command normally like always.
+                                 if (Luna.DISCORD_MANAGER.getDiscordMemberUtils().checkUserPermission(member, messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getPermissions())) {
+                                     if ((commandArguments != null) && (foundDiscordCommand.getDiscordSubCommandsArrayList().size() != 0)) {
+                                        if (commandArguments.length >= 1) {
+                                            String commandMode = commandArguments[0].trim();
+
+                                            for (DiscordSubCommand discordSubCommand : foundDiscordCommand.getDiscordSubCommandsArrayList()) {
+                                                if (discordSubCommand.getSubCommandName().equalsIgnoreCase(commandMode)) {
+                                                    if (commandArguments.length == 1) {
+                                                        if (discordSubCommand.getMinimumArgumentsRequired() == 0) {
+                                                            discordSubCommand.onSubCommandExecution(null, messageReceivedEvent);
+                                                        } else {
+                                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
+                                                        }
+                                                    } else {
+                                                        commandArguments = Arrays.copyOfRange(commandArguments, 1, commandArguments.length);
+
+                                                        if (commandArguments.length >= discordSubCommand.getMinimumArgumentsRequired()) {
+                                                            discordSubCommand.onSubCommandExecution(commandArguments, messageReceivedEvent);
+                                                        } else {
+                                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
+                                                        }
+                                                    }
+
+                                                    return;
+                                                }
+                                            }
+
+                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
+                                            return;
+                                        }
+                                     }
+
                                      foundDiscordCommand.onCommandExecution(commandArguments, messageReceivedEvent);
+                                 }
                              }
                          }
 
