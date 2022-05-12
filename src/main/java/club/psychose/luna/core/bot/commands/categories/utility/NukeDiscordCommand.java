@@ -28,13 +28,13 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.concurrent.TimeUnit;
 
 /*
- * This class provides the methods for a specific discord bot command.
+ * This class provides the methods for the Discord bot Nuke command.
  */
 
 public final class NukeDiscordCommand extends DiscordCommand {
     // Public constructor.
     public NukeDiscordCommand () {
-        super("nuke", "Deletes the complete channel history from a channel.", "", new String[] {"clear"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.OWNER, PermissionRoles.ADMIN, PermissionRoles.MODERATOR}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("nuke", "Deletes the complete channel history from a channel.", new String[] {"clear"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.OWNER, PermissionRoles.ADMIN, PermissionRoles.MODERATOR}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     // Command execution method.
@@ -57,4 +57,8 @@ public final class NukeDiscordCommand extends DiscordCommand {
         // Deletes the channel history.
         Luna.DISCORD_MANAGER.getDiscordChannelUtils().deleteChannelHistory(messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel());
     }
+
+    // This method would be register the subcommands, but we don't have any in this command.
+    @Override
+    protected void registerSubCommands() {}
 }

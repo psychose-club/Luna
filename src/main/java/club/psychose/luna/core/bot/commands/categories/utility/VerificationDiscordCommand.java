@@ -36,13 +36,13 @@ import java.io.File;
 import java.io.IOException;
 
 /*
- * This class provides the methods for a specific discord bot command.
+ * This class provides the methods for the Discord bot Help command.
  */
 
 public final class VerificationDiscordCommand extends DiscordCommand {
     // Public constructor.
     public VerificationDiscordCommand () {
-        super("verification", "Verify your self to gain access to the server!", "", new String[] {"verify", "v"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.VERIFICATION});
+        super("verification", "Verify your self to gain access to the server!", new String[] {"verify", "v"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.VERIFICATION});
     }
 
     // Command execution method.
@@ -85,4 +85,8 @@ public final class VerificationDiscordCommand extends DiscordCommand {
             }
         }
     }
+
+    // This method would be register the subcommands, but we don't have any in this command.
+    @Override
+    protected void registerSubCommands() {}
 }

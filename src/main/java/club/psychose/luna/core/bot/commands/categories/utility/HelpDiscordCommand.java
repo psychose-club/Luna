@@ -35,13 +35,13 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /*
- * This class provides the methods for a specific discord bot command.
+ * This class provides the methods for the Discord bot Help command.
  */
 
 public final class HelpDiscordCommand extends DiscordCommand {
     // Public constructor.
     public HelpDiscordCommand () {
-        super("help", "Shows the help usage of other commands!", "", new String[] {"?"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("help", "Shows the help usage of other commands!", new String[] {"?"}, CommandCategory.UTILITY, new PermissionRoles[] {PermissionRoles.EVERYONE}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     // Message reaction method.
@@ -93,4 +93,8 @@ public final class HelpDiscordCommand extends DiscordCommand {
         // Sends the message.
         Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Command - Help", "Please select a category below to see the usage of the commands.", commandCategoryHashMap, "\uD83D\uDC08 L U N A \uD83D\uDC08", Color.MAGENTA, (message) -> Arrays.stream(CommandCategory.values()).forEachOrdered(commandCategory -> this.addReaction(messageReceivedEvent.getTextChannel(), commandCategory.getEmoji().getName(), messageReceivedEvent.getAuthor().getId(), message.getId(), null)));
     }
+
+    // This method would be register the subcommands, but we don't have any in this command.
+    @Override
+    protected void registerSubCommands() {}
 }

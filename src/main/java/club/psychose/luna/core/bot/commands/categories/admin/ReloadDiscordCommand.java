@@ -17,51 +17,27 @@
 
 package club.psychose.luna.core.bot.commands.categories.admin;
 
-import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.subcommands.reload.ReloadFilterDiscordSubCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.subcommands.reload.ReloadSettingsDiscordSubCommand;
 import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.enums.DiscordChannels;
-import club.psychose.luna.enums.FooterType;
 import club.psychose.luna.enums.PermissionRoles;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
-import java.awt.*;
 
 /*
- * This class provides the methods for a specific discord bot command.
+ * This class provides the subcommands for the Discord bot Reload command.
  */
 
 public final class ReloadDiscordCommand extends DiscordCommand {
     // Public constructor.
     public ReloadDiscordCommand () {
-        super("reload", "Reload specific configurations", "<filter | settings>", new String[] {"rl", "rel"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("reload", "Reload specific configurations", new String[] {"rl", "rel"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
-    // Command execution method.
+    // This method registers the subcommands.
     @Override
-    public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
-        // Checks if arguments are provided.
-        if ((arguments != null) && (arguments.length == 1)) {
-            String mode = arguments[0].trim();
-
-            // Checks which mode is selected.
-            switch (mode) {
-                case "filter" -> {
-                    // Reloads the filter settings.
-                    Luna.SETTINGS_MANAGER.loadFilterSettings();
-                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Filter reloaded!", "Filter successfully reloaded!", FooterType.SUCCESS, Color.GREEN);
-                }
-
-                case "settings" -> {
-                    // Reloads the normal settings.
-                    Luna.SETTINGS_MANAGER.loadSettings();
-                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Settings reloaded!", "Settings successfully reloaded!", FooterType.SUCCESS, Color.GREEN);
-                }
-
-                default -> Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", FooterType.ERROR, Color.RED);
-            }
-        } else {
-            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", FooterType.ERROR, Color.RED);
-        }
+    protected void registerSubCommands () {
+        this.addSubCommand(new ReloadFilterDiscordSubCommand());
+        this.addSubCommand(new ReloadSettingsDiscordSubCommand());
     }
 }

@@ -37,13 +37,13 @@ import java.nio.file.Files;
 import java.util.List;
 
 /*
- * This class provides the methods for a specific discord bot command.
+ * This class provides the methods for the Discord bot ClearTempFolder command.
  */
 
 public final class ClearTempFolderDiscordCommand extends DiscordCommand {
     // Public constructor.
     public ClearTempFolderDiscordCommand () {
-        super("cleartempfolder", "Clears the temporary folder on the bot server!", "", new String[] {"clear", "cleartemp", "ctf"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("cleartempfolder", "Clears the temporary folder on the bot server!", new String[] {"clear", "cleartemp", "ctf"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
     // Command execution method.
@@ -56,6 +56,10 @@ public final class ClearTempFolderDiscordCommand extends DiscordCommand {
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder already cleared :)", "No need to let the bot do the dirty stuff.", FooterType.SUCCESS, Color.GREEN);
         }
     }
+
+    // This method would be register the subcommands, but we don't have any in this command.
+    @Override
+    protected void registerSubCommands() {}
 
     // Method to clears the temp folder.
     private boolean clearTempFolder (List<Guild> guildList) {
