@@ -17,11 +17,13 @@
 
 package club.psychose.luna.core.system.managers;
 
+import club.psychose.luna.core.bot.schedulers.BotScheduler;
 import club.psychose.luna.core.bot.schedulers.ReactionScheduler;
 import club.psychose.luna.core.bot.utils.DiscordChannelUtils;
 import club.psychose.luna.core.bot.utils.DiscordMemberUtils;
 import club.psychose.luna.core.bot.utils.DiscordMessageUtils;
 import club.psychose.luna.core.bot.utils.DiscordBotUtils;
+import club.psychose.luna.core.bot.utils.DiscordMusicBotUtils;
 import club.psychose.luna.core.bot.utils.builder.message.DiscordMessageBuilder;
 import club.psychose.luna.core.bot.utils.DiscordRoleUtils;
 
@@ -31,15 +33,20 @@ import club.psychose.luna.core.bot.utils.DiscordRoleUtils;
 
 public final class DiscordManager {
     // These methods initialized the utils.
+    private final BotScheduler botScheduler = new BotScheduler();
     private final DiscordBotUtils discordBotUtils = new DiscordBotUtils();
     private final DiscordChannelUtils discordChannelUtils = new DiscordChannelUtils();
     private final DiscordMessageBuilder discordMessageBuilder = new DiscordMessageBuilder();
     private final DiscordMessageUtils discordMessageUtils = new DiscordMessageUtils();
     private final DiscordMemberUtils discordMemberUtils = new DiscordMemberUtils();
+    private final DiscordMusicBotUtils discordMusicBotUtils = new DiscordMusicBotUtils();
     private final DiscordRoleUtils discordRoleUtils = new DiscordRoleUtils();
     private final ReactionScheduler reactionScheduler = new ReactionScheduler();
 
     // These methods return the utils.
+    public BotScheduler getBotScheduler () {
+        return this.botScheduler;
+    }
     public DiscordBotUtils getDiscordBotUtils () {
         return this.discordBotUtils;
     }
@@ -58,6 +65,10 @@ public final class DiscordManager {
 
     public DiscordMemberUtils getDiscordMemberUtils () {
         return this.discordMemberUtils;
+    }
+
+    public DiscordMusicBotUtils getDiscordMusicBotUtils () {
+        return this.discordMusicBotUtils;
     }
 
     public DiscordRoleUtils getDiscordRoleUtils () {
