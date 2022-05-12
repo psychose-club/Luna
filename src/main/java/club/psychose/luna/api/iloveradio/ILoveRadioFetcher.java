@@ -41,7 +41,7 @@ public final class ILoveRadioFetcher {
     private final ArrayList<ILoveRadioStream> iLoveRadioStreamsArrayList = new ArrayList<>();
 
     // This method fetches the streams from the ILoveRadio website.
-    public void fetchStreams () {
+    public boolean fetchStreams () {
         // Clears the current fetched streams.
         this.iLoveRadioStreamsArrayList.clear();
 
@@ -99,6 +99,12 @@ public final class ILoveRadioFetcher {
                                 this.iLoveRadioStreamsArrayList.add(iLoveRadioStream);
                         }
                     }
+
+                    bufferedReader.close();
+                    inputStream.close();
+                    closeableHttpClient.close();
+
+                    return true;
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
@@ -106,6 +112,8 @@ public final class ILoveRadioFetcher {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+
+        return false;
     }
 
     // This method returns the valid ILoveRadio streams.
