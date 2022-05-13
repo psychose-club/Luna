@@ -17,12 +17,15 @@
 
 package club.psychose.luna.core.system.managers;
 
+import club.psychose.luna.core.bot.DiscordBot;
+import club.psychose.luna.core.captcha.Captcha;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.CrashLog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -66,6 +69,40 @@ public final class FileManager {
         } catch (IOException ioException) {
             CrashLog.saveLogAsCrashLog(ioException, null);
         }
+    }
+
+    //This method clears the temp folder.
+    public boolean clearTempFolder () {
+        // Checks if the temp folder exist and fetches the folder content.
+        if (Files.exists(Constants.getLunaFolderPath("\\temp\\"))) {
+            File[] tempFiles = Constants.getLunaFolderPath("\\temp\\").toFile().listFiles();
+
+            // Checks if the folder has contents available.
+            if (tempFiles != null) {
+                // Deletes the file if it's not a bot used captcha file.
+                for (File file : tempFiles) {
+                    boolean isCaptchaFile = false;
+                    for (Captcha captcha : DiscordBot.CAPTCHA_MANAGER.getCaptchaArrayList()) {
+                        if (captcha.getImageFile().equals(file)) {
+                            isCaptchaFile = true;
+                            break;
+                        }
+                    }
+
+                    if (!(isCaptchaFile)) {
+                        try {
+                            Files.deleteIfExists(file.toPath());
+                        } catch (IOException ioException) {
+                            CrashLog.saveLogAsCrashLog(ioException, null);
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     // This method reads json files and convert them to a JsonObject.
