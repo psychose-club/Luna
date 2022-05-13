@@ -153,6 +153,11 @@ public final class MusicPlayerTrackScheduler extends AudioEventAdapter {
         return ((this.voiceChannel != null) && (this.isConnectedWithAnyVoiceChannel())) && (this.voiceChannel.getMembers().contains(member));
     }
 
+    // This method checks if a voice channel is the right voice channel where the audio manager is opened.
+    public boolean isVoiceChannelTheSaneVoiceChannel (String voiceChannelID) {
+        return ((this.voiceChannel != null) && (this.isConnectedWithAnyVoiceChannel()) && (this.voiceChannel.getId().equals(voiceChannelID)));
+    }
+
     // Checks if the bot is connected to a voice channel.
     public boolean isConnectedWithAnyVoiceChannel () {
         // Returns if the bot is connected and if the connected channel is not null.
