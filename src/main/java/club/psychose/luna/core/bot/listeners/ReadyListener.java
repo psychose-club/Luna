@@ -26,6 +26,7 @@ import club.psychose.luna.core.system.settings.ServerSetting;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -43,8 +44,12 @@ public final class ReadyListener extends ListenerAdapter {
     // Ready event.
     @Override
     public void onReady (ReadyEvent readyEvent) {
-        // Fetches all text channels.
+        // Fetches all channels.
         List<TextChannel> textChannelList = readyEvent.getJDA().getTextChannels();
+        List<VoiceChannel> voiceChannelList = readyEvent.getJDA().getVoiceChannels();
+
+        // Safety call if bot already joined a voice channel it'll automatically disconnect the bot.
+        voiceChannelList.stream().filter(voiceChannel -> voiceChannel.getMembers().size() != 0).forEachOrdered(voiceChannel -> voiceChannel.getMembers().stream().filter(member -> member.getId().equals(readyEvent.getJDA().getSelfUser().getId())).forEachOrdered(member -> voiceChannel.getGuild().getAudioManager().closeAudioConnection()));
 
         // Gets the server configurations.
         for (Map.Entry<String, ServerSetting> serverSettingEntry : Luna.SETTINGS_MANAGER.getServerSettings().getServerConfigurationHashMap().entrySet()) {
