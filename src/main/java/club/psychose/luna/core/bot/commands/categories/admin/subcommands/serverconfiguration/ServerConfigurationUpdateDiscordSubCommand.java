@@ -61,7 +61,7 @@ public final class ServerConfigurationUpdateDiscordSubCommand extends DiscordSub
                     // It'll remove the old configuration and adds the new configuration.
                     Luna.SETTINGS_MANAGER.getServerSettings().removeServerConfiguration(serverID);
                     Luna.SETTINGS_MANAGER.getServerSettings().addServerConfiguration(serverID, serverSetting);
-                    Luna.SETTINGS_MANAGER.getServerSettings().reloadServerConfiguration(serverID);
+                    Luna.SETTINGS_MANAGER.getServerSettings().reloadServerConfiguration(messageReceivedEvent.getJDA().getTextChannels());
 
                     Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Server entry updated in the database!", "Server entry successfully updated in the database!", FooterType.SUCCESS, Color.GREEN);
                 } else {

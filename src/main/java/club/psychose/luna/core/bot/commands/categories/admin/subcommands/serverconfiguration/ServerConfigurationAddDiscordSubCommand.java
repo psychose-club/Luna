@@ -64,7 +64,7 @@ public final class ServerConfigurationAddDiscordSubCommand extends DiscordSubCom
 
                     // Adds the server configuration.
                     Luna.SETTINGS_MANAGER.getServerSettings().addServerConfiguration(serverID, serverSetting);
-                    Luna.SETTINGS_MANAGER.getServerSettings().reloadServerConfiguration(serverID);
+                    Luna.SETTINGS_MANAGER.getServerSettings().reloadServerConfiguration(messageReceivedEvent.getJDA().getTextChannels());
 
                     Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Server added to the database!", "Server successfully added to the database!", FooterType.SUCCESS, Color.GREEN);
                 } else {
