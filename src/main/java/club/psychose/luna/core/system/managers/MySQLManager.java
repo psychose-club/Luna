@@ -42,14 +42,14 @@ public final class MySQLManager {
             // Executes the request.
             serversTablePreparedStatement.executeUpdate();
         } catch (SQLException sqlException) {
-            CrashLog.saveLogAsCrashLog(sqlException, null);
+            CrashLog.saveLogAsCrashLog(sqlException);
         }
 
         // Closes the MySQL connection.
         try {
             this.mySQLDatabase.closeMySQLConnection();
         } catch (SQLException sqlException) {
-            CrashLog.saveLogAsCrashLog(sqlException, null);
+            CrashLog.saveLogAsCrashLog(sqlException);
         }
     }
 

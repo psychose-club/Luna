@@ -89,7 +89,7 @@ public final class YoutubeSearch {
                 }
             }
         } else {
-            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("API Key not initialized!"), null);
+            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("API Key not initialized!"));
         }
 
         return null;

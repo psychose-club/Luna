@@ -85,11 +85,11 @@ public final class SettingsManager {
 
                         this.getBotSettings().setTimeUnit(timeUnit);
                     } else {
-                        CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Bot settings are invalid!"), null);
+                        CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Bot settings are invalid!"));
                         System.exit(1);
                     }
                 } else {
-                    CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Bot settings are invalid!"), null);
+                    CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Bot settings are invalid!"));
                     System.exit(1);
                 }
             } else {
@@ -98,7 +98,7 @@ public final class SettingsManager {
                 this.loadBotSettings();
             }
         } else {
-            CrashLog.saveLogAsCrashLog(new IOException("Bot settings cannot be created!"), null);
+            CrashLog.saveLogAsCrashLog(new IOException("Bot settings cannot be created!"));
             System.exit(1);
         }
     }
@@ -184,7 +184,7 @@ public final class SettingsManager {
                 this.loadMySQLSettings();
             }
         } else {
-            CrashLog.saveLogAsCrashLog(new IOException("MySQL settings cannot be created!"), null);
+            CrashLog.saveLogAsCrashLog(new IOException("MySQL settings cannot be created!"));
             System.exit(1);
         }
     }
@@ -214,7 +214,7 @@ public final class SettingsManager {
             preparedStatement.close();
             Luna.MY_SQL_MANAGER.closeMySQLConnection();
         } catch (SQLException sqlException) {
-            CrashLog.saveLogAsCrashLog(sqlException, null);
+            CrashLog.saveLogAsCrashLog(sqlException);
             System.exit(1);
         }
     }
@@ -235,7 +235,7 @@ public final class SettingsManager {
             bufferedReader.lines().filter(line -> !(this.getFilterSettings().getWhitelistedWords().contains(line))).forEachOrdered(line -> this.getFilterSettings().getWhitelistedWords().add(line));
             bufferedReader.close();
         } catch (IOException ioException) {
-            CrashLog.saveLogAsCrashLog(ioException, null);
+            CrashLog.saveLogAsCrashLog(ioException);
         }
     }
 
@@ -257,7 +257,7 @@ public final class SettingsManager {
                 this.getFilterSettings().getBlacklistedWords().clear();
             }
         } catch (IOException ioException) {
-            CrashLog.saveLogAsCrashLog(ioException, null);
+            CrashLog.saveLogAsCrashLog(ioException);
         }
     }
 
@@ -268,7 +268,7 @@ public final class SettingsManager {
         if (filterJsonObject != null) {
             filterJsonObject.entrySet().stream().filter(wordFilterMapEntry -> !(this.getFilterSettings().getBypassDetectionHashMap().containsKey(wordFilterMapEntry.getKey()))).forEachOrdered(wordFilterMapEntry -> this.getFilterSettings().getBypassDetectionHashMap().put(wordFilterMapEntry.getKey(), wordFilterMapEntry.getValue().getAsString()));
         } else {
-            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Filter cannot resolved!"), null);
+            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Filter cannot resolved!"));
         }
     }
 
@@ -362,7 +362,7 @@ public final class SettingsManager {
             preparedStatement.close();
             Luna.MY_SQL_MANAGER.closeMySQLConnection();
         } catch (SQLException sqlException) {
-            CrashLog.saveLogAsCrashLog(sqlException, null);
+            CrashLog.saveLogAsCrashLog(sqlException);
         }
 
         for (Map.Entry<String, ServerSetting> serverSettingMapEntry : this.getServerSettings().getServerConfigurationHashMap().entrySet()) {
@@ -403,7 +403,7 @@ public final class SettingsManager {
                     preparedStatement.close();
                     Luna.MY_SQL_MANAGER.closeMySQLConnection();
                 } catch (SQLException sqlException) {
-                    CrashLog.saveLogAsCrashLog(sqlException, null);
+                    CrashLog.saveLogAsCrashLog(sqlException);
                 }
             }
         }
@@ -418,7 +418,7 @@ public final class SettingsManager {
                 preparedStatement.close();
                 Luna.MY_SQL_MANAGER.closeMySQLConnection();
             } catch (SQLException sqlException) {
-                CrashLog.saveLogAsCrashLog(sqlException, null);
+                CrashLog.saveLogAsCrashLog(sqlException);
             }
         }
     }

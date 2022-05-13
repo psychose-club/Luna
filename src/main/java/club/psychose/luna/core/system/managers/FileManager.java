@@ -67,7 +67,7 @@ public final class FileManager {
             if (!(Files.exists(Constants.getLunaFolderPath("\\temp\\"))))
                 Files.createDirectories(Constants.getLunaFolderPath("\\temp\\"));
         } catch (IOException ioException) {
-            CrashLog.saveLogAsCrashLog(ioException, null);
+            CrashLog.saveLogAsCrashLog(ioException);
         }
     }
 
@@ -93,7 +93,7 @@ public final class FileManager {
                         try {
                             Files.deleteIfExists(file.toPath());
                         } catch (IOException ioException) {
-                            CrashLog.saveLogAsCrashLog(ioException, null);
+                            CrashLog.saveLogAsCrashLog(ioException);
                         }
                     }
                 }
@@ -117,7 +117,7 @@ public final class FileManager {
             try (FileReader fileReader = new FileReader(path.toFile())) {
                 return gson.fromJson(fileReader, JsonObject.class);
             } catch (IOException ioException) {
-                CrashLog.saveLogAsCrashLog(ioException, null);
+                CrashLog.saveLogAsCrashLog(ioException);
             }
         }
 
@@ -134,7 +134,7 @@ public final class FileManager {
             // Creates the file and write the string.
             Files.write(outputPath, contentString.getBytes());
         } catch (IOException ioException) {
-            CrashLog.saveLogAsCrashLog(ioException, null);
+            CrashLog.saveLogAsCrashLog(ioException);
         }
     }
 
@@ -148,7 +148,7 @@ public final class FileManager {
         try (FileWriter fileWriter = new FileWriter(path.toFile())) {
             gson.toJson(jsonObject, fileWriter);
         } catch (IOException ioException) {
-            CrashLog.saveLogAsCrashLog(ioException, null);
+            CrashLog.saveLogAsCrashLog(ioException);
         }
     }
 }

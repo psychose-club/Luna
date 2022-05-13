@@ -203,21 +203,21 @@ public final class MessageListener extends ListenerAdapter {
                                              // Deletes the captcha.
                                              Files.deleteIfExists(captcha.getImageFile().toPath());
                                          } catch (IOException ioException) {
-                                             CrashLog.saveLogAsCrashLog(ioException, serverGuild.getJDA().getGuilds());
+                                             CrashLog.saveLogAsCrashLog(ioException);
                                          }
 
                                          // Removes the captcha.
                                          DiscordBot.CAPTCHA_MANAGER.removeCaptcha(captcha);
                                          Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Verification was successful!", "You are now verified!", FooterType.SUCCESS, Color.GREEN);
                                      } else {
-                                         CrashLog.saveLogAsCrashLog(new NullPointerException("Verification Role not found!"), serverGuild.getJDA().getGuilds());
+                                         CrashLog.saveLogAsCrashLog(new NullPointerException("Verification Role not found!"));
                                          Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Something went wrong!", "Please try it again later!", FooterType.ERROR, Color.RED);
                                      }
                                  } else {
                                      Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Something went wrong!", "You are already verified!", FooterType.ERROR, Color.RED);
                                  }
                              } else {
-                                 CrashLog.saveLogAsCrashLog(new NullPointerException("Guild not found!"), null);
+                                 CrashLog.saveLogAsCrashLog(new NullPointerException("Guild not found!"));
                                  Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(user, "Something went wrong!", "Please try it again later!", FooterType.ERROR, Color.RED);
                              }
                          } else {

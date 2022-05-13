@@ -38,7 +38,7 @@ public final class MySQLDatabase {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException classNotFoundException) {
-            CrashLog.saveLogAsCrashLog(classNotFoundException, null);
+            CrashLog.saveLogAsCrashLog(classNotFoundException);
         }
     }
 

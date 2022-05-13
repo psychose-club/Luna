@@ -54,16 +54,16 @@ public final class DiscordBotUtils {
                             // Checks the version state of the verification channel.
                             this.checkVerificationChannel(serverID, verificationTextChannel, botInformationTextChannel, verificationTextChannel.getGuild());
                         } else {
-                            CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found for the server with the id " + serverID + "!"), null);
+                            CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found for the server with the id " + serverID + "!"));
                         }
                     } else {
-                        CrashLog.saveLogAsCrashLog(new NullPointerException("Bot information channel not found for the server with the id " + serverID + "!"), null);
+                        CrashLog.saveLogAsCrashLog(new NullPointerException("Bot information channel not found for the server with the id " + serverID + "!"));
                     }
                 } else {
-                    CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Invalid configuration for the server with the id " + serverID + "!"), null);
+                    CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Invalid configuration for the server with the id " + serverID + "!"));
                 }
             } else {
-                CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Invalid configuration for the server with the id " + serverID + "!"), null);
+                CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Invalid configuration for the server with the id " + serverID + "!"));
             }
         });
     }
@@ -91,10 +91,10 @@ public final class DiscordBotUtils {
             if (loggingTextChannel != null) {
                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(loggingTextChannel, "Logging", message, fieldHashMap, FooterType.ERROR, Color.RED);
             } else {
-                CrashLog.saveLogAsCrashLog(new NullPointerException("Logging channel not found for the server with the id " + serverID + "!"), null);
+                CrashLog.saveLogAsCrashLog(new NullPointerException("Logging channel not found for the server with the id " + serverID + "!"));
             }
         } else {
-            CrashLog.saveLogAsCrashLog(new NullPointerException("Logging channel not found for the server with the id " + serverID + "!"), null);
+            CrashLog.saveLogAsCrashLog(new NullPointerException("Logging channel not found for the server with the id " + serverID + "!"));
         }
     }
 
@@ -124,7 +124,7 @@ public final class DiscordBotUtils {
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(verificationChannel, "Verification Process", "Welcome to this server!\nYou need to get verified to gain access to all of the server channels!\nYou accept automatically the server rules by verifying you with the bot and that the bot can maybe collect messages to improve the experience and stability!\n\nYou need to enable your PMs you'll not get any captcha if you disable your PMs!\nTo enable your PMs -> Server Menu -> Privacy Settings -> Allow direct messages from server members. -> Toggle on\n\nEnter " + Luna.SETTINGS_MANAGER.getBotSettings().getPrefix() + "verification to receive a PM!\n\nIf you need help to get verify please contact a server administrator!", "Luna was developed by psychose.club", Color.MAGENTA);
             this.sendChangelog(botInformationChannel);
         } else {
-            CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found after refresh on the server with the server id " + serverID + "!"), null);
+            CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found after refresh on the server with the server id " + serverID + "!"));
         }
     }
 

@@ -65,10 +65,10 @@ public final class DiscordBot {
                 jdaBuilder.setAutoReconnect(true);
                 jda.awaitReady();
             } catch (LoginException | InterruptedException exception) {
-                CrashLog.saveLogAsCrashLog(exception, null);
+                CrashLog.saveLogAsCrashLog(exception);
             }
         } else {
-            CrashLog.saveLogAsCrashLog(new NullPointerException("Bot token is null!"), null);
+            CrashLog.saveLogAsCrashLog(new NullPointerException("Bot token is null!"));
         }
     }
 }

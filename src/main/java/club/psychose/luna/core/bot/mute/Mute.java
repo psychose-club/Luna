@@ -54,7 +54,7 @@ public final class Mute {
             try {
                 member.timeoutFor(Duration.ofHours(12)).reason("Multiple usage of inappropriate words!").queue();
             } catch (HierarchyException hierarchyException) {
-                CrashLog.saveLogAsCrashLog(hierarchyException, member.getJDA().getGuilds());
+                CrashLog.saveLogAsCrashLog(hierarchyException);
             }
 
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(member.getUser(), "You got muted!", "You got automatically muted from any server that contains this bot!\nReason:\nMultiple usages of inappropriate words!\n\nIf you think this is a mistake please contact the administration!", fieldHashMap, FooterType.ERROR, Color.RED);

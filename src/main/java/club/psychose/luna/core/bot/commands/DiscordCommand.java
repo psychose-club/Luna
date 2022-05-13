@@ -65,7 +65,7 @@ public abstract class DiscordCommand {
                     if (permissionRole.equals(PermissionRoles.BOT_OWNER))
                         throw new InvalidPermissionUsageException("Invalid permission usage for " + this.commandName + "!");
             } catch (InvalidPermissionUsageException invalidPermissionUsageException) {
-                CrashLog.saveLogAsCrashLog(invalidPermissionUsageException, null);
+                CrashLog.saveLogAsCrashLog(invalidPermissionUsageException);
             }
         }
 

@@ -103,7 +103,7 @@ public final class MusicPlayerPlayDiscordSubCommand extends DiscordSubCommand {
                     cancel = true;
                 } catch (IOException ioException) {
                     Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Something went wrong while searching for the video!", "We notify the developers!", FooterType.ERROR, Color.RED);
-                    CrashLog.saveLogAsCrashLog(ioException, messageReceivedEvent.getJDA().getGuilds());
+                    CrashLog.saveLogAsCrashLog(ioException);
                     cancel = true;
                 }
             }
@@ -157,7 +157,7 @@ public final class MusicPlayerPlayDiscordSubCommand extends DiscordSubCommand {
 
                     @Override
                     public void loadFailed (FriendlyException friendlyException) {
-                        CrashLog.saveLogAsCrashLog(friendlyException, messageReceivedEvent.getJDA().getGuilds());
+                        CrashLog.saveLogAsCrashLog(friendlyException);
                         Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Music Bot", "An exception occurred!", FooterType.ERROR, Color.RED);
                     }
                 });

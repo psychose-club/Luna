@@ -76,7 +76,7 @@ public final class VerificationDiscordCommand extends DiscordCommand {
                     // Sends the captcha to the user.
                     messageReceivedEvent.getMember().getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendFile(captchaFile).queue());
                 } catch (IOException ioException) {
-                    CrashLog.saveLogAsCrashLog(ioException, messageReceivedEvent.getJDA().getGuilds());
+                    CrashLog.saveLogAsCrashLog(ioException);
                 } catch (Exception exception) {
                     ConsoleLogger.debug("Failed to send captcha!");
                 }

@@ -37,7 +37,7 @@ public final class MessageFilter {
 
         // Throws an exception if the blacklist is empty.
         if (Luna.SETTINGS_MANAGER.getFilterSettings().getBlacklistedWords().isEmpty()) {
-            CrashLog.saveLogAsCrashLog(new NullPointerException("Blacklist is empty!"), null);
+            CrashLog.saveLogAsCrashLog(new NullPointerException("Blacklist is empty!"));
             return true;
         }
 
