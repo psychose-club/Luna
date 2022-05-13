@@ -20,6 +20,7 @@ package club.psychose.luna.core.system.settings;
 import club.psychose.luna.Luna;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -163,6 +164,11 @@ public final class ServerSettings {
         }
 
         return false;
+    }
+
+    // This method checks if a guild is added to the server configurations.
+    public boolean isGuildAdded (Guild guild) {
+        return this.serverConfigurationHashMap.getOrDefault(guild.getId(), null) != null;
     }
 
     // This method returns the entire server configurations.
