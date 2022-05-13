@@ -30,6 +30,9 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /*
  * This class is the MusicPlayerTrackScheduler and handles the AudioPlayer.
@@ -37,10 +40,13 @@ import java.util.ArrayList;
 
 public final class MusicPlayerTrackScheduler extends AudioEventAdapter {
     private final ArrayList<AudioTrack> musicPlayerQueueArrayList = new ArrayList<>();
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private final AudioPlayer audioPlayer;
     private final AudioManager audioManager;
     private final VoiceChannel voiceChannel;
     private TextChannel textChannel = null;
+
+    private boolean songPlayed = false;
 
     // Public constructor.
     public MusicPlayerTrackScheduler (AudioPlayer audioPlayer, AudioManager audioManager, VoiceChannel voiceChannel)
@@ -54,6 +60,9 @@ public final class MusicPlayerTrackScheduler extends AudioEventAdapter {
     // onTrackStart event.
     @Override
     public void onTrackStart (AudioPlayer audioPlayer, AudioTrack audioTrack) {
+        if (this.songPlayed)
+            this.stopTimeoutScheduler();
+
         // Checks if the voice channel is not null.
         if (this.voiceChannel != null) {
             // Opens the audio connection.
@@ -75,9 +84,15 @@ public final class MusicPlayerTrackScheduler extends AudioEventAdapter {
             // Checks if the next track can be played.
             if (this.checkIfNextTrackCanBePlayed()) {
                 // Plays the next track.
-                this.playNextTrack();
+                if (this.playNextTrack()) {
+                    this.stopTimeoutScheduler();
+                    return;
+                }
             }
         }
+
+        // This method starts the timeout scheduler.
+        this.startTimeoutScheduler();
     }
 
     // Adds an AudioTrack to the queue.
@@ -145,6 +160,23 @@ public final class MusicPlayerTrackScheduler extends AudioEventAdapter {
     public boolean checkIfNextTrackCanBePlayed () {
         // Returns if the track is null or not.
         return this.audioPlayer.getPlayingTrack() == null;
+    }
+
+    // This method starts the timeout scheduler.
+    private void startTimeoutScheduler () {
+        // Starts the scheduler.
+        this.scheduledExecutorService.schedule(() -> {
+            this.songPlayed = false;
+            this.stopMusicBot();
+        }, 1, TimeUnit.MINUTES);
+
+        this.songPlayed = true;
+    }
+
+    // This method stops the timeout scheduler.
+    private void stopTimeoutScheduler () {
+        if (!(this.scheduledExecutorService.isShutdown()))
+            this.scheduledExecutorService.shutdownNow();
     }
 
     // Checks if the member is in the same channel as the bot.
