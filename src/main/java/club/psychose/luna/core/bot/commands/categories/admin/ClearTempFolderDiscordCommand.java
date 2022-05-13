@@ -18,23 +18,14 @@
 package club.psychose.luna.core.bot.commands.categories.admin;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
-import club.psychose.luna.core.captcha.Captcha;
 import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.enums.FooterType;
-import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.Constants;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
 
 /*
  * This class provides the methods for the Discord bot ClearTempFolder command.
@@ -50,7 +41,7 @@ public final class ClearTempFolderDiscordCommand extends DiscordCommand {
     @Override
     public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
         // Clears the temp folder.
-        if (this.clearTempFolder(messageReceivedEvent.getJDA().getGuilds())) {
+        if (Luna.FILE_MANAGER.clearTempFolder()) {
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder cleared :)", "Everything is clean now :o", FooterType.SUCCESS, Color.GREEN);
         } else {
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Temp folder already cleared :)", "No need to let the bot do the dirty stuff.", FooterType.SUCCESS, Color.GREEN);
@@ -60,38 +51,4 @@ public final class ClearTempFolderDiscordCommand extends DiscordCommand {
     // This method would be register the subcommands, but we don't have any in this command.
     @Override
     protected void registerSubCommands() {}
-
-    // Method to clears the temp folder.
-    private boolean clearTempFolder (List<Guild> guildList) {
-        // Checks if the temp folder exist and fetches the folder content.
-        if (Files.exists(Constants.getLunaFolderPath("\\temp\\"))) {
-            File[] tempFiles = Constants.getLunaFolderPath("\\temp\\").toFile().listFiles();
-
-            // Checks if the folder has contents available.
-            if (tempFiles != null) {
-                // Deletes the file if it's not a bot used captcha file.
-                for (File file : tempFiles) {
-                    boolean isCaptchaFile = false;
-                    for (Captcha captcha : DiscordBot.CAPTCHA_MANAGER.getCaptchaArrayList()) {
-                        if (captcha.getImageFile().equals(file)) {
-                            isCaptchaFile = true;
-                            break;
-                        }
-                    }
-
-                    if (!(isCaptchaFile)) {
-                        try {
-                            Files.deleteIfExists(file.toPath());
-                        } catch (IOException ioException) {
-                            CrashLog.saveLogAsCrashLog(ioException, guildList);
-                        }
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
