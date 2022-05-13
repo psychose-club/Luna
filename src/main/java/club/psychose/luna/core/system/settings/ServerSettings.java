@@ -21,6 +21,7 @@ import club.psychose.luna.Luna;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
@@ -43,8 +44,8 @@ public final class ServerSettings {
     }
 
     // This method reloads a server configuration.
-    public void reloadServerConfiguration (String serverID) {
-
+    public void reloadServerConfiguration (List<TextChannel> textChannelList) {
+        Luna.DISCORD_MANAGER.getDiscordBotUtils().checkServers(textChannelList);
     }
 
     // This method removes a server configuration.
