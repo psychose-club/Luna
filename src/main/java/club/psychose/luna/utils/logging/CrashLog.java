@@ -46,6 +46,10 @@ public final class CrashLog {
         crashLogArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\crashes\\" + timestamp + ".txt"));
         crashLogArrayList.add("Timestamp: " + timestamp);
         crashLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        crashLogArrayList.add("OS: " + System.getProperty("os.name"));
+        crashLogArrayList.add("OS Architecture: " + System.getProperty("os.arch"));
+        crashLogArrayList.add("JRE Version: " + System.getProperty("java.version"));
+        crashLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         crashLogArrayList.add("Exception Cause: " + exception.getCause());
         crashLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         crashLogArrayList.add("PrintStackTrace:");
