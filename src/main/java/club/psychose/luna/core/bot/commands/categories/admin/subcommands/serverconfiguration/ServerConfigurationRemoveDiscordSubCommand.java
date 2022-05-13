@@ -20,6 +20,7 @@ package club.psychose.luna.core.bot.commands.categories.admin.subcommands.server
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.commands.DiscordSubCommand;
 import club.psychose.luna.enums.FooterType;
+import club.psychose.luna.utils.logging.CrashLog;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
@@ -43,6 +44,7 @@ public final class ServerConfigurationRemoveDiscordSubCommand extends DiscordSub
         // Checks if the server configuration is registered and removes it from the configuration.
         if (Luna.SETTINGS_MANAGER.getServerSettings().checkIfServerConfigurationExist(serverID)) {
             Luna.SETTINGS_MANAGER.getServerSettings().removeServerConfiguration(serverID);
+            CrashLog.removeGuild(messageReceivedEvent.getGuild());
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Server configuration removed!", "We have successfully removed the server configuration!", FooterType.SUCCESS, Color.GREEN);
         } else {
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Server configuration didn't exist!", "Please select a valid server configuration!", FooterType.ERROR, Color.RED);
