@@ -36,6 +36,9 @@ public final class BotScheduler {
         this.scheduledExecutorService.scheduleAtFixedRate(() -> {
             // Fetches the ILoveRadio streams.
             Luna.DISCORD_MANAGER.getDiscordMusicBotUtils().getILoveRadioFetcher().fetchStreams();
+
+            // Fetches the latest message filters.
+            Luna.SETTINGS_MANAGER.loadFilterSettings();
         }, 0, 30, TimeUnit.MINUTES);
     }
 }
