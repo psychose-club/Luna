@@ -34,6 +34,12 @@ public final class Constants {
     // Emoji constant.
     public static final Emoji GO_BACK_EMOJI = Emoji.fromUnicode("\uD83D\uDD19");
 
+    // Filter constants.
+    // If custom filters are enabled it'll use it only as fallback if not "Fallback to default" is disabled!
+    public static final String FALLBACK_BLACKLIST_URL = "https://luna.psychose.club/assets/blacklist";
+    public static final String FALLBACK_WHITELIST_URL = "https://luna.psychose.club/assets/whitelist";
+    public static final String FALLBACK_CHARACTER_FILTER_URL = "https://luna.psychose.club/assets/character_filter.json";
+
     // Luna folder constant.
     public static Path getLunaFolderPath (String additionalPath) {
         return additionalPath != null ? StringUtils.getOSPath(Paths.get(System.getProperty("user.home") + "\\psychose.club\\Luna\\" + additionalPath)) : StringUtils.getOSPath(Paths.get(System.getProperty("user.home") + "\\psychose.club\\Luna\\"));
