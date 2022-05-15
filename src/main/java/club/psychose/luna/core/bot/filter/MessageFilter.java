@@ -32,62 +32,65 @@ public final class MessageFilter {
 
     // This method checks the message.
     public boolean checkMessage (String message) {
-        // Replace all spaces to prevent bypasses.
-        message = message.replaceAll(" ", "").trim();
+        // Checks if the blacklist function is enabled.
+        if (Luna.SETTINGS_MANAGER.getMessageFilterSettings().isBlacklistEnabled()) {
+            // Replace all spaces to prevent bypasses.
+            message = message.replaceAll(" ", "").trim();
 
-        // Throws an exception if the blacklist is empty.
-        if (Luna.SETTINGS_MANAGER.getFilterSettings().getBlacklistedWords().isEmpty()) {
-            CrashLog.saveLogAsCrashLog(new NullPointerException("Blacklist is empty!"));
-            return true;
-        }
+            // Throws an exception if the blacklist is empty.
+            if (Luna.SETTINGS_MANAGER.getMessageFilterSettings().getBlacklistedWords().isEmpty()) {
+                CrashLog.saveLogAsCrashLog(new NullPointerException("Blacklist is empty!"));
+                return true;
+            }
 
-        // This method checks if a specific message has a special character and replace it with the right character to prevent word bypasses.
-        for (Map.Entry<String, String> replaceFilterMapEntry : Luna.SETTINGS_MANAGER.getFilterSettings().getBypassDetectionHashMap().entrySet()) {
-            String character = replaceFilterMapEntry.getKey();
-            String replaceWith = replaceFilterMapEntry.getValue();
+            // This method checks if a specific message has a special character and replace it with the right character to prevent word bypasses.
+            for (Map.Entry<String, String> replaceFilterMapEntry : Luna.SETTINGS_MANAGER.getMessageFilterSettings().getCharacterFilterHashMap().entrySet()) {
+                String character = replaceFilterMapEntry.getKey();
+                String replaceWith = replaceFilterMapEntry.getValue();
 
-            if (character.equals("REPLACE")) {
+                if (character.equals("REPLACE")) {
+                    if (replaceWith.contains(" ")) {
+                        String[] splitReplaceWith = replaceWith.split(" ");
+
+                        for (String replaceCharacter : splitReplaceWith)
+                            message = message.replaceAll(replaceCharacter, "");
+
+                        continue;
+                    }
+
+                    message = message.replaceAll(replaceWith, "").trim();
+                }
+            }
+
+            // Checks if the word is whitelisted, if it's whitelisted it'll remove the word from the message.
+            for (String whitelistedWord : Luna.SETTINGS_MANAGER.getMessageFilterSettings().getWhitelistedWords())
+                message = message.replaceAll(whitelistedWord, "").trim();
+
+            // Wait why is this duplicated here. IDK it's work so yeah. Will check this later. (Maybe later in few years now I'm lazy to test this shit.)
+            // TODO: Check why this exist.
+            for (Map.Entry<String, String> replaceFilterMapEntry : Luna.SETTINGS_MANAGER.getMessageFilterSettings().getCharacterFilterHashMap().entrySet()) {
+                String character = replaceFilterMapEntry.getKey();
+                String replaceWith = replaceFilterMapEntry.getValue();
+                String temporaryMessage = message;
+
+                if (character.equals("REPLACE"))
+                    continue;
+
                 if (replaceWith.contains(" ")) {
                     String[] splitReplaceWith = replaceWith.split(" ");
 
                     for (String replaceCharacter : splitReplaceWith)
-                        message = message.replaceAll(replaceCharacter, "");
-
-                    continue;
+                        temporaryMessage = message.replaceAll(replaceCharacter, "");
+                } else {
+                    temporaryMessage = message.replaceAll(replaceWith, "").trim();
                 }
 
-                message = message.replaceAll(replaceWith, "").trim();
-            }
-        }
-
-        // Checks if the word is whitelisted, if it's whitelisted it'll remove the word from the message.
-        for (String whitelistedWord : Luna.SETTINGS_MANAGER.getFilterSettings().getWhitelistedWords())
-            message = message.replaceAll(whitelistedWord, "").trim();
-
-        // Wait why is this duplicated here. IDK it's work so yeah. Will check this later.
-        // TODO: Check why this exist.
-        for (Map.Entry<String, String> replaceFilterMapEntry : Luna.SETTINGS_MANAGER.getFilterSettings().getBypassDetectionHashMap().entrySet()) {
-            String character = replaceFilterMapEntry.getKey();
-            String replaceWith = replaceFilterMapEntry.getValue();
-            String temporaryMessage = message;
-
-            if (character.equals("REPLACE"))
-                continue;
-
-            if (replaceWith.contains(" ")) {
-                String[] splitReplaceWith = replaceWith.split(" ");
-
-                for (String replaceCharacter : splitReplaceWith)
-                    temporaryMessage = message.replaceAll(replaceCharacter, "");
-            } else {
-                temporaryMessage = message.replaceAll(replaceWith, "").trim();
-            }
-
-            // Checks if the word is blacklisted.
-            for (String blacklistedWord : Luna.SETTINGS_MANAGER.getFilterSettings().getBlacklistedWords()) {
-                if (temporaryMessage.equalsIgnoreCase(blacklistedWord)) {
-                    this.lastBadWord = blacklistedWord;
-                    return false;
+                // Checks if the word is blacklisted.
+                for (String blacklistedWord : Luna.SETTINGS_MANAGER.getMessageFilterSettings().getBlacklistedWords()) {
+                    if (temporaryMessage.equalsIgnoreCase(blacklistedWord)) {
+                        this.lastBadWord = blacklistedWord;
+                        return false;
+                    }
                 }
             }
         }
