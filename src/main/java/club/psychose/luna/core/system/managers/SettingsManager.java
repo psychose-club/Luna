@@ -19,6 +19,7 @@ package club.psychose.luna.core.system.managers;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.system.settings.*;
+import club.psychose.luna.utils.JsonUtils;
 import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.utils.logging.exceptions.InvalidConfigurationDataException;
 import club.psychose.luna.utils.Constants;
@@ -44,18 +45,19 @@ import java.util.concurrent.TimeUnit;
 public final class SettingsManager {
     // Initializing the settings.
     private final BotSettings botSettings = new BotSettings();
-    private final FilterSettings filterSettings = new FilterSettings();
+    private final MessageFilterSettings messageFilterSettings = new MessageFilterSettings();
     private final MySQLSettings mySQLSettings = new MySQLSettings();
     private final ServerSettings serverSettings = new ServerSettings();
 
     private int retryBotSettings = 0;
+    private int retryMessageFilterSettings = 0;
     private int retryMySQLSettings = 0;
 
     // This method loads all settings.
     public void loadSettings () {
         this.loadBotSettings();
+        this.loadMessageFilterSettings();
         this.loadMySQLSettings();
-        this.loadFilterSettings();
     }
 
     // This method loads the bot settings.
@@ -65,12 +67,10 @@ public final class SettingsManager {
                 JsonObject botSettingsJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\bot_settings.json"));
 
                 if (botSettingsJsonObject != null) {
-                    if ((botSettingsJsonObject.has("Bot Token") && (botSettingsJsonObject.has("YouTube API Key")) && (botSettingsJsonObject.has("Bot Owner ID")) && (botSettingsJsonObject.has("Message Filter URL") && (botSettingsJsonObject.has("Message Whitelist Filter URL")) && (botSettingsJsonObject.has("Syntax Prefix")) && (botSettingsJsonObject.has("Time Period")) && (botSettingsJsonObject.has("Time Unit"))))) {
+                    if ((botSettingsJsonObject.has("Bot Token") && (botSettingsJsonObject.has("YouTube API Key")) && (botSettingsJsonObject.has("Bot Owner ID")) && (botSettingsJsonObject.has("Syntax Prefix")) && (botSettingsJsonObject.has("Time Period")) && (botSettingsJsonObject.has("Time Unit")))) {
                         this.getBotSettings().setBotToken(botSettingsJsonObject.get("Bot Token").getAsString());
                         this.getBotSettings().setYoutubeAPIKey(botSettingsJsonObject.get("YouTube API Key").getAsString());
                         this.getBotSettings().setBotOwnerID(botSettingsJsonObject.get("Bot Owner ID").getAsString());
-                        this.getBotSettings().setMessageFilterURL(botSettingsJsonObject.get("Message Filter URL").getAsString());
-                        this.getBotSettings().setMessageWhitelistFilterURL(botSettingsJsonObject.get("Message Whitelist Filter URL").getAsString());
                         this.getBotSettings().setPrefix(botSettingsJsonObject.get("Syntax Prefix").getAsString());
 
                         int timePeriod = 10;
@@ -103,6 +103,39 @@ public final class SettingsManager {
         }
     }
 
+    // This method loads the message filter settings.
+    public void loadMessageFilterSettings () {
+        if (this.retryMessageFilterSettings <= 1) {
+            if (Files.exists(Constants.getLunaFolderPath("\\settings\\message_filter_settings.json"))) {
+                JsonObject messageFilterSettingsJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\message_filter_settings.json"));
+
+                if (messageFilterSettingsJsonObject != null) {
+                    if ((messageFilterSettingsJsonObject.has("Enable Blacklist")) && (messageFilterSettingsJsonObject.has("Custom Filters")) && (messageFilterSettingsJsonObject.has("Custom Blacklist URL")) && (messageFilterSettingsJsonObject.has("Custom Whitelist URL")) && (messageFilterSettingsJsonObject.has("Custom Character Filter URL")) && (messageFilterSettingsJsonObject.has("Fallback to default"))) {
+                        this.getMessageFilterSettings().setEnableBlacklist(messageFilterSettingsJsonObject.get("Enable Blacklist").getAsBoolean());
+                        this.getMessageFilterSettings().setCustomFiltersEnabled(messageFilterSettingsJsonObject.get("Custom Filters").getAsBoolean());
+                        this.getMessageFilterSettings().setCustomBlackListURL(messageFilterSettingsJsonObject.get("Custom Blacklist URL").getAsString());
+                        this.getMessageFilterSettings().setCustomWhitelistURL(messageFilterSettingsJsonObject.get("Custom Whitelist URL").getAsString());
+                        this.getMessageFilterSettings().setCustomCharacterFilterURL(messageFilterSettingsJsonObject.get("Custom Character Filter URL").getAsString());
+                        this.getMessageFilterSettings().setFallbackToDefault(messageFilterSettingsJsonObject.get("Fallback to default").getAsBoolean());
+                    } else {
+                        CrashLog.saveLogAsCrashLog(new IOException("Message filter settings are invalid!"));
+                        System.exit(1);
+                    }
+                } else {
+                    CrashLog.saveLogAsCrashLog(new IOException("Message filter settings are invalid!"));
+                    System.exit(1);
+                }
+            } else {
+                this.retryMessageFilterSettings ++;
+                this.saveMessageFilterSettings();
+                this.loadMessageFilterSettings();
+            }
+        } else {
+            CrashLog.saveLogAsCrashLog(new IOException("Message filter settings cannot be created!"));
+            System.exit(1);
+        }
+    }
+
     // This method loads the MySQL settings.
     public void loadMySQLSettings () {
         if (this.retryMySQLSettings <= 1) {
@@ -110,73 +143,34 @@ public final class SettingsManager {
                 JsonObject mySQLSettingsJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\mysql_settings.json"));
 
                 if (mySQLSettingsJsonObject != null) {
-                    if (mySQLSettingsJsonObject.has("MySQL Hostname")) {
+                    if ((mySQLSettingsJsonObject.has("MySQL Hostname")) && (mySQLSettingsJsonObject.has("MySQL Port")) && (mySQLSettingsJsonObject.has("MySQL Username")) && (mySQLSettingsJsonObject.has("MySQL Password")) && (mySQLSettingsJsonObject.has("MySQL Database Name")) && (mySQLSettingsJsonObject.has("MySQL JDBC URL")) && (mySQLSettingsJsonObject.has("MySQL Cache Prepared Statement")) && (mySQLSettingsJsonObject.has("MySQL Prepared Statement Cache Size")) && (mySQLSettingsJsonObject.has("MySQL Prepared Statement Cache SQL Limit")) && (mySQLSettingsJsonObject.has("MySQL Minimum Idle")) && (mySQLSettingsJsonObject.has("MySQL Maximum Pool Size")) && (mySQLSettingsJsonObject.has("MySQL Idle Timeout")) && (mySQLSettingsJsonObject.has("MySQL Leak Detection Threshold")) && (mySQLSettingsJsonObject.has("MySQL Connection Timeout")) && (mySQLSettingsJsonObject.has("MySQL Validation Timeout")) && (mySQLSettingsJsonObject.has("MySQL Max Lifetime"))) {
                         this.getMySQLSettings().setMySQLHostname(mySQLSettingsJsonObject.get("MySQL Hostname").getAsString());
+                        this.getMySQLSettings().setMySQLPort(mySQLSettingsJsonObject.get("MySQL Port").getAsString());
+                        this.getMySQLSettings().setMySQLUsername(mySQLSettingsJsonObject.get("MySQL Username").getAsString());
+                        this.getMySQLSettings().setMySQLPassword(mySQLSettingsJsonObject.get("MySQL Password").getAsString());
+                        this.getMySQLSettings().setMySQLDatabaseName(mySQLSettingsJsonObject.get("MySQL Database Name").getAsString());
+                        this.getMySQLSettings().setMySQLJDBCURL(mySQLSettingsJsonObject.get("MySQL JDBC URL").getAsString());
+                        this.getMySQLSettings().setCachePrepStmts(mySQLSettingsJsonObject.get("MySQL Cache Prepared Statement").getAsString());
+                        this.getMySQLSettings().setPrepStmtCacheSize(mySQLSettingsJsonObject.get("MySQL Prepared Statement Cache Size").getAsString());
+                        this.getMySQLSettings().setPrepStmtCacheSqlLimit(mySQLSettingsJsonObject.get("MySQL Prepared Statement Cache SQL Limit").getAsString());
+                        this.getMySQLSettings().setMinimumIdle(mySQLSettingsJsonObject.get("MySQL Minimum Idle").getAsString());
+                        this.getMySQLSettings().setMaximumPoolSize(mySQLSettingsJsonObject.get("MySQL Maximum Pool Size").getAsString());
+                        this.getMySQLSettings().setIdleTimeOut(mySQLSettingsJsonObject.get("MySQL Idle Timeout").getAsString());
+                        this.getMySQLSettings().setLeakDetectionThreshold(mySQLSettingsJsonObject.get("MySQL Leak Detection Threshold").getAsString());
+                        this.getMySQLSettings().setConnectionTimeout(mySQLSettingsJsonObject.get("MySQL Connection Timeout").getAsString());
+                        this.getMySQLSettings().setValidationTimeout(mySQLSettingsJsonObject.get("MySQL Validation Timeout").getAsString());
+                        this.getMySQLSettings().setMaxLifetime(mySQLSettingsJsonObject.get("MySQL Max Lifetime").getAsString());
 
-                        if (mySQLSettingsJsonObject.has("MySQL Port")) {
-                            this.getMySQLSettings().setMySQLPort(mySQLSettingsJsonObject.get("MySQL Port").getAsString());
-
-                            if (mySQLSettingsJsonObject.has("MySQL Username")) {
-                                this.getMySQLSettings().setMySQLUsername(mySQLSettingsJsonObject.get("MySQL Username").getAsString());
-
-                                if (mySQLSettingsJsonObject.has("MySQL Password")) {
-                                    this.getMySQLSettings().setMySQLPassword(mySQLSettingsJsonObject.get("MySQL Password").getAsString());
-
-                                    if (mySQLSettingsJsonObject.has("MySQL Database Name")) {
-                                        this.getMySQLSettings().setMySQLDatabaseName(mySQLSettingsJsonObject.get("MySQL Database Name").getAsString());
-
-                                        if (mySQLSettingsJsonObject.has("MySQL JDBC URL")) {
-                                            this.getMySQLSettings().setMySQLJDBCURL(mySQLSettingsJsonObject.get("MySQL JDBC URL").getAsString());
-
-                                            if (mySQLSettingsJsonObject.has("MySQL Cache Prepared Statement")) {
-                                                this.getMySQLSettings().setCachePrepStmts(mySQLSettingsJsonObject.get("MySQL Cache Prepared Statement").getAsString());
-
-                                                if (mySQLSettingsJsonObject.has("MySQL Prepared Statement Cache Size")) {
-                                                    this.getMySQLSettings().setPrepStmtCacheSize(mySQLSettingsJsonObject.get("MySQL Prepared Statement Cache Size").getAsString());
-
-                                                    if (mySQLSettingsJsonObject.has("MySQL Prepared Statement Cache SQL Limit")) {
-                                                        this.getMySQLSettings().setPrepStmtCacheSqlLimit(mySQLSettingsJsonObject.get("MySQL Prepared Statement Cache SQL Limit").getAsString());
-
-                                                        if (mySQLSettingsJsonObject.has("MySQL Minimum Idle")) {
-                                                            this.getMySQLSettings().setMinimumIdle(mySQLSettingsJsonObject.get("MySQL Minimum Idle").getAsString());
-
-                                                            if (mySQLSettingsJsonObject.has("MySQL Maximum Pool Size")) {
-                                                                this.getMySQLSettings().setMaximumPoolSize(mySQLSettingsJsonObject.get("MySQL Maximum Pool Size").getAsString());
-
-                                                                if (mySQLSettingsJsonObject.has("MySQL Idle Timeout")) {
-                                                                    this.getMySQLSettings().setIdleTimeOut(mySQLSettingsJsonObject.get("MySQL Idle Timeout").getAsString());
-
-                                                                    if (mySQLSettingsJsonObject.has("MySQL Leak Detection Threshold")) {
-                                                                        this.getMySQLSettings().setLeakDetectionThreshold(mySQLSettingsJsonObject.get("MySQL Leak Detection Threshold").getAsString());
-
-                                                                        if (mySQLSettingsJsonObject.has("MySQL Connection Timeout")) {
-                                                                            this.getMySQLSettings().setConnectionTimeout(mySQLSettingsJsonObject.get("MySQL Connection Timeout").getAsString());
-
-                                                                            if (mySQLSettingsJsonObject.has("MySQL Validation Timeout")) {
-                                                                                this.getMySQLSettings().setValidationTimeout(mySQLSettingsJsonObject.get("MySQL Validation Timeout").getAsString());
-
-                                                                                if (mySQLSettingsJsonObject.has("MySQL Max Lifetime")) {
-                                                                                    this.getMySQLSettings().setMaxLifetime(mySQLSettingsJsonObject.get("MySQL Max Lifetime").getAsString());
-
-                                                                                    Luna.MY_SQL_MANAGER.setupHikariConfig();
-                                                                                    Luna.MY_SQL_MANAGER.createTables();
-                                                                                    this.loadServerSettings();
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        Luna.MY_SQL_MANAGER.setupHikariConfig();
+                        Luna.MY_SQL_MANAGER.createTables();
+                        this.loadServerSettings();
+                    } else {
+                        CrashLog.saveLogAsCrashLog(new IOException("MySQL settings are invalid!"));
+                        System.exit(1);
                     }
+                } else {
+                    CrashLog.saveLogAsCrashLog(new IOException("MySQL settings are invalid!"));
+                    System.exit(1);
                 }
             } else {
                 this.retryMySQLSettings ++;
@@ -228,55 +222,105 @@ public final class SettingsManager {
 
     // This method updates the whitelist.
     public void updateWhitelist () {
-        try {
-            URL url = new URL(this.getBotSettings().getMessageWhitelistFilterURL());
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+        if (this.getMessageFilterSettings().isBlacklistEnabled()) {
+            boolean fallback = false;
+            String whitelistURL = this.getMessageFilterSettings().isCustomFiltersEnabled() ? this.getMessageFilterSettings().getCustomWhitelistURL() : Constants.FALLBACK_WHITELIST_URL;
 
-            bufferedReader.lines().filter(line -> !(this.getFilterSettings().getWhitelistedWords().contains(line))).forEachOrdered(line -> this.getFilterSettings().getWhitelistedWords().add(line));
-            bufferedReader.close();
-        } catch (IOException ioException) {
-            CrashLog.saveLogAsCrashLog(ioException);
+            while (true) {
+                if (fallback)
+                    whitelistURL = Constants.FALLBACK_WHITELIST_URL;
+
+                if (!(this.getMessageFilterSettings().isCustomFiltersEnabled()))
+                    fallback = true;
+
+                try {
+                    URL url = new URL(whitelistURL);
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+
+                    bufferedReader.lines().filter(line -> !(this.getMessageFilterSettings().getWhitelistedWords().contains(line))).forEachOrdered(line -> this.getMessageFilterSettings().getWhitelistedWords().add(line));
+                    bufferedReader.close();
+                    return;
+                } catch (IOException ioException) {
+                    CrashLog.saveLogAsCrashLog(ioException);
+
+                    if (fallback)
+                        return;
+
+                    fallback = true;
+                }
+            }
         }
     }
 
     // This method updates the blacklist.
     public void updateBlacklist () {
-        try {
-            URL url = new URL(this.getBotSettings().getMessageFilterURL());
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+        if (this.getMessageFilterSettings().isBlacklistEnabled()) {
+            boolean fallback = false;
+            String blacklistURL = this.getMessageFilterSettings().isCustomFiltersEnabled() ? this.getMessageFilterSettings().getCustomBlackListURL() : Constants.FALLBACK_BLACKLIST_URL;
 
-            this.getFilterSettings().getBlacklistedWords().clear();
-            bufferedReader.lines().filter(line -> !(this.getFilterSettings().getBlacklistedWords().contains(line))).forEachOrdered(line -> this.getFilterSettings().getBlacklistedWords().add(line));
-            bufferedReader.close();
+            while (true) {
+                if (fallback)
+                    blacklistURL = Constants.FALLBACK_BLACKLIST_URL;
 
-            if (this.getFilterSettings().getBlacklistedWords().size() > 3) {
-                this.getFilterSettings().getBlacklistedWords().remove(0);
-                this.getFilterSettings().getBlacklistedWords().remove(0);
-                this.getFilterSettings().getBlacklistedWords().remove(0);
-            } else {
-                this.getFilterSettings().getBlacklistedWords().clear();
+                if (!(this.getMessageFilterSettings().isCustomFiltersEnabled()))
+                    fallback = true;
+
+                try {
+                    URL url = new URL(blacklistURL);
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+
+                    bufferedReader.lines().filter(line -> !(this.getMessageFilterSettings().getBlacklistedWords().contains(line))).forEachOrdered(line -> this.getMessageFilterSettings().getBlacklistedWords().add(line));
+                    bufferedReader.close();
+                    return;
+                } catch (IOException ioException) {
+                    CrashLog.saveLogAsCrashLog(ioException);
+
+                    if (fallback)
+                        return;
+
+                    fallback = true;
+                }
             }
-        } catch (IOException ioException) {
-            CrashLog.saveLogAsCrashLog(ioException);
         }
     }
 
     // This method updates the filters.
     public void updateFilters () {
-        JsonObject filterJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\filter.json"));
+        if (this.getMessageFilterSettings().isBlacklistEnabled()) {
+            boolean fallback = false;
+            String characterFilterURL = this.getMessageFilterSettings().isCustomFiltersEnabled() ? this.getMessageFilterSettings().getCustomCharacterFilterURL() : Constants.FALLBACK_CHARACTER_FILTER_URL;
 
-        if (filterJsonObject != null) {
-            filterJsonObject.entrySet().stream().filter(wordFilterMapEntry -> !(this.getFilterSettings().getBypassDetectionHashMap().containsKey(wordFilterMapEntry.getKey()))).forEachOrdered(wordFilterMapEntry -> this.getFilterSettings().getBypassDetectionHashMap().put(wordFilterMapEntry.getKey(), wordFilterMapEntry.getValue().getAsString()));
-        } else {
-            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Filter cannot resolved!"));
+            while (true) {
+                if (fallback)
+                    characterFilterURL = Constants.FALLBACK_CHARACTER_FILTER_URL;
+
+                if (!(this.getMessageFilterSettings().isCustomFiltersEnabled()))
+                    fallback = true;
+
+                try {
+                    JsonObject characterFilterJsonObject = JsonUtils.fetchOnlineJsonObject(characterFilterURL);
+
+                    if (characterFilterJsonObject != null) {
+                        characterFilterJsonObject.entrySet().stream().filter(wordFilterMapEntry -> !(this.getMessageFilterSettings().getCharacterFilterHashMap().containsKey(wordFilterMapEntry.getKey()))).forEachOrdered(wordFilterMapEntry -> this.getMessageFilterSettings().getCharacterFilterHashMap().put(wordFilterMapEntry.getKey(), wordFilterMapEntry.getValue().getAsString()));
+                        return;
+                    } else {
+                        CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Character filter resolving failed!"));
+
+                        if (fallback)
+                            return;
+
+                        fallback = true;
+                    }
+                } catch (IOException ioException) {
+                    CrashLog.saveLogAsCrashLog(ioException);
+
+                    if (fallback)
+                        return;
+
+                    fallback = true;
+                }
+            }
         }
-    }
-
-    // This method saves the settings.
-    public void saveSettings () {
-        this.saveBotSettings();
-        this.saveMySQLSettings();
-        this.saveServerSettings();
     }
 
     // This method saves the bot settings.
@@ -287,13 +331,26 @@ public final class SettingsManager {
         botSettingsJsonObject.addProperty("Bot Token", this.getBotSettings().getBotToken());
         botSettingsJsonObject.addProperty("YouTube API Key", this.getBotSettings().getYoutubeAPIKey());
         botSettingsJsonObject.addProperty("Bot Owner ID", this.getBotSettings().getBotOwnerID());
-        botSettingsJsonObject.addProperty("Message Filter URL", this.getBotSettings().getMessageFilterURL());
-        botSettingsJsonObject.addProperty("Message Whitelist Filter URL", this.getBotSettings().getMessageWhitelistFilterURL());
         botSettingsJsonObject.addProperty("Syntax Prefix", this.getBotSettings().getPrefix());
         botSettingsJsonObject.addProperty("Time Period", this.getBotSettings().getTimePeriod());
         botSettingsJsonObject.addProperty("Time Unit", this.getBotSettings().getTimeUnit().name());
 
         Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\bot_settings.json"), botSettingsJsonObject);
+    }
+
+    // This method saves the message filter settings.
+    public void saveMessageFilterSettings () {
+        JsonObject messageFilterSettingsJsonObject = new JsonObject();
+
+        messageFilterSettingsJsonObject.addProperty("Config", "1.0.0");
+        messageFilterSettingsJsonObject.addProperty("Enable Blacklist", this.getMessageFilterSettings().isBlacklistEnabled());
+        messageFilterSettingsJsonObject.addProperty("Custom Filters", this.getMessageFilterSettings().isCustomFiltersEnabled());
+        messageFilterSettingsJsonObject.addProperty("Custom Blacklist URL", this.getMessageFilterSettings().getCustomBlackListURL());
+        messageFilterSettingsJsonObject.addProperty("Custom Whitelist URL", this.getMessageFilterSettings().getCustomWhitelistURL());
+        messageFilterSettingsJsonObject.addProperty("Custom Character Filter URL", this.getMessageFilterSettings().getCustomCharacterFilterURL());
+        messageFilterSettingsJsonObject.addProperty("Fallback to default", this.getMessageFilterSettings().isFallbackToDefault());
+
+        Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\message_filter_settings.json"), messageFilterSettingsJsonObject);
     }
 
     // This method saves the MySQL settings.
@@ -428,8 +485,8 @@ public final class SettingsManager {
         return this.botSettings;
     }
 
-    public FilterSettings getFilterSettings () {
-        return this.filterSettings;
+    public MessageFilterSettings getMessageFilterSettings () {
+        return this.messageFilterSettings;
     }
 
     public MySQLSettings getMySQLSettings () {
