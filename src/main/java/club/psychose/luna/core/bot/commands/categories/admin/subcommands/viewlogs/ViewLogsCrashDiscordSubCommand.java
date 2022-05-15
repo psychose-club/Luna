@@ -41,6 +41,9 @@ public final class ViewLogsCrashDiscordSubCommand extends DiscordSubCommand {
     public void onSubCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
         String fileName = arguments[0].trim();
 
+        if (!(fileName.endsWith(".txt")))
+            fileName += ".txt";
+
         if (Files.exists(Constants.getLunaFolderPath("\\logs\\crashes\\" + fileName))) {
             messageReceivedEvent.getTextChannel().sendFile(Constants.getLunaFolderPath("\\logs\\crashes\\" + fileName).toFile()).queue();
         } else {
