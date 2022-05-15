@@ -87,8 +87,12 @@ public final class DiscordEmbedBuilder {
         this.embedBuilder.setThumbnail("https://cdn.discordapp.com/app-icons/934768351710965801/c3542b33281164d8c80e26c434b2834c.png?size=256");
         this.embedBuilder.setColor(this.embedColor);
 
-        if (this.fieldHashMap != null)
-            this.fieldHashMap.forEach((key, value) -> this.embedBuilder.addField(key, value, false));
+        if (this.fieldHashMap != null) {
+            this.fieldHashMap.forEach((key, value) -> {
+                if ((key != null) && (value != null))
+                    this.embedBuilder.addField(key, value, false);
+            });
+        }
 
         // This method selects a random footer text.
         if (this.footerType != null) {
