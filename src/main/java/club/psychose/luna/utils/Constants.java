@@ -31,8 +31,9 @@ public final class Constants {
     public static final String VERSION = "1.0.5";
     public static final String BUILD = "6";
 
-    // Emoji constant.
+    // Bot constants.
     public static final Emoji GO_BACK_EMOJI = Emoji.fromUnicode("\uD83D\uDD19");
+    public static String BOT_IMAGE_URL = null;
 
     // Filter constants.
     // If custom filters are enabled it'll use it only as fallback if not "Fallback to default" is disabled!
