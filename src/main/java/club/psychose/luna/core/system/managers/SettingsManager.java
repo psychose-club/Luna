@@ -48,12 +48,14 @@ public final class SettingsManager {
     private final MessageFilterSettings messageFilterSettings = new MessageFilterSettings();
     private final MuteSettings muteSettings = new MuteSettings();
     private final MySQLSettings mySQLSettings = new MySQLSettings();
+    private final PhishingSettings phishingSettings = new PhishingSettings();
     private final ServerSettings serverSettings = new ServerSettings();
 
     private int retryBotSettings = 0;
     private int retryMessageFilterSettings = 0;
     private int retryMuteSettings = 0;
     private int retryMySQLSettings = 0;
+    private int retryPhishingSettings = 0;
 
     // This method loads all settings.
     public void loadSettings () {
@@ -61,6 +63,7 @@ public final class SettingsManager {
         this.loadMuteSettings();
         this.loadMessageFilterSettings();
         this.loadMySQLSettings();
+        this.loadPhishingSettings();
     }
 
     // This method loads the bot settings.
@@ -227,6 +230,40 @@ public final class SettingsManager {
         }
     }
 
+    // This method loads the phishing blacklist settings.
+    public void loadPhishingSettings () {
+        if (this.retryPhishingSettings <= 1) {
+            if (Files.exists(Constants.getLunaFolderPath("\\settings\\phishing_settings.json"))) {
+                JsonObject phishingSettingsJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\phishing_settings.json"));
+
+                if (phishingSettingsJsonObject != null) {
+                    if ((phishingSettingsJsonObject.has("Enable Phishing Protection")) && (phishingSettingsJsonObject.has("Block domains")) && (phishingSettingsJsonObject.has("Block suspicious domains")) && (phishingSettingsJsonObject.has("Auto-Mute")) && (phishingSettingsJsonObject.has("Auto-Ban")) && (phishingSettingsJsonObject.has("Domain List")) && (phishingSettingsJsonObject.has("Suspicious Domain List"))) {
+                        this.getPhishingSettings().setEnablePhishingProtection(phishingSettingsJsonObject.get("Enable Phishing Protection").getAsBoolean());
+                        this.getPhishingSettings().setEnableDomainList(phishingSettingsJsonObject.get("Block domains").getAsBoolean());
+                        this.getPhishingSettings().setEnableSuspiciousList(phishingSettingsJsonObject.get("Block suspicious domains").getAsBoolean());
+                        this.getPhishingSettings().setEnableAutomaticMute(phishingSettingsJsonObject.get("Auto-Mute").getAsBoolean());
+                        this.getPhishingSettings().setEnableAutomaticBan(phishingSettingsJsonObject.get("Auto-Ban").getAsBoolean());
+                        this.getPhishingSettings().setDomainListURL(phishingSettingsJsonObject.get("Domain List").getAsString());
+                        this.getPhishingSettings().setSuspiciousListURL(phishingSettingsJsonObject.get("Suspicious Domain List").getAsString());
+                    } else {
+                        CrashLog.saveLogAsCrashLog(new IOException("Phishing settings are invalid!"));
+                        System.exit(1);
+                    }
+                } else {
+                    CrashLog.saveLogAsCrashLog(new IOException("Phishing settings are invalid!"));
+                    System.exit(1);
+                }
+            } else {
+                this.retryPhishingSettings ++;
+                this.savePhishingSettings();
+                this.loadPhishingSettings();
+            }
+        } else {
+            CrashLog.saveLogAsCrashLog(new IOException("Phishing settings cannot be created!"));
+            System.exit(1);
+        }
+    }
+
     // This method loads the server settings.
     public void loadServerSettings () {
         String mySQLStatement = "SELECT * FROM servers";
@@ -261,6 +298,7 @@ public final class SettingsManager {
     public void loadFilterSettings () {
         this.updateWhitelist();
         this.updateBlacklist();
+        this.updatePhishingLists();
         this.updateFilters();
     }
 
@@ -323,6 +361,35 @@ public final class SettingsManager {
                         return;
 
                     fallback = true;
+                }
+            }
+        }
+    }
+
+    // This method updates the phishing lists.
+    public void updatePhishingLists () {
+        if (this.getPhishingSettings().isPhishingProtectionEnabled()) {
+            if (this.getPhishingSettings().isDomainListEnabled()) {
+                try {
+                    URL url = new URL(this.getPhishingSettings().getDomainListURL());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+
+                    bufferedReader.lines().filter(line -> !(this.getPhishingSettings().getPhishingDomainsArrayList().contains(line))).forEachOrdered(line -> this.getPhishingSettings().getPhishingDomainsArrayList().add(line));
+                    bufferedReader.close();
+                } catch (IOException ioException) {
+                    CrashLog.saveLogAsCrashLog(ioException);
+                }
+            }
+
+            if (this.getPhishingSettings().isSuspiciousListEnabled()) {
+                try {
+                    URL url = new URL(this.getPhishingSettings().getSuspiciousListURL());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+
+                    bufferedReader.lines().filter(line -> !(this.getPhishingSettings().getPhishingDomainsSuspiciousArrayList().contains(line))).forEachOrdered(line -> this.getPhishingSettings().getPhishingDomainsSuspiciousArrayList().add(line));
+                    bufferedReader.close();
+                } catch (IOException ioException) {
+                    CrashLog.saveLogAsCrashLog(ioException);
                 }
             }
         }
@@ -435,6 +502,22 @@ public final class SettingsManager {
         mySQLJsonObject.addProperty("MySQL Max Lifetime", this.getMySQLSettings().getMaxLifetime());
 
         Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\mysql_settings.json"), mySQLJsonObject);
+    }
+
+    // This method saves the phishing settings.
+    public void savePhishingSettings () {
+        JsonObject phishingSettingsJsonObject = new JsonObject();
+
+        phishingSettingsJsonObject.addProperty("Config", "1.0.0");
+        phishingSettingsJsonObject.addProperty("Enable Phishing Protection", this.getPhishingSettings().isPhishingProtectionEnabled());
+        phishingSettingsJsonObject.addProperty("Block domains", this.getPhishingSettings().isDomainListEnabled());
+        phishingSettingsJsonObject.addProperty("Block suspicious domains", this.getPhishingSettings().isSuspiciousListEnabled());
+        phishingSettingsJsonObject.addProperty("Auto-Mute", this.getPhishingSettings().isAutomaticMuteEnabled());
+        phishingSettingsJsonObject.addProperty("Auto-Ban", this.getPhishingSettings().isAutomaticBanEnabled());
+        phishingSettingsJsonObject.addProperty("Domain List", this.getPhishingSettings().getDomainListURL());
+        phishingSettingsJsonObject.addProperty("Suspicious Domain List", this.getPhishingSettings().getSuspiciousListURL());
+
+        Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\phishing_settings.json"), phishingSettingsJsonObject);
     }
 
     // This method saves the server settings.
@@ -554,6 +637,10 @@ public final class SettingsManager {
 
     public MySQLSettings getMySQLSettings () {
         return this.mySQLSettings;
+    }
+
+    public PhishingSettings getPhishingSettings () {
+        return this.phishingSettings;
     }
 
     public ServerSettings getServerSettings () {
