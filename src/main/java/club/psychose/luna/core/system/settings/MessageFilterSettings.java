@@ -17,12 +17,12 @@
 
 package club.psychose.luna.core.system.settings;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*
  * This class contains the settings for the filter usage.
  */
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public final class MessageFilterSettings {
     private final ArrayList<String> blacklistedWords = new ArrayList<>();
