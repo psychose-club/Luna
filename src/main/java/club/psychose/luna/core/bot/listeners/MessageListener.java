@@ -22,6 +22,7 @@ import club.psychose.luna.core.bot.DiscordBot;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
 import club.psychose.luna.core.bot.commands.DiscordSubCommand;
 import club.psychose.luna.core.bot.filter.MessageFilter;
+import club.psychose.luna.core.bot.filter.PhishingFilter;
 import club.psychose.luna.core.bot.mute.Mute;
 import club.psychose.luna.core.captcha.Captcha;
 import club.psychose.luna.enums.FooterType;
@@ -41,6 +42,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /*
  * This class handles all sent messages in a text channel on Discord.
@@ -48,6 +50,7 @@ import java.util.List;
 
 public final class MessageListener extends ListenerAdapter {
     private final MessageFilter messageFilter = new MessageFilter();
+    private final PhishingFilter phishingFilter = new PhishingFilter();
     private final Mute mute = new Mute();
 
     // Received message event.
@@ -64,108 +67,113 @@ public final class MessageListener extends ListenerAdapter {
              if (!(messageReceivedEvent.getChannelType().equals(ChannelType.PRIVATE))) {
                  // Checks if the member is not null.
                  if (member != null) {
-                     // Checks if the message is not blacklisted.
-                     if (this.messageFilter.checkMessage(message)) {
-                         // Checks if the message is starts with the bot prefix.
-                         if (message.startsWith(Luna.SETTINGS_MANAGER.getBotSettings().getPrefix())) {
-                             // Resolves the command and command arguments from the message.
-                             String command = message.substring(Luna.SETTINGS_MANAGER.getBotSettings().getPrefix().length()).trim();
-                             String[] commandArguments = null;
+                     // Checks if the message is not a phishing message.
+                     if (this.phishingFilter.checkMessage(message)) {
+                         // Checks if the message is not blacklisted.
+                         if (this.messageFilter.checkMessage(message)) {
+                             // Checks if the message is starts with the bot prefix.
+                             if (message.startsWith(Luna.SETTINGS_MANAGER.getBotSettings().getPrefix())) {
+                                 // Resolves the command and command arguments from the message.
+                                 String command = message.substring(Luna.SETTINGS_MANAGER.getBotSettings().getPrefix().length()).trim();
+                                 String[] commandArguments = null;
 
-                             if (command.contains(" ")) {
-                                 commandArguments = command.split(" ");
-                                 command = commandArguments[0].trim();
+                                 if (command.contains(" ")) {
+                                     commandArguments = command.split(" ");
+                                     command = commandArguments[0].trim();
 
-                                 commandArguments = Arrays.copyOfRange(commandArguments, 1, commandArguments.length);
-                             }
+                                     commandArguments = Arrays.copyOfRange(commandArguments, 1, commandArguments.length);
+                                 }
 
-                             // Searches for the command or an alias from the command.
-                             boolean commandFound = false;
-                             DiscordCommand foundDiscordCommand = null;
+                                 // Searches for the command or an alias from the command.
+                                 boolean commandFound = false;
+                                 DiscordCommand foundDiscordCommand = null;
 
-                             for (DiscordCommand discordCommand : DiscordBot.COMMAND_MANAGER.getDiscordCommandsArrayList()) {
-                                 if (discordCommand.getCommandName().equalsIgnoreCase(command)) {
-                                     commandFound = true;
-                                     foundDiscordCommand = discordCommand;
-                                     break;
-                                 } else if (discordCommand.getAliases().length != 0) {
-                                     for (String alias : discordCommand.getAliases()) {
-                                         if (alias.equalsIgnoreCase(command)) {
-                                             commandFound = true;
-                                             foundDiscordCommand = discordCommand;
-                                             break;
+                                 for (DiscordCommand discordCommand : DiscordBot.COMMAND_MANAGER.getDiscordCommandsArrayList()) {
+                                     if (discordCommand.getCommandName().equalsIgnoreCase(command)) {
+                                         commandFound = true;
+                                         foundDiscordCommand = discordCommand;
+                                         break;
+                                     } else if (discordCommand.getAliases().length != 0) {
+                                         for (String alias : discordCommand.getAliases()) {
+                                             if (alias.equalsIgnoreCase(command)) {
+                                                 commandFound = true;
+                                                 foundDiscordCommand = discordCommand;
+                                                 break;
+                                             }
                                          }
                                      }
                                  }
-                             }
 
-                             // Checks if the command was found.
-                             if (commandFound) {
-                                 // Here we'll check if the command was not executed in the verification channel to prevent a bug that the bot send messages in the verification channel.
-                                 if (messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION))) {
-                                     // Only the verification command is allowed on the channel to let the verification process begin. (yeah good logic lmao)
-                                     if (!(foundDiscordCommand.getCommandName().equals("verification"))) {
-                                         messageReceivedEvent.getMessage().delete().queue();
-                                         return;
-                                     }
-                                 }
-
-                                 // Here we'll check if the command requires the bot owner permission.
-                                 boolean skipServerCheck = Arrays.asList(foundDiscordCommand.getPermissions()).contains(PermissionRoles.BOT_OWNER);
-
-                                 // If not the bot permission is required we'll look if the channel is valid for the command.
-                                 // So never ever a command should have the bot owner permission and another permission because then the channel will not be checked.
-                                 if (!(skipServerCheck))
-                                     if (!(Luna.DISCORD_MANAGER.getDiscordChannelUtils().isChannelValidForTheDiscordCommand(messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getDiscordChannels())))
-                                         return;
-
-                                 // Here we check if the user has the permissions to execute the command.
-                                 // We'll check if arguments are provided and if a specific command has subcommands.
-                                 // If a command has subcommands it'll parse the arguments and checks the "selected mode" and execute the subcommand.
-                                 // If not it'll execute the command normally like always.
-                                 if (Luna.DISCORD_MANAGER.getDiscordMemberUtils().checkUserPermission(member, messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getPermissions())) {
-                                     if ((commandArguments != null) && (foundDiscordCommand.getDiscordSubCommandsArrayList().size() != 0)) {
-                                        if (commandArguments.length >= 1) {
-                                            String commandMode = commandArguments[0].trim();
-
-                                            for (DiscordSubCommand discordSubCommand : foundDiscordCommand.getDiscordSubCommandsArrayList()) {
-                                                if (discordSubCommand.getSubCommandName().equalsIgnoreCase(commandMode)) {
-                                                    if (commandArguments.length == 1) {
-                                                        if (discordSubCommand.getMinimumArgumentsRequired() == 0) {
-                                                            discordSubCommand.onSubCommandExecution(null, messageReceivedEvent);
-                                                        } else {
-                                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
-                                                        }
-                                                    } else {
-                                                        commandArguments = Arrays.copyOfRange(commandArguments, 1, commandArguments.length);
-
-                                                        if (commandArguments.length >= discordSubCommand.getMinimumArgumentsRequired()) {
-                                                            discordSubCommand.onSubCommandExecution(commandArguments, messageReceivedEvent);
-                                                        } else {
-                                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
-                                                        }
-                                                    }
-
-                                                    return;
-                                                }
-                                            }
-
-                                            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
-                                            return;
-                                        }
+                                 // Checks if the command was found.
+                                 if (commandFound) {
+                                     // Here we'll check if the command was not executed in the verification channel to prevent a bug that the bot send messages in the verification channel.
+                                     if (messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION))) {
+                                         // Only the verification command is allowed on the channel to let the verification process begin. (yeah good logic lmao)
+                                         if (!(foundDiscordCommand.getCommandName().equals("verification"))) {
+                                             messageReceivedEvent.getMessage().delete().queue();
+                                             return;
+                                         }
                                      }
 
-                                     foundDiscordCommand.onCommandExecution(commandArguments, messageReceivedEvent);
+                                     // Here we'll check if the command requires the bot owner permission.
+                                     boolean skipServerCheck = Arrays.asList(foundDiscordCommand.getPermissions()).contains(PermissionRoles.BOT_OWNER);
+
+                                     // If not the bot permission is required we'll look if the channel is valid for the command.
+                                     // So never ever a command should have the bot owner permission and another permission because then the channel will not be checked.
+                                     if (!(skipServerCheck))
+                                         if (!(Luna.DISCORD_MANAGER.getDiscordChannelUtils().isChannelValidForTheDiscordCommand(messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getDiscordChannels())))
+                                             return;
+
+                                     // Here we check if the user has the permissions to execute the command.
+                                     // We'll check if arguments are provided and if a specific command has subcommands.
+                                     // If a command has subcommands it'll parse the arguments and checks the "selected mode" and execute the subcommand.
+                                     // If not it'll execute the command normally like always.
+                                     if (Luna.DISCORD_MANAGER.getDiscordMemberUtils().checkUserPermission(member, messageReceivedEvent.getGuild().getId(), foundDiscordCommand.getPermissions())) {
+                                         if ((commandArguments != null) && (foundDiscordCommand.getDiscordSubCommandsArrayList().size() != 0)) {
+                                             if (commandArguments.length >= 1) {
+                                                 String commandMode = commandArguments[0].trim();
+
+                                                 for (DiscordSubCommand discordSubCommand : foundDiscordCommand.getDiscordSubCommandsArrayList()) {
+                                                     if (discordSubCommand.getSubCommandName().equalsIgnoreCase(commandMode)) {
+                                                         if (commandArguments.length == 1) {
+                                                             if (discordSubCommand.getMinimumArgumentsRequired() == 0) {
+                                                                 discordSubCommand.onSubCommandExecution(null, messageReceivedEvent);
+                                                             } else {
+                                                                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
+                                                             }
+                                                         } else {
+                                                             commandArguments = Arrays.copyOfRange(commandArguments, 1, commandArguments.length);
+
+                                                             if (commandArguments.length >= discordSubCommand.getMinimumArgumentsRequired()) {
+                                                                 discordSubCommand.onSubCommandExecution(commandArguments, messageReceivedEvent);
+                                                             } else {
+                                                                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
+                                                             }
+                                                         }
+
+                                                         return;
+                                                     }
+                                                 }
+
+                                                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Syntax:\n" + foundDiscordCommand.getSyntaxString(), FooterType.ERROR, Color.RED);
+                                                 return;
+                                             }
+                                         }
+
+                                         foundDiscordCommand.onCommandExecution(commandArguments, messageReceivedEvent);
+                                     }
                                  }
                              }
+
+                             // If the channel is the verification channel it'll automatically delete the message.
+                             if (messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION)))
+                                 messageReceivedEvent.getMessage().delete().queue();
+                         } else {
+                             // We'll warn a member about the behaviour.
+                             this.warnMember(messageReceivedEvent.getMessage(), messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getTextChannels(), member);
                          }
-
-                         // If the channel is the verification channel it'll automatically delete the message.
-                         if (messageReceivedEvent.getTextChannel().getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(messageReceivedEvent.getGuild().getId(), DiscordChannels.VERIFICATION)))
-                             messageReceivedEvent.getMessage().delete().queue();
                      } else {
-                         // We'll warn a member about the behaviour.
-                         this.warnMember(messageReceivedEvent.getMessage(), messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getTextChannels(), member);
+                         this.punishMember(messageReceivedEvent.getMessage(), messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getTextChannels(), member);
                      }
                  }
              } else {
@@ -276,5 +284,37 @@ public final class MessageListener extends ListenerAdapter {
 
         // Sends a logging message.
         Luna.DISCORD_MANAGER.getDiscordBotUtils().sendLoggingMessage(guildID, "Inappropriate word detected!", fieldHashMap, textChannelList);
+    }
+
+    // This method handles the actions that happen with the member when a phishing message was detected.
+    private void punishMember (Message message, String guildID, TextChannel textChannel, List<TextChannel> textChannelList, Member member) {
+        // Deletes the message.
+        message.delete().queue();
+
+        // Checks if the text channel is not the verification channel.
+        if (!(textChannel.getId().equals(Luna.SETTINGS_MANAGER.getServerSettings().getDiscordChannelID(guildID, DiscordChannels.VERIFICATION))))
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(textChannel, "Message removed!", "Phishing link detected!", FooterType.ERROR, Color.RED);
+
+        // Fetches the current timestamp.
+        String timestamp = StringUtils.getDateAndTime("LOG");
+
+        // Creates a FieldHashMap.
+        HashMap<String, String> fieldHashMap = new HashMap<>();
+        fieldHashMap.put("Member", member.getAsMention());
+        fieldHashMap.put("Timestamp: ", timestamp);
+
+        // Sends a logging message.
+        Luna.DISCORD_MANAGER.getDiscordBotUtils().sendLoggingMessage(guildID, "Phishing link detected!", fieldHashMap, textChannelList);
+
+        // Handles the punishment.
+        if (Luna.SETTINGS_MANAGER.getPhishingSettings().isAutomaticMuteEnabled()) {
+            member.timeoutFor(Member.MAX_TIME_OUT_LENGTH, TimeUnit.DAYS).reason("Phishing link detected! | Automatically performed by Luna").queue();
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(member.getUser(), "You got muted!", "You got automatically muted from a server that contains this bot!\nReason:\nPhishing link detected!\n\nIf you think this is a mistake please contact the administration!", fieldHashMap, FooterType.ERROR, Color.RED);
+        }
+
+        if (Luna.SETTINGS_MANAGER.getPhishingSettings().isAutomaticBanEnabled()) {
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(member.getUser(), "You got banned!", "You got automatically banned from a server that contains this bot!\nReason:\nPhishing link detected!\n\nIf you think this is a mistake please contact the administration!", fieldHashMap, FooterType.ERROR, Color.RED);
+            member.ban(7, "Phishing link detected! | Automatically performed by Luna").queue();
+        }
     }
 }
