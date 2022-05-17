@@ -23,7 +23,7 @@ import club.psychose.luna.utils.logging.CrashLog;
 import java.util.Map;
 
 /*
- * This classes filters the message.
+ * This classes filters the messages.
  */
 
 public final class MessageFilter {
