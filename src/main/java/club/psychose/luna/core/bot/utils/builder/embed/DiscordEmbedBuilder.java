@@ -18,6 +18,7 @@
 package club.psychose.luna.core.bot.utils.builder.embed;
 
 import club.psychose.luna.enums.FooterType;
+import club.psychose.luna.utils.Constants;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
@@ -84,7 +85,10 @@ public final class DiscordEmbedBuilder {
         this.embedBuilder.setTitle(this.embedTitle);
         this.embedBuilder.setDescription(this.embedDescription);
         this.embedBuilder.setAuthor("\uD83D\uDC08 L U N A \uD83D\uDC08");
-        this.embedBuilder.setThumbnail("https://cdn.discordapp.com/app-icons/934768351710965801/c3542b33281164d8c80e26c434b2834c.png?size=256");
+
+        if (Constants.BOT_IMAGE_URL != null)
+            this.embedBuilder.setThumbnail(Constants.BOT_IMAGE_URL);
+
         this.embedBuilder.setColor(this.embedColor);
 
         if (this.fieldHashMap != null) {
