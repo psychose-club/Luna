@@ -18,6 +18,7 @@
 package club.psychose.luna.core.bot.listeners;
 
 import club.psychose.luna.Luna;
+import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.ConsoleLogger;
 import club.psychose.luna.utils.logging.CrashLog;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -38,6 +39,13 @@ public final class ReadyListener extends ListenerAdapter {
         // Fetches all channels.
         List<TextChannel> textChannelList = readyEvent.getJDA().getTextChannels();
         List<VoiceChannel> voiceChannelList = readyEvent.getJDA().getVoiceChannels();
+
+        // Sets the bot image url.
+        Constants.BOT_IMAGE_URL = readyEvent.getJDA().getSelfUser().getAvatarUrl();
+
+        // If the avatar is a default avatar it'll return most likely no avatar url, so we use the default avatar url.
+        if (Constants.BOT_IMAGE_URL == null)
+            Constants.BOT_IMAGE_URL = readyEvent.getJDA().getSelfUser().getDefaultAvatarUrl();
 
         // Safety call if bot already joined a voice channel it'll automatically disconnect the bot.
         voiceChannelList.stream().filter(voiceChannel -> voiceChannel.getMembers().size() != 0).forEachOrdered(voiceChannel -> voiceChannel.getMembers().stream().filter(member -> member.getId().equals(readyEvent.getJDA().getSelfUser().getId())).forEachOrdered(member -> voiceChannel.getGuild().getAudioManager().closeAudioConnection()));
