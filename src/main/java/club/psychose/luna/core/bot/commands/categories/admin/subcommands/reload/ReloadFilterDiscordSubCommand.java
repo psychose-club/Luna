@@ -39,6 +39,7 @@ public final class ReloadFilterDiscordSubCommand extends DiscordSubCommand {
     public void onSubCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
         // Reloads the filter settings.
         Luna.SETTINGS_MANAGER.loadMessageFilterSettings();
+        Luna.SETTINGS_MANAGER.loadPhishingSettings();
         Luna.SETTINGS_MANAGER.loadFilterSettings();
         Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Filter reloaded!", "Filter successfully reloaded!", FooterType.SUCCESS, Color.GREEN);
     }
