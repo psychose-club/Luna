@@ -75,7 +75,7 @@ public final class Mute {
 
                 if (duration != null) {
                     member.timeoutFor(duration).reason("Multiple usage of inappropriate words detected! | Automatically performed by Luna").queue();
-                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(member.getUser(), "You got muted!", "You got automatically muted from any server that contains this bot!\nReason:\nMultiple usages of inappropriate words!\n\nIf you think this is a mistake please contact the administration!", fieldHashMap, FooterType.ERROR, Color.RED);
+                    Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(member.getUser(), "You got muted!", "You got automatically muted from a server that contains this bot!\nReason:\nMultiple usages of inappropriate words!\n\nIf you think this is a mistake please contact the administration!", fieldHashMap, FooterType.ERROR, Color.RED);
                 }
             } catch (HierarchyException hierarchyException) {
                 CrashLog.saveLogAsCrashLog(hierarchyException);
