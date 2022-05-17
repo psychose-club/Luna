@@ -29,9 +29,14 @@ import java.util.concurrent.TimeUnit;
 
 public final class BotScheduler {
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService mutesExecutorService = Executors.newScheduledThreadPool(1);
 
     // This method starts the scheduler.
     public void startScheduler () {
+        // These are the time period and unit for mute resetting.
+        int timePeriod = Luna.SETTINGS_MANAGER.getMuteSettings().getTimeToResetMutes();
+        TimeUnit timeUnit = Luna.SETTINGS_MANAGER.getMuteSettings().getTimeToResetMutesUnit();
+
         // Starts the scheduler.
         this.scheduledExecutorService.scheduleAtFixedRate(() -> {
             // Fetches the ILoveRadio streams.
@@ -40,5 +45,8 @@ public final class BotScheduler {
             // Fetches the latest message filters.
             Luna.SETTINGS_MANAGER.loadFilterSettings();
         }, 0, 30, TimeUnit.MINUTES);
+
+        // Starts the mute scheduler.
+        this.mutesExecutorService.scheduleAtFixedRate(Luna.MY_SQL_MANAGER::clearMuteTable, timePeriod, timePeriod, timeUnit);
     }
 }
