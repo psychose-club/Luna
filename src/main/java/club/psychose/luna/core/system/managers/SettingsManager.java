@@ -46,16 +46,19 @@ public final class SettingsManager {
     // Initializing the settings.
     private final BotSettings botSettings = new BotSettings();
     private final MessageFilterSettings messageFilterSettings = new MessageFilterSettings();
+    private final MuteSettings muteSettings = new MuteSettings();
     private final MySQLSettings mySQLSettings = new MySQLSettings();
     private final ServerSettings serverSettings = new ServerSettings();
 
     private int retryBotSettings = 0;
     private int retryMessageFilterSettings = 0;
+    private int retryMuteSettings = 0;
     private int retryMySQLSettings = 0;
 
     // This method loads all settings.
     public void loadSettings () {
         this.loadBotSettings();
+        this.loadMuteSettings();
         this.loadMessageFilterSettings();
         this.loadMySQLSettings();
     }
@@ -132,6 +135,47 @@ public final class SettingsManager {
             }
         } else {
             CrashLog.saveLogAsCrashLog(new IOException("Message filter settings cannot be created!"));
+            System.exit(1);
+        }
+    }
+
+    // This method loads the mute settings.
+    public void loadMuteSettings () {
+        if (this.retryMuteSettings <= 1) {
+            if (Files.exists(Constants.getLunaFolderPath("\\settings\\mute_settings.json"))) {
+                JsonObject muteSettingsJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\mute_settings.json"));
+
+                if (muteSettingsJsonObject != null) {
+                    if ((muteSettingsJsonObject.has("Enable Muting")) && (muteSettingsJsonObject.has("Warnings needed for mute")) && (muteSettingsJsonObject.has("Mute Time")) && (muteSettingsJsonObject.has("Mute Time Unit")) && (muteSettingsJsonObject.has("Time to reset all mutes")) && (muteSettingsJsonObject.has("Reset Time Unit"))) {
+                        this.getMuteSettings().setEnableMuting(muteSettingsJsonObject.get("Enable Muting").getAsBoolean());
+                        this.getMuteSettings().setMuteTime(muteSettingsJsonObject.get("Mute Time").getAsInt());
+                        this.getMuteSettings().setWarningsNeededForMute(muteSettingsJsonObject.get("Warnings needed for mute").getAsInt());
+
+                        String muteTimeUnitString = muteSettingsJsonObject.get("Mute Time Unit").getAsString();
+                        TimeUnit muteTimeUnit = Arrays.stream(TimeUnit.values()).filter(validTimeUnit -> validTimeUnit.name().equalsIgnoreCase(muteTimeUnitString)).findFirst().orElse(TimeUnit.HOURS);
+
+                        this.getMuteSettings().setMuteTimeUnit(muteTimeUnit);
+                        this.getMuteSettings().setTimeToResetMutes(muteSettingsJsonObject.get("Time to reset all mutes").getAsInt());
+
+                        String resetTimeUnitString = muteSettingsJsonObject.get("Reset Time Unit").getAsString();
+                        TimeUnit resetTimeUnit = Arrays.stream(TimeUnit.values()).filter(validTimeUnit -> validTimeUnit.name().equalsIgnoreCase(resetTimeUnitString)).findFirst().orElse(TimeUnit.HOURS);
+
+                        this.getMuteSettings().setTimeToResetMutesUnit(resetTimeUnit);
+                    } else {
+                        CrashLog.saveLogAsCrashLog(new IOException("Mute settings are invalid!"));
+                        System.exit(1);
+                    }
+                } else {
+                    CrashLog.saveLogAsCrashLog(new IOException("Mute settings are invalid!"));
+                    System.exit(1);
+                }
+            } else {
+                this.retryMuteSettings ++;
+                this.saveMuteSettings();
+                this.loadMuteSettings();
+            }
+        } else {
+            CrashLog.saveLogAsCrashLog(new IOException("Mute settings cannot be created!"));
             System.exit(1);
         }
     }
@@ -353,6 +397,21 @@ public final class SettingsManager {
         Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\message_filter_settings.json"), messageFilterSettingsJsonObject);
     }
 
+    // This method saves the mute settings.
+    public void saveMuteSettings () {
+        JsonObject muteSettingsJsonObject = new JsonObject();
+
+        muteSettingsJsonObject.addProperty("Config", "1.0.0");
+        muteSettingsJsonObject.addProperty("Enable Muting", this.getMuteSettings().isMutingEnabled());
+        muteSettingsJsonObject.addProperty("Warnings needed for mute", this.getMuteSettings().getWarningsNeededForMute());
+        muteSettingsJsonObject.addProperty("Mute Time", this.getMuteSettings().getMuteTime());
+        muteSettingsJsonObject.addProperty("Mute Time Unit", this.getMuteSettings().getMuteTimeUnit().name());
+        muteSettingsJsonObject.addProperty("Time to reset all mutes", this.getMuteSettings().getTimeToResetMutes());
+        muteSettingsJsonObject.addProperty("Reset Time Unit", this.getMuteSettings().getTimeToResetMutesUnit().name());
+
+        Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\mute_settings.json"), muteSettingsJsonObject);
+    }
+
     // This method saves the MySQL settings.
     public void saveMySQLSettings () {
         JsonObject mySQLJsonObject = new JsonObject();
@@ -487,6 +546,10 @@ public final class SettingsManager {
 
     public MessageFilterSettings getMessageFilterSettings () {
         return this.messageFilterSettings;
+    }
+
+    public MuteSettings getMuteSettings () {
+        return this.muteSettings;
     }
 
     public MySQLSettings getMySQLSettings () {
