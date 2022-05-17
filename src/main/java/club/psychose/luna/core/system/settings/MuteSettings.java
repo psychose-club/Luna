@@ -19,7 +19,12 @@ package club.psychose.luna.core.system.settings;
 
 import java.util.concurrent.TimeUnit;
 
+/*
+ * This class contains the settings for the mute usage.
+ */
+
 public final class MuteSettings {
+    // These are the default values for the settings.
     private boolean enableMuting = true;
     private int warningsNeededForMute = 3;
     private int muteTime = 12;
