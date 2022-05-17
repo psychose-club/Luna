@@ -31,7 +31,7 @@ import java.awt.*;
 public final class ReloadSettingsDiscordSubCommand extends DiscordSubCommand {
     // Public constructor.
     public ReloadSettingsDiscordSubCommand () {
-        super("settings", new String[] {"all | bot | mysql"}, 1);
+        super("settings", new String[] {"all | bot | mute | mysql"}, 1);
     }
 
     // Subcommand execution method.
@@ -50,6 +50,12 @@ public final class ReloadSettingsDiscordSubCommand extends DiscordSubCommand {
                 // Reloads the bot settings.
                 Luna.SETTINGS_MANAGER.loadBotSettings();
                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Settings reloaded!", "Bot settings successfully reloaded!", FooterType.SUCCESS, Color.GREEN);
+            }
+
+            case "mute" -> {
+                // Reloads the mute settings.
+                Luna.SETTINGS_MANAGER.loadMuteSettings();
+                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Settings reloaded!", "Mute settings successfully reloaded!", FooterType.SUCCESS, Color.GREEN);
             }
 
             case "mysql" -> {
