@@ -29,6 +29,18 @@ import java.util.Date;
  */
 
 public final class StringUtils {
+    // This method converts bytes to HEX.
+    public static String convertBytesToHEX (byte[] bytes) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        // Converts every byte to HEX.
+        for (byte convertByte : bytes)
+            stringBuilder.append(String.format("%02x", convertByte));
+
+        // Returns the string.
+        return stringBuilder.toString().trim();
+    }
+
     // This method returns a date and time string.
     public static String getDateAndTime (String formatMode) {
         // Setup date.
