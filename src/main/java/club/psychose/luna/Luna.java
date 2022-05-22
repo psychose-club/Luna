@@ -53,24 +53,33 @@ public final class Luna {
         ConsoleLogger.debug("Version: " + Constants.VERSION);
         ConsoleLogger.debug("Build Version: " + Constants.BUILD);
         ConsoleLogger.printEmptyLine();
-        ConsoleLogger.debug("Checking for updates...");
 
-        // Searching for an update.
-        if (APPLICATION_CHECKER.checkIfUpdateIsAvailable()) {
-            ConsoleLogger.debug("Update found!");
-            ConsoleLogger.debug("Downloading UniversalUpdater...");
+        // Checks if the development mode is disabled.
+        if (!(Constants.DEVELOPMENT_MODE)) {
+            ConsoleLogger.debug("Checking for updates...");
 
-            if (new UniversalUpdaterDownloader().downloadUniversalUpdater()) {
-                ConsoleLogger.debug("SUCCESS! UniversalUpdater downloaded!");
-                new ApplicationDownloader().downloadUpdate();
-            } else {
-                ConsoleLogger.debug("ERROR! Failed to download UniversalUpdater!");
+            // Searching for an update.
+            if (APPLICATION_CHECKER.checkIfUpdateIsAvailable()) {
+                ConsoleLogger.debug("Update found!");
+                ConsoleLogger.debug("Downloading UniversalUpdater...");
+
+                if (new UniversalUpdaterDownloader().downloadUniversalUpdater()) {
+                    ConsoleLogger.debug("SUCCESS! UniversalUpdater downloaded!");
+                    new ApplicationDownloader().downloadUpdate();
+                } else {
+                    ConsoleLogger.debug("ERROR! Failed to download UniversalUpdater!");
+                }
+
+                return;
             }
 
-            return;
+            ConsoleLogger.debug("Update not found!");
+        } else {
+            ConsoleLogger.debug("Update searching disabled, because development mode is enabled!");
         }
 
-        ConsoleLogger.debug("Update not found!");
+        ConsoleLogger.printEmptyLine();
+
         new Luna().initializeBot();
     }
 
