@@ -29,7 +29,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+ * This class handles the nuke logging.
+ */
+
 public final class NukeLog {
+    // This method saves the log to a txt file.
     public static void saveNukeLog (TextChannel textChannel, Member member) {
         ArrayList<String> messageHistoryArrayList = new ArrayList<>();
         List<Message> messageHistoryList = Luna.DISCORD_MANAGER.getDiscordMessageUtils().getMessageHistory(textChannel, 100);

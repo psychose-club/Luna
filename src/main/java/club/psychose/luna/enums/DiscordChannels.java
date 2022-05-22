@@ -17,6 +17,10 @@
 
 package club.psychose.luna.enums;
 
+/*
+ * This enum contains the discord channels.
+ */
+
 public enum DiscordChannels {
     BOT_INFORMATION, LOGGING, VERIFICATION, ANY_CHANNEL
 }

@@ -23,7 +23,12 @@ import net.dv8tion.jda.api.entities.Member;
 
 import java.util.Arrays;
 
+/*
+ * This class provides the utils for the Discord members.
+ */
+
 public final class DiscordMemberUtils {
+    // This method checks if a member has a specific permission.
     public boolean checkUserPermission (Member member, String serverID, PermissionRoles[] permissions) {
         return (member != null && (member.getId().equals(Luna.SETTINGS_MANAGER.getBotSettings().getBotOwnerID()) || (member.getRoles().size() == 0 ? Arrays.asList(permissions).contains(PermissionRoles.EVERYONE) : Luna.SETTINGS_MANAGER.getServerSettings().containsPermission(serverID, member.getUser(), member.getRoles(), permissions))));
     }

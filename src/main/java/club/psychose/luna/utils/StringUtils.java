@@ -24,17 +24,36 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/*
+ * This class contain methods for strings.
+ */
+
 public final class StringUtils {
+    // This method converts bytes to HEX.
+    public static String convertBytesToHEX (byte[] bytes) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        // Converts every byte to HEX.
+        for (byte convertByte : bytes)
+            stringBuilder.append(String.format("%02x", convertByte));
+
+        // Returns the string.
+        return stringBuilder.toString().trim();
+    }
+
     // This method returns a date and time string.
     public static String getDateAndTime (String formatMode) {
+        // Setup date.
         Date date = new Date();
 
+        // Setups the format.
         DateFormat dateFormat = switch (formatMode) {
             case "CONSOLE" -> new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             case "LOG" -> new SimpleDateFormat("dd-MM-yyyy HH-mm-ss-SSS");
             default -> new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
         };
 
+        // Returns the formatted date.
         return dateFormat.format(date);
     }
 

@@ -17,4 +17,8 @@
 
 package club.psychose.luna.core.system.settings;
 
+/*
+ * This record contains information about the server configuration.
+ */
+
 public record ServerSetting (String getOwnerRoleID, String getAdminRoleID, String getModeratorRoleID, String getVerificationRoleID, String getBotInformationChannelID, String getLoggingChannelID, String getVerificationChannelID)  {}

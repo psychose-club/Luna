@@ -18,11 +18,16 @@
 package club.psychose.luna.core.bot.utils.builder.embed;
 
 import club.psychose.luna.enums.FooterType;
+import club.psychose.luna.utils.Constants;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
 import java.security.SecureRandom;
 import java.util.HashMap;
+
+/*
+ * This method builds the embedded message.
+ */
 
 public final class DiscordEmbedBuilder {
     private final SecureRandom secureRandom = new SecureRandom();
@@ -38,6 +43,7 @@ public final class DiscordEmbedBuilder {
     private final String footerText;
     private final Color embedColor;
 
+    // Public constructors.
     public DiscordEmbedBuilder (String embedTitle, String embedDescription, FooterType footerType, Color embedColor) {
         this.embedTitle = embedTitle;
         this.embedDescription = embedDescription;
@@ -74,16 +80,25 @@ public final class DiscordEmbedBuilder {
         this.embedColor = embedColor;
     }
 
+    // Builds the EmbedBuilder.
     public EmbedBuilder build () {
         this.embedBuilder.setTitle(this.embedTitle);
         this.embedBuilder.setDescription(this.embedDescription);
         this.embedBuilder.setAuthor("\uD83D\uDC08 L U N A \uD83D\uDC08");
-        this.embedBuilder.setThumbnail("https://cdn.discordapp.com/app-icons/934768351710965801/c3542b33281164d8c80e26c434b2834c.png?size=256");
+
+        if (Constants.BOT_IMAGE_URL != null)
+            this.embedBuilder.setThumbnail(Constants.BOT_IMAGE_URL);
+
         this.embedBuilder.setColor(this.embedColor);
 
-        if (this.fieldHashMap != null)
-            this.fieldHashMap.forEach((key, value) -> this.embedBuilder.addField(key, value, false));
+        if (this.fieldHashMap != null) {
+            this.fieldHashMap.forEach((key, value) -> {
+                if ((key != null) && (value != null))
+                    this.embedBuilder.addField(key, value, false);
+            });
+        }
 
+        // This method selects a random footer text.
         if (this.footerType != null) {
             switch (this.footerType) {
                 case SUCCESS -> this.embedBuilder.setFooter(this.successFooterText[this.secureRandom.nextInt(this.successFooterText.length)]);

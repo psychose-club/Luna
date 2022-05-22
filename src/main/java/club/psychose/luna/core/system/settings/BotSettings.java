@@ -19,12 +19,15 @@ package club.psychose.luna.core.system.settings;
 
 import java.util.concurrent.TimeUnit;
 
+/*
+ * This class contains the settings for the bot usage.
+ */
+
 public final class BotSettings {
+    // These are the default values for the settings.
     private String botToken = "NULL";
     private String youtubeAPIKey = "NULL";
     private String botOwnerID = "NULL";
-    private String messageFilterURL = "NULL";
-    private String messageWhitelistFilterURL = "NULL";
     private String prefix = "L!";
     private int timePeriod = 10;
     private TimeUnit timeUnit = TimeUnit.MINUTES;
@@ -39,14 +42,6 @@ public final class BotSettings {
 
     public void setBotOwnerID(String value) {
         this.botOwnerID = value;
-    }
-
-    public void setMessageFilterURL (String value) {
-        this.messageFilterURL = value;
-    }
-
-    public void setMessageWhitelistFilterURL (String value) {
-        this.messageWhitelistFilterURL = value;
     }
 
     public void setPrefix (String value) {
@@ -71,14 +66,6 @@ public final class BotSettings {
 
     public String getBotOwnerID() {
         return this.botOwnerID;
-    }
-
-    public String getMessageFilterURL () {
-        return this.messageFilterURL;
-    }
-
-    public String getMessageWhitelistFilterURL () {
-        return this.messageWhitelistFilterURL;
     }
 
     public String getPrefix () {

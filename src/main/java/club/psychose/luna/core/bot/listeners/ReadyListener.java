@@ -18,80 +18,47 @@
 package club.psychose.luna.core.bot.listeners;
 
 import club.psychose.luna.Luna;
-import club.psychose.luna.core.bot.DiscordBot;
-import club.psychose.luna.core.captcha.Captcha;
-import club.psychose.luna.utils.logging.CrashLog;
-import club.psychose.luna.utils.logging.exceptions.InvalidConfigurationDataException;
-import club.psychose.luna.core.system.settings.ServerSetting;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.ConsoleLogger;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
+
+/*
+ * This class handles the ready event when the bot is started and connected successfully to the Discord websocket.
+ */
 
 public final class ReadyListener extends ListenerAdapter {
+    // Ready event.
     @Override
     public void onReady (ReadyEvent readyEvent) {
+        // Fetches all channels.
         List<TextChannel> textChannelList = readyEvent.getJDA().getTextChannels();
+        List<VoiceChannel> voiceChannelList = readyEvent.getJDA().getVoiceChannels();
 
-        for (Map.Entry<String, ServerSetting> serverSettingEntry : Luna.SETTINGS_MANAGER.getServerSettings().getServerConfigurationHashMap().entrySet()) {
-            String serverID = serverSettingEntry.getKey();
-            ServerSetting serverSetting = serverSettingEntry.getValue();
+        // Sets the bot image url.
+        Constants.BOT_IMAGE_URL = readyEvent.getJDA().getSelfUser().getAvatarUrl();
 
-            if (serverSetting != null) {
-                if ((serverSetting.getVerificationChannelID() != null) && (serverSetting.getBotInformationChannelID() != null)) {
-                    TextChannel botInformationTextChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(serverSetting.getBotInformationChannelID(), textChannelList);
-                    TextChannel verificationTextChannel = Luna.DISCORD_MANAGER.getDiscordChannelUtils().getTextChannel(serverSetting.getVerificationChannelID(), textChannelList);
+        // If the avatar is a default avatar it'll return most likely no avatar url, so we use the default avatar url.
+        if (Constants.BOT_IMAGE_URL == null)
+            Constants.BOT_IMAGE_URL = readyEvent.getJDA().getSelfUser().getDefaultAvatarUrl();
 
-                    if (botInformationTextChannel != null) {
-                        if (verificationTextChannel != null) {
-                            Luna.DISCORD_MANAGER.getDiscordBotUtils().checkVerificationChannel(serverID, verificationTextChannel, botInformationTextChannel, verificationTextChannel.getGuild());
-                        } else {
-                            CrashLog.saveLogAsCrashLog(new NullPointerException("Verification channel not found for the server with the id " + serverID +  "!"), readyEvent.getJDA().getGuilds());
-                        }
-                    } else {
-                        CrashLog.saveLogAsCrashLog(new NullPointerException("Bot information channel not found for the server with the id " + serverID +  "!"), readyEvent.getJDA().getGuilds());
-                    }
-                } else {
-                    CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Invalid configuration for the server with the id " + serverID + "!"), readyEvent.getJDA().getGuilds());
-                }
-            } else {
-                CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("Invalid configuration for the server with the id " + serverID + "!"), readyEvent.getJDA().getGuilds());
-            }
-        }
+        // Safety call if bot already joined a voice channel it'll automatically disconnect the bot.
+        voiceChannelList.stream().filter(voiceChannel -> voiceChannel.getMembers().size() != 0).forEachOrdered(voiceChannel -> voiceChannel.getMembers().stream().filter(member -> member.getId().equals(readyEvent.getJDA().getSelfUser().getId())).forEachOrdered(member -> voiceChannel.getGuild().getAudioManager().closeAudioConnection()));
 
-        if (Files.exists(Constants.getLunaFolderPath("\\temp\\captchas\\"))) {
-            File[] tempFiles = Constants.getLunaFolderPath("\\temp\\captchas\\").toFile().listFiles();
+        // Checks the servers.
+        Luna.DISCORD_MANAGER.getDiscordBotUtils().checkServers(textChannelList);
 
-            if (tempFiles != null) {
-                for (File file : tempFiles) {
-                    if (file.isFile()) {
-                        boolean isCaptchaFile = false;
-                        for (Captcha captcha : DiscordBot.CAPTCHA_MANAGER.getCaptchaArrayList()) {
-                            if (captcha.getImageFile().equals(file)) {
-                                isCaptchaFile = true;
-                                break;
-                            }
-                        }
+        // Clears the temp folder.
+        Luna.FILE_MANAGER.clearTempFolder();
 
-                        if (!(isCaptchaFile)) {
-                            try {
-                                Files.deleteIfExists(file.toPath());
-                            } catch (IOException ioException) {
-                                CrashLog.saveLogAsCrashLog(ioException, readyEvent.getJDA().getGuilds());
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // We'll add all guilds that are added to the server configuration to the CrashLog class.
+        readyEvent.getJDA().getGuilds().stream().filter(guild -> Luna.SETTINGS_MANAGER.getServerSettings().isGuildAdded(guild)).forEachOrdered(Constants::addGuild);
 
+        // Debug stuff.
         ConsoleLogger.debug("Bot started successfully!");
         ConsoleLogger.printEmptyLine();
     }

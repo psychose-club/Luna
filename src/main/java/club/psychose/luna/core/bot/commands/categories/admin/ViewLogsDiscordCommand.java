@@ -17,92 +17,31 @@
 
 package club.psychose.luna.core.bot.commands.categories.admin;
 
-import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.commands.DiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.subcommands.viewlogs.ViewLogsCrashDiscordSubCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.subcommands.viewlogs.ViewLogsDetectionDiscordSubCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.subcommands.viewlogs.ViewLogsListDiscordSubCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.subcommands.viewlogs.ViewLogsNukesDiscordSubCommand;
 import club.psychose.luna.enums.CommandCategory;
 import club.psychose.luna.enums.DiscordChannels;
-import club.psychose.luna.enums.FooterType;
 import club.psychose.luna.enums.PermissionRoles;
-import club.psychose.luna.utils.Constants;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.awt.*;
-import java.io.File;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+/*
+ * This class provides the subcommands for the Discord bot ViewLogs command.
+ */
 
 public final class ViewLogsDiscordCommand extends DiscordCommand {
+    // Public constructor.
     public ViewLogsDiscordCommand () {
-        super("viewlogs", "Views logs!", "<crash | detection | nuke> <list | file>", new String[] {"vl", "logs"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
+        super("viewlogs", "Views logs!", new String[] {"vl", "logs"}, CommandCategory.ADMIN, new PermissionRoles[] {PermissionRoles.BOT_OWNER}, new DiscordChannels[] {DiscordChannels.ANY_CHANNEL});
     }
 
+    // This method registers the subcommands.
     @Override
-    public void onCommandExecution (String[] arguments, MessageReceivedEvent messageReceivedEvent) {
-        if (arguments != null) {
-            if (arguments.length == 2) {
-                String mode = arguments[0].trim();
-                String fileName = arguments[1].trim().equalsIgnoreCase("LIST") ? "LIST" : arguments[1].trim() + ".txt" ;
-
-                switch (mode) {
-                    case "crash" -> {
-                        if (!(fileName.equalsIgnoreCase("LIST"))) {
-                            if (Files.exists(Constants.getLunaFolderPath("\\logs\\crashes\\" + fileName))) {
-                                messageReceivedEvent.getTextChannel().sendFile(Constants.getLunaFolderPath("\\logs\\crashes\\" + fileName).toFile()).queue();
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "File not found!", "We can't find the log file :(", FooterType.ERROR, Color.RED);
-                            }
-                        } else {
-                            this.sendFileDirectoryList("crashes", messageReceivedEvent);
-                        }
-                    }
-
-                    case "detection" -> {
-                        if (!(fileName.equalsIgnoreCase("LIST"))) {
-                            if (Files.exists(Constants.getLunaFolderPath("\\logs\\detections\\" + fileName))) {
-                                messageReceivedEvent.getTextChannel().sendFile(Constants.getLunaFolderPath("\\logs\\detections\\" + fileName).toFile()).queue();
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "File not found!", "We can't find the log file :(", FooterType.ERROR, Color.RED);
-                            }
-                        } else {
-                            this.sendFileDirectoryList("detections", messageReceivedEvent);
-                        }
-                    }
-
-                    case "nuke" -> {
-                        if (!(fileName.equalsIgnoreCase("LIST"))) {
-                            if (Files.exists(Constants.getLunaFolderPath("\\logs\\nukes\\" + fileName))) {
-                                messageReceivedEvent.getTextChannel().sendFile(Constants.getLunaFolderPath("\\logs\\nukes\\" + fileName).toFile()).queue();
-                            } else {
-                                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "File not found!", "We can't find the log file :(", FooterType.ERROR, Color.RED);
-                            }
-                        } else {
-                            this.sendFileDirectoryList("nukes", messageReceivedEvent);
-                        }
-                    }
-
-                    default -> Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid mode!", "Please check the syntax!", FooterType.ERROR, Color.RED);
-                }
-            } else {
-                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", FooterType.ERROR, Color.RED);
-            }
-        } else {
-            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Invalid arguments!", "Please check the syntax!", FooterType.ERROR, Color.RED);
-        }
-    }
-
-    private void sendFileDirectoryList (String directoryName, MessageReceivedEvent messageReceivedEvent) {
-        if (Files.exists(Constants.getLunaFolderPath("\\logs\\" + directoryName + "\\"))) {
-            File[] directoryFiles = Constants.getLunaFolderPath("\\logs\\" + directoryName + "\\").toFile().listFiles();
-
-            if ((directoryFiles != null) && (directoryFiles.length != 0)) {
-                String fileNames = Arrays.stream(directoryFiles).filter(File::isFile).filter(directoryFile -> directoryFile.getName().endsWith(".txt")).map(directoryFile -> directoryFile.getName().replace(".txt", "") + "\n").collect(Collectors.joining("", "```bash\n", "```"));
-                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendTextChannelMessage(messageReceivedEvent.getTextChannel(), fileNames, "\n", true);
-            } else {
-                Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Logs don't exist!", "Seems like no logs exists for this type!", FooterType.ERROR, Color.RED);
-            }
-        } else {
-            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Logs don't exist!", "Seems like no logs exists for this type!", FooterType.ERROR, Color.RED);
-        }
+    protected void registerSubCommands() {
+        this.addSubCommand(new ViewLogsCrashDiscordSubCommand());
+        this.addSubCommand(new ViewLogsDetectionDiscordSubCommand());
+        this.addSubCommand(new ViewLogsNukesDiscordSubCommand());
+        this.addSubCommand(new ViewLogsListDiscordSubCommand());
     }
 }

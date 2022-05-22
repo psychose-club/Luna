@@ -24,11 +24,17 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * This class provides the utils for the Discord messages.
+ */
+
 public final class DiscordMessageUtils {
+    // This method adds a reaction to a message.
     public void addReaction (TextChannel textChannel, String messageID, DiscordCommandReaction discordCommandReaction) {
         textChannel.addReactionById(messageID, discordCommandReaction.getReactionEmoji()).queue();
     }
 
+    // This method returns a message history from a channel.
     public List<Message> getMessageHistory (TextChannel textChannel, int messages) {
         return new ArrayList<>(textChannel.getHistory().retrievePast(messages).complete());
     }

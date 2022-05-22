@@ -24,7 +24,12 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.util.List;
 
+/*
+ * This class provides the utils for the Discord roles.
+ */
+
 public final class DiscordRoleUtils {
+    // This method adds the verification role to a user.
     public void addVerificationRoleToUser (User user, Captcha captcha, Role verificationRole) {
         if (captcha.getMember().getId().equals(user.getId())) {
             if (captcha.getMember().getGuild().getRoles().contains(verificationRole))
@@ -32,10 +37,12 @@ public final class DiscordRoleUtils {
         }
     }
 
+    // This method checks if a specific role exist on a server.
     public boolean checkIfRoleExistOnServer (String serverID, String roleID, List<Guild> guildList) {
         return guildList.stream().filter(guild -> guild.getId().equals(serverID)).flatMap(guild -> guild.getRoles().stream()).anyMatch(role -> role.getId().equals(roleID));
     }
 
+    // This method returns a role over a role id.
     public Role getRoleViaID (String roleID, List<Role> roleList) {
         return (roleList.size() != 0 ? (roleList.stream().filter(role -> role.getId().equals(roleID)).findFirst().orElse(null)) : null);
     }

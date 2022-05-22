@@ -15,7 +15,14 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.bot.musicplayer.youtube;
+package club.psychose.luna.utils.logging.exceptions;
 
-@Deprecated // This will probably be replaced in the future.
-public record YouTubeVideo (String getTitleURL, String getYoutubeURL, boolean isLivestream) {}
+/*
+ * This exception will be thrown if the update configuration is invalid.
+ */
+
+public final class InvalidUpdateConfigurationException extends Exception {
+    public InvalidUpdateConfigurationException (String message) {
+        super(message, new Throwable());
+    }
+}

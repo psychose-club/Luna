@@ -20,17 +20,19 @@ package club.psychose.luna.utils.logging;
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.StringUtils;
-import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
+/*
+ * This class handles the crash logging.
+ */
 
 public final class CrashLog {
-    // TODO: Channel initialization.
-    public static void saveLogAsCrashLog (Exception exception, List<Guild> guildList) {
+    // This method saves the exception to a txt file.
+    public static void saveLogAsCrashLog (Exception exception) {
         ArrayList<String> crashLogArrayList = new ArrayList<>();
 
         String timestamp = StringUtils.getDateAndTime("LOG");
@@ -41,18 +43,22 @@ public final class CrashLog {
         crashLogArrayList.add("File: " + Constants.getLunaFolderPath("\\logs\\crashes\\" + timestamp + ".txt"));
         crashLogArrayList.add("Timestamp: " + timestamp);
         crashLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        crashLogArrayList.add("OS: " + System.getProperty("os.name"));
+        crashLogArrayList.add("OS Architecture: " + System.getProperty("os.arch"));
+        crashLogArrayList.add("JRE Version: " + System.getProperty("java.version"));
+        crashLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         crashLogArrayList.add("Exception Cause: " + exception.getCause());
         crashLogArrayList.add("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         crashLogArrayList.add("PrintStackTrace:");
         crashLogArrayList.add(ExceptionUtils.getStackTrace(exception));
         crashLogArrayList.add("==================================================================================================");
 
-        if (guildList != null) {
+        if (Constants.GUILD_ARRAY_LIST.size() != 0) {
             HashMap<String, String> fieldHashMap = new HashMap<>();
             fieldHashMap.put("Path in Luna folder", "\\logs\\crashes\\" + timestamp + ".txt");
             fieldHashMap.put("Timestamp: ", timestamp);
 
-            guildList.forEach(guild -> Luna.DISCORD_MANAGER.getDiscordBotUtils().sendBotInformationMessage(guild.getId(), "Oh no!\nA crash occurred!\nPlease create on GitHub an issue!", fieldHashMap, Color.ORANGE, guild.getTextChannels()));
+            Constants.GUILD_ARRAY_LIST.forEach(guild -> Luna.DISCORD_MANAGER.getDiscordBotUtils().sendBotInformationMessage(guild.getId(), "Oh no!\nA crash occurred!\nPlease create on GitHub an issue!", fieldHashMap, Color.ORANGE, guild.getTextChannels()));
         }
 
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crashes\\" + timestamp + ".txt"), crashLogArrayList);

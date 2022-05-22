@@ -22,6 +22,7 @@ package club.psychose.luna.core.system.settings;
  */
 
 public final class MySQLSettings {
+    // These are the default values for the settings.
     private String mySQLHostname = "127.0.0.1";
     private String mySQLPort = "3306";
     private String mySQLUsername = "root";

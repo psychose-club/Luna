@@ -29,9 +29,14 @@ import club.psychose.luna.core.bot.commands.categories.utility.VerificationDisco
 
 import java.util.ArrayList;
 
+/*
+ * This class manages the commands.
+ */
+
 public final class CommandManager {
     private final ArrayList<DiscordCommand> discordCommandsArrayList = new ArrayList<>();
 
+    // This method initialize the commands.
     public void initializeCommands () {
         // Admin category.
         this.discordCommandsArrayList.add(new ClearTempFolderDiscordCommand());
@@ -48,6 +53,7 @@ public final class CommandManager {
         this.discordCommandsArrayList.add(new VerificationDiscordCommand());
     }
 
+    // This method returns the captchas.
     public ArrayList<DiscordCommand> getDiscordCommandsArrayList () {
         return this.discordCommandsArrayList;
     }

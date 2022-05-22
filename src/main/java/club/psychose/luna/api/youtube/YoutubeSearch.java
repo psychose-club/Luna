@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package club.psychose.luna.core.bot.musicplayer.youtube;
+package club.psychose.luna.api.youtube;
 
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.logging.CrashLog;
@@ -28,21 +28,33 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.util.Arrays;
 
+/*
+ * This class handles the YouTube search requests.
+ */
+
 public final class YoutubeSearch {
+    // This method searches a YouTube video via keywords.
     public YouTubeVideo searchYouTubeVideo (String[] keywords) throws IOException {
+        // Checks if the YouTube API key is initialized.
         if (!(Luna.SETTINGS_MANAGER.getBotSettings().getYoutubeAPIKey().equals("NULL"))) {
+            // Checks if the keywords are not null.
             if (keywords != null) {
+                // Parses the keywords for the request.
                 String keyword = Arrays.toString(keywords).replaceAll(" ", "+");
 
+                // Send the request and receive the JsonObject.
                 JsonObject youtubeSearchJsonObject = JsonUtils.fetchOnlineJsonObject("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&order=relevance&q=" + keyword + "&key=" + Luna.SETTINGS_MANAGER.getBotSettings().getYoutubeAPIKey());
 
+                // Checks if the received JsonObject is not null.
                 if (youtubeSearchJsonObject != null) {
+                    // Checks if the JsonObject has the "items" key.
                     if (youtubeSearchJsonObject.has("items")) {
                         JsonArray jsonArray = youtubeSearchJsonObject.get("items").getAsJsonArray();
 
                         String videoURL = null;
                         String title = null;
 
+                        // Fetches the required video data.
                         for (JsonElement jsonElement : jsonArray) {
                             if (jsonElement.isJsonObject()) {
                                 JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -50,35 +62,34 @@ public final class YoutubeSearch {
                                 if (jsonObject.has("id")) {
                                     JsonObject idJsonObject = jsonObject.get("id").getAsJsonObject();
 
-                                    if (idJsonObject.has("videoId")) {
+                                    if (idJsonObject.has("videoId"))
                                         videoURL = idJsonObject.get("videoId").getAsString();
-                                    }
                                 }
 
                                 if (jsonObject.has("snippet")) {
                                     JsonObject snippetJsonObject = jsonObject.get("snippet").getAsJsonObject();
 
-                                    if (snippetJsonObject.has("title")) {
+                                    if (snippetJsonObject.has("title"))
                                         title = snippetJsonObject.get("title").getAsString();
-                                    }
 
                                     if (snippetJsonObject.has("liveBroadcastContent")) {
                                         String liveBroadcastContent = snippetJsonObject.get("liveBroadcastContent").getAsString();
 
-                                        if (liveBroadcastContent.equalsIgnoreCase("upcoming")) {
+                                        // Returns null when the video is a broadcast.
+                                        if (liveBroadcastContent.equalsIgnoreCase("upcoming"))
                                             return new YouTubeVideo(null,null, true);
-                                        }
                                     }
                                 }
                             }
                         }
 
+                        // Returns the YouTube video.
                         return (videoURL != null) && (title != null) ? new YouTubeVideo(title, videoURL, false) : new YouTubeVideo(null, null, false);
                     }
                 }
             }
         } else {
-            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("API Key not initialized!"), null);
+            CrashLog.saveLogAsCrashLog(new InvalidConfigurationDataException("API Key not initialized!"));
         }
 
         return null;
