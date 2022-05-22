@@ -20,7 +20,6 @@ package club.psychose.luna.core.bot.listeners;
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.ConsoleLogger;
-import club.psychose.luna.utils.logging.CrashLog;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -57,7 +56,7 @@ public final class ReadyListener extends ListenerAdapter {
         Luna.FILE_MANAGER.clearTempFolder();
 
         // We'll add all guilds that are added to the server configuration to the CrashLog class.
-        readyEvent.getJDA().getGuilds().stream().filter(guild -> Luna.SETTINGS_MANAGER.getServerSettings().isGuildAdded(guild)).forEachOrdered(CrashLog::addGuild);
+        readyEvent.getJDA().getGuilds().stream().filter(guild -> Luna.SETTINGS_MANAGER.getServerSettings().isGuildAdded(guild)).forEachOrdered(Constants::addGuild);
 
         // Debug stuff.
         ConsoleLogger.debug("Bot started successfully!");
