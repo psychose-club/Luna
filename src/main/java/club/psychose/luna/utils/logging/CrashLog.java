@@ -20,7 +20,6 @@ package club.psychose.luna.utils.logging;
 import club.psychose.luna.Luna;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.StringUtils;
-import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.awt.*;
@@ -32,8 +31,6 @@ import java.util.HashMap;
  */
 
 public final class CrashLog {
-    private static final ArrayList<Guild> guildArrayList = new ArrayList<>();
-
     // This method saves the exception to a txt file.
     public static void saveLogAsCrashLog (Exception exception) {
         ArrayList<String> crashLogArrayList = new ArrayList<>();
@@ -56,26 +53,17 @@ public final class CrashLog {
         crashLogArrayList.add(ExceptionUtils.getStackTrace(exception));
         crashLogArrayList.add("==================================================================================================");
 
-        if (guildArrayList.size() != 0) {
+        if (Constants.GUILD_ARRAY_LIST.size() != 0) {
             HashMap<String, String> fieldHashMap = new HashMap<>();
             fieldHashMap.put("Path in Luna folder", "\\logs\\crashes\\" + timestamp + ".txt");
             fieldHashMap.put("Timestamp: ", timestamp);
 
-            guildArrayList.forEach(guild -> Luna.DISCORD_MANAGER.getDiscordBotUtils().sendBotInformationMessage(guild.getId(), "Oh no!\nA crash occurred!\nPlease create on GitHub an issue!", fieldHashMap, Color.ORANGE, guild.getTextChannels()));
+            Constants.GUILD_ARRAY_LIST.forEach(guild -> Luna.DISCORD_MANAGER.getDiscordBotUtils().sendBotInformationMessage(guild.getId(), "Oh no!\nA crash occurred!\nPlease create on GitHub an issue!", fieldHashMap, Color.ORANGE, guild.getTextChannels()));
         }
 
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crashes\\" + timestamp + ".txt"), crashLogArrayList);
         Luna.FILE_MANAGER.saveArrayListToAFile(Constants.getLunaFolderPath("\\logs\\crashes\\latest.txt"), crashLogArrayList);
 
         ConsoleLogger.debug("ERROR: An exception occurred! Crash Log under: " + Constants.getLunaFolderPath("\\logs\\crashes\\" + timestamp + ".txt"));
-    }
-
-    public static void addGuild (Guild guild) {
-        if (!(guildArrayList.contains(guild)))
-            guildArrayList.add(guild);
-    }
-
-    public static void removeGuild (Guild guild) {
-        guildArrayList.remove(guild);
     }
 }
