@@ -130,6 +130,6 @@ public final class DiscordBotUtils {
 
     // This method sends the latest changelog.
     private void sendChangelog (TextChannel botInformationChannel) {
-        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "[+] Documentation\n[=] Bugfixes", "Luna was developed by psychose.club", Color.MAGENTA);
+        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "\uD83C\uDF89\uD83C\uDF89 WE ARE OPEN-SOURCE NOW \uD83C\uDF89\uD83C\uDF89\n\n[+] Phishing protection\n[+] ILoveRadio and it's now possible to use other web streaming services.\n[+] Other major improvements and features[+] Documentation\n[=] Bugfixes and many internal changes :)", "Luna was developed by psychose.club", Color.MAGENTA);
     }
 }
