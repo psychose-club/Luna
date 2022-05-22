@@ -21,7 +21,7 @@ import club.psychose.luna.Luna;
 import club.psychose.luna.core.bot.commands.DiscordSubCommand;
 import club.psychose.luna.core.system.settings.ServerSetting;
 import club.psychose.luna.enums.FooterType;
-import club.psychose.luna.utils.logging.CrashLog;
+import club.psychose.luna.utils.Constants;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
@@ -65,7 +65,7 @@ public final class ServerConfigurationAddDiscordSubCommand extends DiscordSubCom
 
                     // Adds the server configuration.
                     Luna.SETTINGS_MANAGER.getServerSettings().addServerConfiguration(serverID, serverSetting);
-                    CrashLog.addGuild(messageReceivedEvent.getGuild());
+                    Constants.addGuild(messageReceivedEvent.getGuild());
                     Luna.SETTINGS_MANAGER.getServerSettings().reloadServerConfiguration(messageReceivedEvent.getJDA().getTextChannels());
 
                     Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Server added to the database!", "Server successfully added to the database!", FooterType.SUCCESS, Color.GREEN);
