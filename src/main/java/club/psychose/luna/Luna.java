@@ -22,6 +22,9 @@ import club.psychose.luna.core.system.managers.DiscordManager;
 import club.psychose.luna.core.system.managers.FileManager;
 import club.psychose.luna.core.system.managers.MySQLManager;
 import club.psychose.luna.core.system.managers.SettingsManager;
+import club.psychose.luna.core.system.updater.ApplicationChecker;
+import club.psychose.luna.core.system.updater.ApplicationDownloader;
+import club.psychose.luna.core.system.updater.UniversalUpdaterDownloader;
 import club.psychose.luna.utils.Constants;
 import club.psychose.luna.utils.logging.ConsoleLogger;
 
@@ -30,7 +33,8 @@ import club.psychose.luna.utils.logging.ConsoleLogger;
  */
 
 public final class Luna {
-    // Initialize the managers.
+    // Initialize the variables.
+    public static final ApplicationChecker APPLICATION_CHECKER = new ApplicationChecker();
     public static final DiscordManager DISCORD_MANAGER = new DiscordManager();
     public static final FileManager FILE_MANAGER = new FileManager();
     public static final MySQLManager MY_SQL_MANAGER = new MySQLManager();
@@ -49,9 +53,29 @@ public final class Luna {
         ConsoleLogger.debug("Version: " + Constants.VERSION);
         ConsoleLogger.debug("Build Version: " + Constants.BUILD);
         ConsoleLogger.printEmptyLine();
-        ConsoleLogger.debug("This is a private psychose.club project!");
-        ConsoleLogger.debug("Publishing is not allowed!");
-        ConsoleLogger.printEmptyLine();
+        ConsoleLogger.debug("Checking for updates...");
+
+        // Searching for an update.
+        if (APPLICATION_CHECKER.checkIfUpdateIsAvailable()) {
+            ConsoleLogger.debug("Update found!");
+            ConsoleLogger.debug("Downloading UniversalUpdater...");
+
+            if (new UniversalUpdaterDownloader().downloadUniversalUpdater()) {
+                ConsoleLogger.debug("SUCCESS! UniversalUpdater downloaded!");
+                new ApplicationDownloader().downloadUpdate();
+            } else {
+                ConsoleLogger.debug("ERROR! Failed to download UniversalUpdater!");
+            }
+
+            return;
+        }
+
+        ConsoleLogger.debug("Update not found!");
+        new Luna().initializeBot();
+    }
+
+    // Initializes the bot.
+    private void initializeBot () {
         ConsoleLogger.debug("Loading settings...");
         SETTINGS_MANAGER.loadSettings();
         ConsoleLogger.debug("Settings loaded!");
