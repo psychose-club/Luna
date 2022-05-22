@@ -44,6 +44,10 @@ public final class JsonUtils {
             stringBuilder.append((char) line);
         }
 
+        // Closes the streams.
+        bufferedReader.close();
+        inputStream.close();
+
         // Converts the JsonObject and returns it.
         return new Gson().fromJson(stringBuilder.toString().trim(), JsonObject.class);
     }
