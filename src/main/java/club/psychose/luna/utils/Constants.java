@@ -18,9 +18,11 @@
 package club.psychose.luna.utils;
 
 import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.Guild;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /*
  * This class contains all constants.
@@ -32,6 +34,8 @@ public final class Constants {
     public static final String BUILD = "6";
 
     // Bot constants.
+    public static final ArrayList<Guild> GUILD_ARRAY_LIST = new ArrayList<>();
+    public static final boolean DEVELOPMENT_MODE = true;
     public static final Emoji GO_BACK_EMOJI = Emoji.fromUnicode("\uD83D\uDD19");
     public static String BOT_IMAGE_URL = null;
 
@@ -44,6 +48,15 @@ public final class Constants {
     // Updater constants.
     public static final String RELEASE_INFORMATION_URL = "https://development.psychose.club/Luna/assets/update.json";
     public static final String UNIVERSAL_UPDATER_RELEASE_INFORMATION_URL = "https://development.psychose.club/UniversalUpdater/assets/update.json";
+
+    public static void addGuild (Guild guild) {
+        if (!(GUILD_ARRAY_LIST.contains(guild)))
+            GUILD_ARRAY_LIST.add(guild);
+    }
+
+    public static void removeGuild (Guild guild) {
+        GUILD_ARRAY_LIST.remove(guild);
+    }
 
     // Luna folder constant.
     public static Path getLunaFolderPath (String additionalPath) {
