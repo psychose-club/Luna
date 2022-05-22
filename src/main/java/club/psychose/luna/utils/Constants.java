@@ -37,9 +37,13 @@ public final class Constants {
 
     // Filter constants.
     // If custom filters are enabled it'll use it only as fallback if not "Fallback to default" is disabled!
-    public static final String FALLBACK_BLACKLIST_URL = "https://luna.psychose.club/assets/blacklist";
-    public static final String FALLBACK_WHITELIST_URL = "https://luna.psychose.club/assets/whitelist";
-    public static final String FALLBACK_CHARACTER_FILTER_URL = "https://luna.psychose.club/assets/character_filter.json";
+    public static final String FALLBACK_BLACKLIST_URL = "https://development.psychose.club/Luna/assets/blacklist";
+    public static final String FALLBACK_WHITELIST_URL = "https://development.psychose.club/Luna/assets/whitelist";
+    public static final String FALLBACK_CHARACTER_FILTER_URL = "https://development.psychose.club/Luna/assets/character_filter.json";
+
+    // Updater constants.
+    public static final String RELEASE_INFORMATION_URL = "https://development.psychose.club/Luna/assets/update.json";
+    public static final String UNIVERSAL_UPDATER_RELEASE_INFORMATION_URL = "https://development.psychose.club/UniversalUpdater/assets/update.json";
 
     // Luna folder constant.
     public static Path getLunaFolderPath (String additionalPath) {
