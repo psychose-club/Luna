@@ -93,7 +93,7 @@ public final class PhishingSettings {
     }
 
     public ArrayList<String> getPhishingDomainsArrayList () {
-        return this.phishingDomainsSuspiciousArrayList;
+        return this.phishingDomainsArrayList;
     }
 
     public ArrayList<String> getPhishingDomainsSuspiciousArrayList () {

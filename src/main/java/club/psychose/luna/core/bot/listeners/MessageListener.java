@@ -31,6 +31,7 @@ import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.enums.DiscordChannels;
 import club.psychose.luna.enums.PermissionRoles;
 import club.psychose.luna.utils.StringUtils;
+import club.psychose.luna.utils.logging.PhishingLinkLog;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
@@ -173,7 +174,7 @@ public final class MessageListener extends ListenerAdapter {
                              this.warnMember(messageReceivedEvent.getMessage(), messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getTextChannels(), member);
                          }
                      } else {
-                         this.punishMember(messageReceivedEvent.getMessage(), messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel(), messageReceivedEvent.getGuild().getTextChannels(), member);
+                         this.punishMember(messageReceivedEvent.getMessage(), messageReceivedEvent.getGuild().getId(), messageReceivedEvent.getTextChannel(), member);
                      }
                  }
              } else {
@@ -254,6 +255,11 @@ public final class MessageListener extends ListenerAdapter {
                     // If it's blacklisted the member will be warned.
                     if (!(this.messageFilter.checkMessage(message)))
                         this.warnMember(messageUpdateEvent.getMessage(), messageUpdateEvent.getGuild().getId(), messageUpdateEvent.getTextChannel(), messageUpdateEvent.getGuild().getTextChannels(), member);
+
+                    // Checks if the message is not a phishing link.
+                    // If it's a phishing link the member will be punished.
+                    if (!(this.phishingFilter.checkMessage(message)))
+                        this.punishMember(messageUpdateEvent.getMessage(), messageUpdateEvent.getGuild().getId(), messageUpdateEvent.getTextChannel(), member);
                 }
             }
         }
@@ -287,7 +293,7 @@ public final class MessageListener extends ListenerAdapter {
     }
 
     // This method handles the actions that happen with the member when a phishing message was detected.
-    private void punishMember (Message message, String guildID, TextChannel textChannel, List<TextChannel> textChannelList, Member member) {
+    private void punishMember (Message message, String guildID, TextChannel textChannel, Member member) {
         // Deletes the message.
         message.delete().queue();
 
@@ -301,10 +307,8 @@ public final class MessageListener extends ListenerAdapter {
         // Creates a FieldHashMap.
         HashMap<String, String> fieldHashMap = new HashMap<>();
         fieldHashMap.put("Member", member.getAsMention());
+        fieldHashMap.put("Log file", PhishingLinkLog.savePhishingLinkLog(member, guildID, this.phishingFilter.getLastDetectedLink(), message.getContentRaw(), timestamp));
         fieldHashMap.put("Timestamp: ", timestamp);
-
-        // Sends a logging message.
-        Luna.DISCORD_MANAGER.getDiscordBotUtils().sendLoggingMessage(guildID, "Phishing link detected!", fieldHashMap, textChannelList);
 
         // Handles the punishment.
         if (Luna.SETTINGS_MANAGER.getPhishingSettings().isAutomaticMuteEnabled()) {

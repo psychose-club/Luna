@@ -20,7 +20,7 @@ plugins {
 }
 
 group 'club.psychose'
-version '1.1.0'
+version '1.1.1'
 
 repositories {
     maven {
@@ -39,7 +39,7 @@ dependencies {
     implementation group: 'com.sedmelluq', name: 'lavaplayer', version: '1.3.77', excludeJUnit
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1', excludeJUnit
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0', excludeJUnit
-    implementation group: 'net.dv8tion', name: 'JDA', version: '5.0.0-alpha.10', excludeJUnit
+    implementation group: 'net.dv8tion', name: 'JDA', version: '5.0.0-alpha.12', excludeJUnit
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.29', excludeJUnit
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0', excludeJUnit
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13', excludeJUnit

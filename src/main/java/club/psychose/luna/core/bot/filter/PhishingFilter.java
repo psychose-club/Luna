@@ -24,6 +24,10 @@ import club.psychose.luna.Luna;
  */
 
 public final class PhishingFilter {
+    // Last detected link.
+    private String lastDetectedLink = null;
+
+    // This method checks if the message contains a phishing link.
     public boolean checkMessage (String message) {
         // Checks if the phishing protection was enabled.
         if (Luna.SETTINGS_MANAGER.getPhishingSettings().isPhishingProtectionEnabled()) {
@@ -34,6 +38,7 @@ public final class PhishingFilter {
             if ((Luna.SETTINGS_MANAGER.getPhishingSettings().isDomainListEnabled()) && (Luna.SETTINGS_MANAGER.getPhishingSettings().getPhishingDomainsArrayList().size() != 0)) {
                 for (String domain : Luna.SETTINGS_MANAGER.getPhishingSettings().getPhishingDomainsArrayList()) {
                     if (message.contains(domain)) {
+                        this.lastDetectedLink = domain;
                         return false;
                     }
                 }
@@ -43,6 +48,7 @@ public final class PhishingFilter {
             if ((Luna.SETTINGS_MANAGER.getPhishingSettings().isSuspiciousListEnabled()) && (Luna.SETTINGS_MANAGER.getPhishingSettings().getPhishingDomainsSuspiciousArrayList().size() != 0)) {
                 for (String suspiciousDomain : Luna.SETTINGS_MANAGER.getPhishingSettings().getPhishingDomainsSuspiciousArrayList()) {
                     if (message.contains(suspiciousDomain)) {
+                        this.lastDetectedLink = suspiciousDomain;
                         return false;
                     }
                 }
@@ -50,5 +56,10 @@ public final class PhishingFilter {
         }
 
         return true;
+    }
+
+    // This method returns the last detected link.
+    public String getLastDetectedLink () {
+        return this.lastDetectedLink;
     }
 }

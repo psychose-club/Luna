@@ -130,6 +130,6 @@ public final class DiscordBotUtils {
 
     // This method sends the latest changelog.
     private void sendChangelog (TextChannel botInformationChannel) {
-        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "\uD83C\uDF89\uD83C\uDF89 WE ARE OPEN-SOURCE NOW \uD83C\uDF89\uD83C\uDF89\n\n[+] Phishing protection\n[+] ILoveRadio and it's now possible to use other web streaming services.\n[+] Other major improvements and features[+] Documentation\n[=] Bugfixes and many internal changes :)", "Luna was developed by psychose.club", Color.MAGENTA);
+        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "Hotfixes\n[=] Deletes now really every file in temp folder.\n[=] Fixed a bug where the false ArrayList for the phishing domains was selected.\n[=] Issue #1 should be easily able to debug because Phishing Links will now be logged.", "https://github.com/psychose-club/Luna/", Color.MAGENTA);
     }
 }
