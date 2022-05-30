@@ -71,17 +71,21 @@ public final class FileManager {
         }
     }
 
-    //This method clears the temp folder.
-    public boolean clearTempFolder () {
-        // Checks if the temp folder exist and fetches the folder content.
-        if (Files.exists(Constants.getLunaFolderPath("\\temp\\"))) {
-            File[] tempFiles = Constants.getLunaFolderPath("\\temp\\").toFile().listFiles();
+    // This method deletes directory files.
+    private boolean deleteDirectoryFiles (File[] files) {
+        // Checks if the files are not null.
+        if (files != null) {
+            // Checks every file.
+            for (File file : files) {
+                // If the file is a directory call this method again.
+                if (file.isDirectory()) {
+                    File[] directoryFiles = file.listFiles();
 
-            // Checks if the folder has contents available.
-            if (tempFiles != null) {
-                // Deletes the file if it's not a bot used captcha file.
-                for (File file : tempFiles) {
+                    this.deleteDirectoryFiles(directoryFiles);
+                } else {
                     boolean isCaptchaFile = false;
+
+                    // Checks if the file is a captcha file.
                     for (Captcha captcha : DiscordBot.CAPTCHA_MANAGER.getCaptchaArrayList()) {
                         if (captcha.getImageFile().equals(file)) {
                             isCaptchaFile = true;
@@ -89,6 +93,7 @@ public final class FileManager {
                         }
                     }
 
+                    // If the file is not a captcha file we'll delete the file.
                     if (!(isCaptchaFile)) {
                         try {
                             Files.deleteIfExists(file.toPath());
@@ -98,6 +103,20 @@ public final class FileManager {
                     }
                 }
             }
+        }
+
+        return false;
+    }
+
+    //This method clears the temp folder.
+    public boolean clearTempFolder () {
+        // Checks if the temp folder exist and fetches the folder content.
+        if (Files.exists(Constants.getLunaFolderPath("\\temp\\"))) {
+            File[] tempFiles = Constants.getLunaFolderPath("\\temp\\").toFile().listFiles();
+
+            // Checks if the folder has contents available.
+            if (tempFiles != null)
+                return this.deleteDirectoryFiles(tempFiles);
 
             return true;
         }
