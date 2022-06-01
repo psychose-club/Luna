@@ -130,6 +130,6 @@ public final class DiscordBotUtils {
 
     // This method sends the latest changelog.
     private void sendChangelog (TextChannel botInformationChannel) {
-        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "Hotfixes\n[=] Deletes now really every file in temp folder.\n[=] Fixed a bug where the false ArrayList for the phishing domains was selected.\n[=] Issue #1 should be easily able to debug because Phishing Links will now be logged.", "https://github.com/psychose-club/Luna/", Color.MAGENTA);
+        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "Hotfix\n[=] Phishing Protection didn't detect real discord links anymore.", "https://github.com/psychose-club/Luna/", Color.MAGENTA);
     }
 }
