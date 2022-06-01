@@ -31,6 +31,18 @@ public final class PhishingFilter {
     public boolean checkMessage (String message) {
         // Checks if the phishing protection was enabled.
         if (Luna.SETTINGS_MANAGER.getPhishingSettings().isPhishingProtectionEnabled()) {
+            // Removes legit links to prevent false flags.
+            // TODO: Adding custom whitelist. (Maybe next version this version it is a fast hotfix)
+            if (message.contains("discordapp.com"))
+                message = message.replace("discordapp.com", "");
+
+            if (message.contains("discord.gift"))
+                message = message.replace("discord.gift", "");
+
+            if (message.contains("discord.gg"))
+                message = message.replace("discord.gg", "");
+
+            // The replacement will be called here, if we call it before it'll let the bots create exploits to bypass the protection.
             // We replace all spaces and all non-printable characters to prevent exploits.
             message = message.replaceAll(" ", "").replaceAll("\\p{C}", "").trim();
 
