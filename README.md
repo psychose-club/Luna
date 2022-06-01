@@ -108,4 +108,4 @@ Stay safe and never give up <3
 
 #### Mirror <a name="mirror"></a>
 
-https://development.psychose.club/Luna/releases/1.1.0/Luna.jar
+https://development.psychose.club/Luna/releases/1.1.2/Luna.jar
