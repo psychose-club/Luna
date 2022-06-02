@@ -30,12 +30,12 @@ import java.util.ArrayList;
 
 public final class Constants {
     // Version constants.
-    public static final String VERSION = "1.1.2";
-    public static final String BUILD = "9";
+    public static final String VERSION = "1.1.3";
+    public static final String BUILD = "10";
 
     // Bot constants.
     public static final ArrayList<Guild> GUILD_ARRAY_LIST = new ArrayList<>();
-    public static final boolean DEVELOPMENT_MODE = true;
+    public static final boolean DEVELOPMENT_MODE = false;
     public static final Emoji GO_BACK_EMOJI = Emoji.fromUnicode("\uD83D\uDD19");
     public static String BOT_IMAGE_URL = null;
 
