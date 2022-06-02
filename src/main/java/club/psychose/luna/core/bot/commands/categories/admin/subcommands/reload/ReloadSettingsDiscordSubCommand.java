@@ -48,18 +48,21 @@ public final class ReloadSettingsDiscordSubCommand extends DiscordSubCommand {
 
             case "bot" -> {
                 // Reloads the bot settings.
+                Luna.SETTINGS_MANAGER.resetConfigurationAttempts("BOT");
                 Luna.SETTINGS_MANAGER.loadBotSettings();
                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Settings reloaded!", "Bot settings successfully reloaded!", FooterType.SUCCESS, Color.GREEN);
             }
 
             case "mute" -> {
                 // Reloads the mute settings.
+                Luna.SETTINGS_MANAGER.resetConfigurationAttempts("MUTE");
                 Luna.SETTINGS_MANAGER.loadMuteSettings();
                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Settings reloaded!", "Mute settings successfully reloaded!", FooterType.SUCCESS, Color.GREEN);
             }
 
             case "mysql" -> {
                 // Reloads the MySQL settings.
+                Luna.SETTINGS_MANAGER.resetConfigurationAttempts("MYSQL");
                 Luna.SETTINGS_MANAGER.loadMySQLSettings();
                 Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Settings reloaded!", "MySQL settings successfully reloaded!", FooterType.SUCCESS, Color.GREEN);
             }
