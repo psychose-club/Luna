@@ -28,6 +28,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import javax.net.ssl.SSLHandshakeException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,9 +44,6 @@ public final class ILoveRadioFetcher {
 
     // This method fetches the streams from the ILoveRadio website.
     public boolean fetchStreams () {
-        // Clears the current fetched streams.
-        this.iLoveRadioStreamsArrayList.clear();
-
         // Connects to the ILoveRadio website.
         HttpGet httpGet = new HttpGet("https://ilovemusic.de/streams/");
 
@@ -60,6 +58,7 @@ public final class ILoveRadioFetcher {
         httpContext.setAttribute(HttpClientContext.COOKIE_STORE, basicCookieStore);
 
         // Creates a http client.
+        // TODO: Find solution for the SSLHandshakeException.
         try (CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build()) {
             // Connects to the URL and looks if 200 got returned.
             HttpResponse httpResponse = closeableHttpClient.execute(httpGet, httpContext);
@@ -70,6 +69,9 @@ public final class ILoveRadioFetcher {
                 // Reads the website content.
                 try (InputStream inputStream = httpEntity.getContent()) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+                    // Clears the current fetched streams.
+                    this.iLoveRadioStreamsArrayList.clear();
 
                     String line;
                     while ((line = bufferedReader.readLine()) != null) {
@@ -110,7 +112,7 @@ public final class ILoveRadioFetcher {
                     CrashLog.saveLogAsCrashLog(ioException);
                 }
             }
-        } catch (IOException ioException) {
+        } catch (SSLHandshakeException ignored) {} catch (IOException ioException) {
             CrashLog.saveLogAsCrashLog(ioException);
         }
 

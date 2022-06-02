@@ -30,8 +30,8 @@ import java.util.ArrayList;
 
 public final class Constants {
     // Version constants.
-    public static final String VERSION = "1.1.3";
-    public static final String BUILD = "10";
+    public static final String VERSION = "1.1.4";
+    public static final String BUILD = "11";
 
     // Bot constants.
     public static final ArrayList<Guild> GUILD_ARRAY_LIST = new ArrayList<>();

@@ -130,6 +130,6 @@ public final class DiscordBotUtils {
 
     // This method sends the latest changelog.
     private void sendChangelog (TextChannel botInformationChannel) {
-        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "Main changes\n\n[+] Update command.\n[+] Added custom whitelist for the Phishing protection\n[=] Fixed a bad word detection bug that let users bypass the detection", "https://github.com/psychose-club/Luna/", Color.MAGENTA);
+        Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(botInformationChannel, "Changelog - Version: " + Constants.VERSION + " | Build Version: " + Constants.BUILD, "Main changes\n\n[=]Bot didn't spam in the logs now if the ILoveRadio service causes an SSLHandshakeException (temp solution)", "https://github.com/psychose-club/Luna/", Color.MAGENTA);
     }
 }

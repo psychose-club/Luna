@@ -43,7 +43,7 @@ public final class MusicPlayerRadioStreamsDiscordSubCommand extends DiscordSubCo
             String radioStreamsList = Luna.DISCORD_MANAGER.getDiscordMusicBotUtils().getILoveRadioFetcher().getILoveRadioStreamsArrayList().stream().map(radioStream -> radioStream.getStreamName() + "\n").collect(Collectors.joining("", "```bash\n", "```"));
             Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendTextChannelMessage(messageReceivedEvent.getTextChannel(), radioStreamsList, "\n", true);
         } else {
-            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Streams not fetched!", "Something went wrong while fetching the streams!", FooterType.ERROR, Color.RED);
+            Luna.DISCORD_MANAGER.getDiscordMessageBuilder().sendEmbedMessage(messageReceivedEvent.getTextChannel(), "Streams not fetched!", "Something went wrong while fetching the streams!\nSometimes the server provides an invalid certificate (idfk why) please try again later!", FooterType.ERROR, Color.RED);
         }
     }
 }
