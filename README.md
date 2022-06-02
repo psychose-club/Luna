@@ -116,7 +116,7 @@ The project runs with gradle, if your IDE didn't import the project look at: (ht
 
 #### Mirror <a name="mirror"></a>
 
-https://development.psychose.club/Luna/releases/1.1.3/Luna.jar    
+https://development.psychose.club/Luna/releases/1.1.4/Luna.jar    
 
 Also, if you want to donate please join our discord server and message us.  
 Stay safe and never give up <3
