@@ -26,15 +26,18 @@ import java.util.ArrayList;
 public final class PhishingSettings {
     private final ArrayList<String> phishingDomainsArrayList = new ArrayList<>();
     private final ArrayList<String> phishingDomainsSuspiciousArrayList = new ArrayList<>();
+    private final ArrayList<String> whitelistedDomainsArrayList = new ArrayList<>();
 
     // These are the default values for the settings.
     private boolean enablePhishingProtection = true;
     private boolean enableDomainList = true;
     private boolean enableSuspiciousList = true;
+    private boolean enableCustomWhitelist = false;
     private boolean enableAutomaticMute = true;
     private boolean enableAutomaticBan = false;
     private String domainListURL = "https://raw.githubusercontent.com/nikolaischunk/discord-phishing-links/main/txt/domain-list.txt";
     private String suspiciousListURL = "https://raw.githubusercontent.com/nikolaischunk/discord-phishing-links/main/txt/suspicious-list.txt";
+    private String customWhitelistURL = "NULL";
     
     public void setEnablePhishingProtection (boolean value) {
         this.enablePhishingProtection = value;
@@ -46,6 +49,10 @@ public final class PhishingSettings {
 
     public void setEnableSuspiciousList (boolean value) {
         this.enableSuspiciousList = value;
+    }
+
+    public void setEnableCustomWhitelist (boolean value) {
+        this.enableCustomWhitelist = value;
     }
 
     public void setEnableAutomaticMute (boolean value) {
@@ -64,6 +71,10 @@ public final class PhishingSettings {
         this.suspiciousListURL = value;
     }
 
+    public void setCustomWhitelistURL (String value) {
+        this.customWhitelistURL = value;
+    }
+
     public boolean isPhishingProtectionEnabled () {
         return this.enablePhishingProtection;
     }
@@ -74,6 +85,10 @@ public final class PhishingSettings {
 
     public boolean isSuspiciousListEnabled () {
         return this.enableSuspiciousList;
+    }
+
+    public boolean isCustomWhitelistEnabled () {
+        return this.enableCustomWhitelist;
     }
 
     public boolean isAutomaticMuteEnabled () {
@@ -92,11 +107,19 @@ public final class PhishingSettings {
         return this.suspiciousListURL;
     }
 
+    public String getCustomWhitelistURL () {
+        return this.customWhitelistURL;
+    }
+
     public ArrayList<String> getPhishingDomainsArrayList () {
         return this.phishingDomainsArrayList;
     }
 
     public ArrayList<String> getPhishingDomainsSuspiciousArrayList () {
         return this.phishingDomainsSuspiciousArrayList;
+    }
+
+    public ArrayList<String> getWhitelistedDomainsArrayList () {
+        return this.whitelistedDomainsArrayList;
     }
 }
