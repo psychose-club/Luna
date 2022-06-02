@@ -35,15 +35,16 @@ public final class Constants {
 
     // Bot constants.
     public static final ArrayList<Guild> GUILD_ARRAY_LIST = new ArrayList<>();
-    public static final boolean DEVELOPMENT_MODE = false;
+    public static final boolean DEVELOPMENT_MODE = true;
     public static final Emoji GO_BACK_EMOJI = Emoji.fromUnicode("\uD83D\uDD19");
     public static String BOT_IMAGE_URL = null;
 
     // Filter constants.
     // If custom filters are enabled it'll use it only as fallback if not "Fallback to default" is disabled!
     public static final String FALLBACK_BLACKLIST_URL = "https://development.psychose.club/Luna/assets/blacklist";
-    public static final String FALLBACK_WHITELIST_URL = "https://development.psychose.club/Luna/assets/whitelist";
     public static final String FALLBACK_CHARACTER_FILTER_URL = "https://development.psychose.club/Luna/assets/character_filter.json";
+    public static final String FALLBACK_PHISHING_PROTECTION_WHITELIST_URL = "https://development.psychose.club/Luna/assets/phishing_whitelist";
+    public static final String FALLBACK_WHITELIST_URL = "https://development.psychose.club/Luna/assets/whitelist";
 
     // Updater constants.
     public static final String RELEASE_INFORMATION_URL = "https://development.psychose.club/Luna/assets/update.json";
