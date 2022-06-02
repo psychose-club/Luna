@@ -39,15 +39,15 @@ public final class MessageFilter {
                 // Initialize the filterReplacement boolean.
                 boolean filterReplacement = Luna.SETTINGS_MANAGER.getMessageFilterSettings().getCharacterFilterHashMap().size() != 0;
 
-                // We replace all spaces and all non-printable characters to prevent exploits.
-                message = message.replaceAll(" ", "").replaceAll("\\p{C}", "").trim();
-
                 // If the whitelist is not empty it'll remove the whitelisted words from the messages.
                 if (Luna.SETTINGS_MANAGER.getMessageFilterSettings().getWhitelistedWords().size() != 0) {
                     for (String whitelistedWord : Luna.SETTINGS_MANAGER.getMessageFilterSettings().getWhitelistedWords()) {
-                        message = message.replaceAll(whitelistedWord, "").trim();
+                        message = message.replace(whitelistedWord, "").trim();
                     }
                 }
+
+                // We replace all spaces and all non-printable characters to prevent exploits.
+                message = message.replaceAll(" ", "").replaceAll("\\p{C}", "").trim();
 
                 // If the filter replacement is enabled, it'll replace the characters that can bypass the restriction with the normal characters.
                 if (filterReplacement) {
@@ -69,7 +69,7 @@ public final class MessageFilter {
 
                 // Here we'll check if the message matches with a blacklisted word.
                 for (String blacklistedWord : Luna.SETTINGS_MANAGER.getMessageFilterSettings().getBlacklistedWords()) {
-                    if (blacklistedWord.equalsIgnoreCase(message)) {
+                    if (message.toLowerCase().contains(blacklistedWord.toLowerCase())) {
                         this.lastBadWord = blacklistedWord;
                         return false;
                     }

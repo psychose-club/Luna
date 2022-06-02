@@ -17,6 +17,7 @@
 
 package club.psychose.luna.api.iloveradio;
 
+import club.psychose.luna.utils.logging.CrashLog;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -106,11 +107,11 @@ public final class ILoveRadioFetcher {
 
                     return true;
                 } catch (IOException ioException) {
-                    ioException.printStackTrace();
+                    CrashLog.saveLogAsCrashLog(ioException);
                 }
             }
         } catch (IOException ioException) {
-            ioException.printStackTrace();
+            CrashLog.saveLogAsCrashLog(ioException);
         }
 
         return false;

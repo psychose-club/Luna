@@ -30,8 +30,8 @@ import java.util.ArrayList;
 
 public final class Constants {
     // Version constants.
-    public static final String VERSION = "1.1.2";
-    public static final String BUILD = "9";
+    public static final String VERSION = "1.1.3";
+    public static final String BUILD = "10";
 
     // Bot constants.
     public static final ArrayList<Guild> GUILD_ARRAY_LIST = new ArrayList<>();
@@ -42,8 +42,9 @@ public final class Constants {
     // Filter constants.
     // If custom filters are enabled it'll use it only as fallback if not "Fallback to default" is disabled!
     public static final String FALLBACK_BLACKLIST_URL = "https://development.psychose.club/Luna/assets/blacklist";
-    public static final String FALLBACK_WHITELIST_URL = "https://development.psychose.club/Luna/assets/whitelist";
     public static final String FALLBACK_CHARACTER_FILTER_URL = "https://development.psychose.club/Luna/assets/character_filter.json";
+    public static final String FALLBACK_PHISHING_PROTECTION_WHITELIST_URL = "https://development.psychose.club/Luna/assets/phishing_whitelist";
+    public static final String FALLBACK_WHITELIST_URL = "https://development.psychose.club/Luna/assets/whitelist";
 
     // Updater constants.
     public static final String RELEASE_INFORMATION_URL = "https://development.psychose.club/Luna/assets/update.json";

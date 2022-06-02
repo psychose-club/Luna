@@ -20,6 +20,7 @@ package club.psychose.luna.core.system.managers;
 import club.psychose.luna.Luna;
 import club.psychose.luna.core.system.settings.*;
 import club.psychose.luna.utils.JsonUtils;
+import club.psychose.luna.utils.logging.ConsoleLogger;
 import club.psychose.luna.utils.logging.CrashLog;
 import club.psychose.luna.utils.logging.exceptions.InvalidConfigurationDataException;
 import club.psychose.luna.utils.Constants;
@@ -59,11 +60,26 @@ public final class SettingsManager {
 
     // This method loads all settings.
     public void loadSettings () {
+        this.resetConfigurationAttempts("BOT");
+        this.resetConfigurationAttempts("MESSAGE_FILTER");
+        this.resetConfigurationAttempts("MUTE");
+        this.resetConfigurationAttempts("MYSQL");
+        this.resetConfigurationAttempts("PHISHING");
+
         this.loadBotSettings();
         this.loadMuteSettings();
         this.loadMessageFilterSettings();
         this.loadMySQLSettings();
         this.loadPhishingSettings();
+    }
+
+    // This method loads the filter settings.
+    public void loadFilterSettings () {
+        this.updateWhitelist();
+        this.updateBlacklist();
+        this.updatePhishingLists();
+        this.updatePhishingWhitelist();
+        this.updateFilters();
     }
 
     // This method loads the bot settings.
@@ -116,13 +132,12 @@ public final class SettingsManager {
                 JsonObject messageFilterSettingsJsonObject = Luna.FILE_MANAGER.readJsonObject(Constants.getLunaFolderPath("\\settings\\message_filter_settings.json"));
 
                 if (messageFilterSettingsJsonObject != null) {
-                    if ((messageFilterSettingsJsonObject.has("Enable Blacklist")) && (messageFilterSettingsJsonObject.has("Custom Filters")) && (messageFilterSettingsJsonObject.has("Custom Blacklist URL")) && (messageFilterSettingsJsonObject.has("Custom Whitelist URL")) && (messageFilterSettingsJsonObject.has("Custom Character Filter URL")) && (messageFilterSettingsJsonObject.has("Fallback to default"))) {
+                    if ((messageFilterSettingsJsonObject.has("Enable Blacklist")) && (messageFilterSettingsJsonObject.has("Custom Filters")) && (messageFilterSettingsJsonObject.has("Custom Blacklist URL")) && (messageFilterSettingsJsonObject.has("Custom Whitelist URL")) && (messageFilterSettingsJsonObject.has("Custom Character Filter URL"))) {
                         this.getMessageFilterSettings().setEnableBlacklist(messageFilterSettingsJsonObject.get("Enable Blacklist").getAsBoolean());
                         this.getMessageFilterSettings().setCustomFiltersEnabled(messageFilterSettingsJsonObject.get("Custom Filters").getAsBoolean());
                         this.getMessageFilterSettings().setCustomBlackListURL(messageFilterSettingsJsonObject.get("Custom Blacklist URL").getAsString());
                         this.getMessageFilterSettings().setCustomWhitelistURL(messageFilterSettingsJsonObject.get("Custom Whitelist URL").getAsString());
                         this.getMessageFilterSettings().setCustomCharacterFilterURL(messageFilterSettingsJsonObject.get("Custom Character Filter URL").getAsString());
-                        this.getMessageFilterSettings().setFallbackToDefault(messageFilterSettingsJsonObject.get("Fallback to default").getAsBoolean());
                     } else {
                         CrashLog.saveLogAsCrashLog(new IOException("Message filter settings are invalid!"));
                         System.exit(1);
@@ -245,6 +260,25 @@ public final class SettingsManager {
                         this.getPhishingSettings().setEnableAutomaticBan(phishingSettingsJsonObject.get("Auto-Ban").getAsBoolean());
                         this.getPhishingSettings().setDomainListURL(phishingSettingsJsonObject.get("Domain List").getAsString());
                         this.getPhishingSettings().setSuspiciousListURL(phishingSettingsJsonObject.get("Suspicious Domain List").getAsString());
+
+                        // Migrating configurations to a newer version.
+                        if (phishingSettingsJsonObject.has("Config")) {
+                            String configVersion = phishingSettingsJsonObject.get("Config").getAsString();
+
+                            if (configVersion.equals("1.0.0")) {
+                                ConsoleLogger.debug("INFO! Migrating Phishing settings configuration from the version 1.0.0 to the latest!");
+                                this.savePhishingSettings();
+                                this.loadPhishingSettings();
+                            }
+                        }
+
+                        if ((phishingSettingsJsonObject.has("Enable custom whitelist") && (phishingSettingsJsonObject.has("Custom whitelist")))) {
+                            this.getPhishingSettings().setEnableCustomWhitelist(phishingSettingsJsonObject.get("Enable custom whitelist").getAsBoolean());
+                            this.getPhishingSettings().setCustomWhitelistURL(phishingSettingsJsonObject.get("Custom whitelist").getAsString());
+                        } else {
+                            CrashLog.saveLogAsCrashLog(new IOException("Phishing settings are invalid!"));
+                            System.exit(1);
+                        }
                     } else {
                         CrashLog.saveLogAsCrashLog(new IOException("Phishing settings are invalid!"));
                         System.exit(1);
@@ -294,16 +328,20 @@ public final class SettingsManager {
         }
     }
 
-    // This method loads the filter settings.
-    public void loadFilterSettings () {
-        this.updateWhitelist();
-        this.updateBlacklist();
-        this.updatePhishingLists();
-        this.updateFilters();
+    // This method reset the configuration attempts.
+    public void resetConfigurationAttempts (String configName) {
+        switch (configName) {
+            case "BOT" -> this.retryBotSettings = 0;
+            case "MESSAGE_FILTER" -> this.retryMessageFilterSettings = 0;
+            case "MUTE" -> this.retryMuteSettings = 0;
+            case "MYSQL" -> this.retryMySQLSettings = 0;
+            case "PHISHING" -> this.retryPhishingSettings = 0;
+            default -> CrashLog.saveLogAsCrashLog(new IOException("Failed to resolve the configuration name \"" + configName + "\"!"));
+        }
     }
 
     // This method updates the whitelist.
-    public void updateWhitelist () {
+    private void updateWhitelist () {
         if (this.getMessageFilterSettings().isBlacklistEnabled()) {
             boolean fallback = false;
             String whitelistURL = this.getMessageFilterSettings().isCustomFiltersEnabled() ? this.getMessageFilterSettings().getCustomWhitelistURL() : Constants.FALLBACK_WHITELIST_URL;
@@ -335,7 +373,7 @@ public final class SettingsManager {
     }
 
     // This method updates the blacklist.
-    public void updateBlacklist () {
+    private void updateBlacklist () {
         if (this.getMessageFilterSettings().isBlacklistEnabled()) {
             boolean fallback = false;
             String blacklistURL = this.getMessageFilterSettings().isCustomFiltersEnabled() ? this.getMessageFilterSettings().getCustomBlackListURL() : Constants.FALLBACK_BLACKLIST_URL;
@@ -367,7 +405,7 @@ public final class SettingsManager {
     }
 
     // This method updates the phishing lists.
-    public void updatePhishingLists () {
+    private void updatePhishingLists () {
         if (this.getPhishingSettings().isPhishingProtectionEnabled()) {
             if (this.getPhishingSettings().isDomainListEnabled()) {
                 try {
@@ -395,8 +433,40 @@ public final class SettingsManager {
         }
     }
 
+    // This method updates the phishing whitelist.
+    private void updatePhishingWhitelist () {
+        if (this.getPhishingSettings().isPhishingProtectionEnabled()) {
+            boolean fallback = false;
+            String whitelistURL = this.getPhishingSettings().isCustomWhitelistEnabled() ? this.getPhishingSettings().getCustomWhitelistURL() : Constants.FALLBACK_PHISHING_PROTECTION_WHITELIST_URL;
+
+            while (true) {
+                if (fallback)
+                    whitelistURL = Constants.FALLBACK_PHISHING_PROTECTION_WHITELIST_URL;
+
+                if (!(this.getPhishingSettings().isCustomWhitelistEnabled()))
+                    fallback = true;
+
+                try {
+                    URL url = new URL(whitelistURL);
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+
+                    bufferedReader.lines().filter(line -> !(this.getPhishingSettings().getWhitelistedDomainsArrayList().contains(line))).forEachOrdered(line -> this.getPhishingSettings().getWhitelistedDomainsArrayList().add(line));
+                    bufferedReader.close();
+                    return;
+                } catch (IOException ioException) {
+                    CrashLog.saveLogAsCrashLog(ioException);
+
+                    if (fallback)
+                        return;
+
+                    fallback = true;
+                }
+            }
+        }
+    }
+
     // This method updates the filters.
-    public void updateFilters () {
+    private void updateFilters () {
         if (this.getMessageFilterSettings().isBlacklistEnabled()) {
             boolean fallback = false;
             String characterFilterURL = this.getMessageFilterSettings().isCustomFiltersEnabled() ? this.getMessageFilterSettings().getCustomCharacterFilterURL() : Constants.FALLBACK_CHARACTER_FILTER_URL;
@@ -453,13 +523,12 @@ public final class SettingsManager {
     public void saveMessageFilterSettings () {
         JsonObject messageFilterSettingsJsonObject = new JsonObject();
 
-        messageFilterSettingsJsonObject.addProperty("Config", "1.0.0");
+        messageFilterSettingsJsonObject.addProperty("Config", "1.0.1");
         messageFilterSettingsJsonObject.addProperty("Enable Blacklist", this.getMessageFilterSettings().isBlacklistEnabled());
         messageFilterSettingsJsonObject.addProperty("Custom Filters", this.getMessageFilterSettings().isCustomFiltersEnabled());
         messageFilterSettingsJsonObject.addProperty("Custom Blacklist URL", this.getMessageFilterSettings().getCustomBlackListURL());
         messageFilterSettingsJsonObject.addProperty("Custom Whitelist URL", this.getMessageFilterSettings().getCustomWhitelistURL());
         messageFilterSettingsJsonObject.addProperty("Custom Character Filter URL", this.getMessageFilterSettings().getCustomCharacterFilterURL());
-        messageFilterSettingsJsonObject.addProperty("Fallback to default", this.getMessageFilterSettings().isFallbackToDefault());
 
         Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\message_filter_settings.json"), messageFilterSettingsJsonObject);
     }
@@ -508,14 +577,16 @@ public final class SettingsManager {
     public void savePhishingSettings () {
         JsonObject phishingSettingsJsonObject = new JsonObject();
 
-        phishingSettingsJsonObject.addProperty("Config", "1.0.0");
+        phishingSettingsJsonObject.addProperty("Config", "1.1.0");
         phishingSettingsJsonObject.addProperty("Enable Phishing Protection", this.getPhishingSettings().isPhishingProtectionEnabled());
         phishingSettingsJsonObject.addProperty("Block domains", this.getPhishingSettings().isDomainListEnabled());
         phishingSettingsJsonObject.addProperty("Block suspicious domains", this.getPhishingSettings().isSuspiciousListEnabled());
+        phishingSettingsJsonObject.addProperty("Enable custom whitelist", this.getPhishingSettings().isCustomWhitelistEnabled());
         phishingSettingsJsonObject.addProperty("Auto-Mute", this.getPhishingSettings().isAutomaticMuteEnabled());
         phishingSettingsJsonObject.addProperty("Auto-Ban", this.getPhishingSettings().isAutomaticBanEnabled());
         phishingSettingsJsonObject.addProperty("Domain List", this.getPhishingSettings().getDomainListURL());
         phishingSettingsJsonObject.addProperty("Suspicious Domain List", this.getPhishingSettings().getSuspiciousListURL());
+        phishingSettingsJsonObject.addProperty("Custom whitelist", this.getPhishingSettings().getCustomWhitelistURL());
 
         Luna.FILE_MANAGER.saveJsonObject(Constants.getLunaFolderPath("\\settings\\phishing_settings.json"), phishingSettingsJsonObject);
     }

@@ -18,10 +18,7 @@
 package club.psychose.luna.core.system.managers;
 
 import club.psychose.luna.core.bot.commands.DiscordCommand;
-import club.psychose.luna.core.bot.commands.categories.admin.ClearTempFolderDiscordCommand;
-import club.psychose.luna.core.bot.commands.categories.admin.ReloadDiscordCommand;
-import club.psychose.luna.core.bot.commands.categories.admin.ServerConfigurationDiscordCommand;
-import club.psychose.luna.core.bot.commands.categories.admin.ViewLogsDiscordCommand;
+import club.psychose.luna.core.bot.commands.categories.admin.*;
 import club.psychose.luna.core.bot.commands.categories.fun.MusicPlayerDiscordCommand;
 import club.psychose.luna.core.bot.commands.categories.utility.HelpDiscordCommand;
 import club.psychose.luna.core.bot.commands.categories.utility.NukeDiscordCommand;
@@ -43,6 +40,7 @@ public final class CommandManager {
         this.discordCommandsArrayList.add(new ReloadDiscordCommand());
         this.discordCommandsArrayList.add(new ServerConfigurationDiscordCommand());
         this.discordCommandsArrayList.add(new ViewLogsDiscordCommand());
+        this.discordCommandsArrayList.add(new UpdateDiscordCommand());
 
         // Fun category.
         this.discordCommandsArrayList.add(new MusicPlayerDiscordCommand());

@@ -10,8 +10,10 @@ Luna is an open-source discord moderation bot with unique features.
     3. [Mute Settings](#mutesettings)
     4. [MySQL Settings](#mysqlsettings)
     5. [Phishing Protection Settings](#phishingprotectionsettings)
+    6. [Add a Discord server](#adddiscordserver)
 3. [Improvements / Feature Requests / Issues / Security](#issues)
-4. [Release mirror](#mirror)
+4. [Workspace](#gradleworkspace)
+5. [Release mirror](#mirror)
 
 #
 
@@ -92,20 +94,29 @@ The Phishing protection settings has the following options:
 - Auto-Ban (Auto-Ban member)
 - Domain List (URL to domain list)
 - Suspicious Domain List (URL to suspicious domain list (amogus))
-# 
 
-
+###### Add a Discord server <a name="adddiscordserver"></a>
+To add a Discord you need to execute as bot owner the following command:
+``{Command Prefix}serverconfiguration add <Server ID> | <Owner Role ID> <Admin Role ID> <Moderator Role ID> <Verification Role ID> <Bot Information Channel ID> <Logging Channel ID> <Verification Channel ID>``
+#
 
 #### Improvements / Feature Requests / Issues / Security <a name="issues"></a>
 We appreciate every help, report and feature request.  
 Please create a detailed issue in Issues about a bug or feature request.  
 Please report security vulnerabilities directly to us on our discord server!!!
 - https://www.psychose.club/discord
+#
 
+#### Workspace <a name="gradleworkspace"></a>
+To contribute you need to fork the project and please create pull requests to the development branch.  
+If you didn't create a pull request to the development branch it'll be declined!  
 
-Also, if you want to donate please join our discord server and message us.  
-Stay safe and never give up <3
+The project runs with gradle, if your IDE didn't import the project look at: (https://gradle.org/install/)  
+#
 
 #### Mirror <a name="mirror"></a>
 
-https://development.psychose.club/Luna/releases/1.1.2/Luna.jar
+https://development.psychose.club/Luna/releases/1.1.3/Luna.jar    
+
+Also, if you want to donate please join our discord server and message us.  
+Stay safe and never give up <3

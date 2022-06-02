@@ -32,7 +32,6 @@ public final class MessageFilterSettings {
     // These are the default values for the settings.
     private boolean enableBlacklist = true;
     private boolean customFilters = false;
-    private boolean fallbackToDefault = true;
     private String customBlackListURL = "NULL";
     private String customWhitelistURL = "NULL";
     private String customCharacterFilterURL = "NULL";
@@ -43,10 +42,6 @@ public final class MessageFilterSettings {
 
     public void setCustomFiltersEnabled (boolean value) {
         this.customFilters = value;
-    }
-
-    public void setFallbackToDefault (boolean value) {
-        this.fallbackToDefault = value;
     }
 
     public void setCustomBlackListURL (String value) {
@@ -67,10 +62,6 @@ public final class MessageFilterSettings {
 
     public boolean isCustomFiltersEnabled () {
         return this.customFilters;
-    }
-
-    public boolean isFallbackToDefault () {
-        return this.fallbackToDefault;
     }
 
     public String getCustomBlackListURL () {
