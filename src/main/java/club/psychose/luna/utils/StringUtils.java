@@ -24,7 +24,7 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 /**
- * <p>This StringUtils class provides various utilities to handle with strings.</p>
+ * <p>The StringUtils class provides various utilities to handle with strings.</p>
  * @author CrashedLife
  */
 
